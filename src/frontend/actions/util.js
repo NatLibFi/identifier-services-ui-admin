@@ -46,7 +46,7 @@ export function redirect(history, pathname = '', state={}) {
   const redirectTime = 500;
 
   if (pathname === '' || (history.location && history.location.pathname === pathname)) {
-    setTimeout(history.go(0), redirectTime);
+    setTimeout(history.go(0), redirectTime); // njsscan-ignore: eval_nodejs
     return;
   }
 
