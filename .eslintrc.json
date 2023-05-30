@@ -1,0 +1,87 @@
+{
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "requireConfigFile": false,
+    "babelOptions": {
+      "presets": [
+        "@babel/preset-react"
+      ]
+    }
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "plugins": [
+    "import"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "rules": {
+    "react/display-name": [
+      "off"
+    ],
+    "object-curly-spacing": [
+      2,
+      "never"
+    ],
+    "quotes": [
+      2,
+      "single"
+    ],
+    "prefer-arrow-callback": [
+      "error"
+    ],
+    "default-param-last": [
+      "off"
+    ],
+    "react/jsx-no-bind": [
+      "off"
+    ],
+    "react/boolean-prop-naming": [
+      "off"
+    ],
+    "react/jsx-uses-react": "error",
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "capitalized-comments": [
+      "off"
+    ],
+    "indent": [
+      2,
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "no-else-return": "error",
+    "no-trailing-spaces": "error",
+    "max-depth": [
+      "error",
+      4
+    ],
+    "no-unused-expressions": "error",
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "eol-last": [
+      "error",
+      "always"
+    ]
+  },
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  }
+}

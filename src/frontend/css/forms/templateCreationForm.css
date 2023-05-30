@@ -1,0 +1,70 @@
+.templateCreationContainer {
+    margin: 40px;
+    margin-left: clamp(-140px, -15%, -105px);
+    width: clamp(500px, 50%, 800px);
+    margin-bottom: 20%;
+}
+
+.templateFormButtons {
+    display: flex;
+    margin: 2rem 0 5rem;
+    gap: 0.5rem;
+}
+
+.templateCreationContainer h5 {
+    margin-bottom: 1rem;
+}
+
+.templateCreationEditableFields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.templateCreationTextField {
+    grid-area: 3 / 1 / 4 / 3;
+}
+
+.templateCreationInstructions {
+    position: absolute !important;
+    top: 15rem;
+    left: 62%;
+    border: 1px solid #002855;
+    width: clamp(150px, 40%, 400px);
+}
+
+.templateCreationInstructions ul > li {
+    margin-bottom: 4px;
+}
+
+.templateCreationInstructions ul > li > span {
+    font-weight: bold;
+}
+
+.templateCreationInstructions div > p {
+    margin-bottom: 5px;
+}
+
+.templateCreationInstructions div > span > p {
+    padding-left: 10px;
+    font-size: 0.8rem;
+}
+
+.templateCreationInstructionsHeader {
+    display: flex;
+    gap: 2px;
+}
+
+.instructionsText p {
+    font-style: italic;
+}
+
+.lineBreak {
+    margin-bottom: 5px !important;
+}
+
+@media (max-width:1000px) {
+    .templateCreationInstructions ul > li, .templateCreationInstructions div > p {
+        font-size: 0.9rem;
+    }
+}

@@ -1,0 +1,48 @@
+.toolbar {
+    justify-content: flex-end;
+    min-height: unset;
+}
+
+.tableWrapper {
+    width: 100%;
+    margin-bottom: 1rem;
+    box-shadow: none;
+    background: inherit;
+    cursor: pointer;
+}
+
+.tableRow:focus {
+    background: #00224f29;
+}
+
+.tableRow:focus-visible {
+    outline: 2px solid var(--color-brand-darkBlue);
+}
+
+.activeIdentifiersTableRows {
+    display: grid;
+    grid-template-columns: 1fr 6fr;
+    margin-bottom: 2px;
+}
+
+.tableRowInnerContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.tableRowInnerContainer > svg {
+    font-size: 1rem;
+}
+
+@media (max-width:900px) {
+    .hiddenColumns {
+        display: none !important;
+    }
+}
+
+@media (max-width:550px) {
+    .hiddenColumnsMobile {
+        display: none !important;
+    }
+}

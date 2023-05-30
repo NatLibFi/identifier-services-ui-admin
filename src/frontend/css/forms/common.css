@@ -1,0 +1,151 @@
+.container, .wideContainer {
+    margin: 40px auto;
+    padding: 0 5px;
+}
+
+.wideContainer {
+    width: 90%;
+}
+
+.subContainer {
+    flex-grow: 1;
+    padding: 20px;
+    width: 50%;
+}
+
+.formButtonsContainer,
+.formSubmitButtonsContainer {
+    display: flex;
+    margin: 2rem 0 5rem;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+.formButtonsContainer button:focus-visible,
+.formSubmitButtonsContainer button:focus-visible {
+    outline: 2px solid var(--color-brand-darkBlue);
+    outline-offset: 4px;
+}
+
+.formSubmitButtonsContainer {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--color-white);
+    z-index: 1;
+}
+
+.textField {
+    height: 60px;
+    width: 100%;
+}
+
+.formTextArea {
+    padding: 10px;
+    width: 400px;
+}
+
+.selectField {
+    width: 100%;
+}
+
+.selectField > div:nth-of-type(2) {
+    z-index: 10;
+}
+
+.topSticky {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--color-brand-gray-20);
+    top: 0;
+    z-index: 11;
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+.full {
+    flex-direction: column;
+}
+
+.isbnContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.isbnContainer li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    padding: 0.2rem;
+    background-color: var(--color-brand-darkBlue-20);
+}
+
+.isbnContainer li div {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.isbnContainer li button {
+    padding: 0;
+}
+
+.isbnContainer li button:first-child {
+    color: var(--color-brand-darkBlue);
+}
+
+.isbnContainer li button:last-child {
+    color: var(--color-brand-red);
+}
+
+.isbnContainer li button svg {
+    font-size: 1.25rem;
+}
+
+.isbnAuthorsFields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 50%;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+}
+
+.addIsbnAuthorButton {
+    margin-left: 1rem !important;
+}
+
+.addIsbnAuthorButton:focus-visible {
+    outline: 2px solid var(--color-brand-darkBlue);
+    outline-offset: 4px;
+}
+
+.selectTitle {
+    margin-bottom: 0.5rem !important;
+}
+
+@media (max-width:1250px) {
+    .container{
+        padding: 0 20px;
+    }
+}
+
+@media (max-width:800px) {
+    .subContainer {
+        width: 90%;
+    }
+}
+
+@media (max-width:500px) {
+    .container {
+        margin: 10px auto;
+    }
+    .topSticky {
+        margin-bottom: 15px;
+    }
+}

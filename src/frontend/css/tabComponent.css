@@ -1,0 +1,16 @@
+.tabs > div:first-child {
+    max-height: 40px;
+}
+
+@media (max-width:760px) {
+    .tabs > div > div > button {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width:570px) {
+    .tabs > div > div > button {
+        font-size: 0.6rem;
+        width: 40px;
+    }
+}

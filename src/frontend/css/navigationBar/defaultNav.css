@@ -1,0 +1,50 @@
+.publicMenu {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    padding-left: 7.6rem;
+    width: 100%;
+    background-color: var(--color-whitesmoke);
+}
+
+.publicMenu button {
+    text-transform: none;
+    font-size: 1rem;
+}
+
+.publicMenu a,
+.publicMenu div {
+    height: 50px;
+    display: flex;
+}
+
+.publicMenu > div > button:focus-visible {
+    outline: 2px solid var(--color-brand-darkBlue);
+}
+
+.menuIcon {
+    display: flex;
+    align-items: center;
+}
+
+.menuItem {
+    font-size: 1rem;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    font-family: "Open Sans", sans-serif;
+}
+
+@media (max-width:900px) {
+    .publicMenu {
+        padding-left: 1rem;
+    }
+}
+
+@media (max-width:500px) {
+    .publicMenu {
+        gap: 0;
+        padding-left: 0;
+        justify-content: space-around;
+    }
+}

@@ -1,0 +1,134 @@
+.appBar {
+    background-color: var(--color-brand-darkBlue) !important;
+}
+
+.testHeader {
+    display: flex;
+    justify-content: center;
+    background-color: rgb(139, 0, 139);
+}
+
+.navbarContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 82px;
+}
+
+.navbarInnerContainer {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.mainLogo {
+    margin: 0.45rem 0 0 1rem;
+}
+
+.mainLogo img {
+    width: 100px;
+}
+
+.loginMenu {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+.loginMenu svg {
+    justify-self: right;
+}
+
+.loginMenuLoggedIn {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-right: 1rem;
+}
+
+.buttonsContainer {
+    display: flex;
+    gap: 10px;
+}
+
+.loginButton {
+    gap: 5px;
+}
+
+.loginButton:focus-visible {
+    outline: 1px solid var(--color-white);
+}
+
+.languageSelect {
+    display: inherit;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    color: var(--color-white);
+    font-size: 1rem;
+}
+
+.languageSelect span {
+    padding-left: 5px;
+    font-weight: 600
+}
+
+.languageContainer {
+    display: flex;
+}
+
+.buttonsContainer > button {
+    color: var(--color-white) !important;
+    border-color: var(--color-white);
+}
+
+.typeOfServiceSelect {
+    align-self: center;
+    min-width: 5.5rem;
+}
+
+.typeOfServiceSelect > label,
+.typeOfServiceSelect > div,
+.typeOfServiceSelect svg {
+    color: var(--color-white);
+}
+
+.typeOfServiceSelect p,
+.typeOfServiceMenuItem p {
+    display: flex;
+    gap: 0.1rem;
+}
+
+.topNavTitle {
+    /* Using important in rules below for overriding default styles of MUI <h1> element */
+    font-size: 1.6rem !important;
+    font-weight: 400 !important;
+    font-family: Georgia, serif !important;
+}
+
+@media (max-width:550px) {
+    .buttonsContainer {
+        display: grid;
+        justify-items: start;
+        justify-content: center;
+        gap: 0;
+    }
+
+    .buttonsContainer button {
+        padding: 6px 3px;
+    }
+
+    .navbarContainer .loginMenuLoggedIn button span {
+        display: none;
+    }
+
+    .loginMenuLoggedIn {
+        gap: 0;
+    }
+
+    .topNavTitle {
+        font-size: 1.2rem !important;
+    }
+}

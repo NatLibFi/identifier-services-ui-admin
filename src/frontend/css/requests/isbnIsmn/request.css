@@ -1,0 +1,130 @@
+.btnContainer {
+  display: flex;
+  min-width: 90%;
+  margin: 2rem 0;
+}
+
+.requestButtonsContainer  {
+  display: grid;
+  place-items: center;
+  grid-template-columns: 0.2fr repeat(6, 1fr) 0.4fr 0.4fr;
+  width: 100%;
+  margin: 3rem 0;
+}
+
+.issnPublicationButtonsContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 3rem 0;
+}
+
+.issnPublicationButtonsContainer > div  {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.grantAnIdButtonsContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.grantAnIdModal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400;
+  border: 2px solid var(--color-black);
+  background-color: var(--color-white);
+  box-shadow: 2px 2px var(--color-brand-darkBlue);
+  padding: 20px;
+}
+
+.grantAnIdModal div {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.grantAnIdModal h5 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.tabsContainer {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.isbnIsmnRequestContainer {
+  display: grid;
+  grid-template-columns: 6fr 1fr;
+  align-items: center;
+}
+
+.requestButton {
+  width: 180px;
+  aspect-ratio: 3/1;
+}
+
+@media (min-width: 1350px) {
+  .btnContainer {
+    width: 120px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .btnContainer {
+    min-width: 80%;
+  }
+}
+
+@media (max-width: 1600px) {
+  .requestButton {
+    width: 7.5rem;
+    min-height: 3.5rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .issnTabsRow button {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 1100px) {
+  .requestButton {
+    width: 5rem;
+    min-height: 2.5rem;
+    font-size: 0.6rem !important;
+  }
+}
+
+@media (max-width: 1000px) {
+  .issnTabsRow button {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .issnTabsRow button {
+    font-size: 0.5rem;
+    width: 100px;
+  }
+}
+
+@media (max-width: 760px) {
+  .tabsContainer p {
+    display: none;
+  }
+}
+
+@media (max-width: 750px) {
+  .btnContainer {
+    min-width: 50%;
+  }
+}

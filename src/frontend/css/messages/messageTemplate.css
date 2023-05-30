@@ -1,0 +1,29 @@
+.templateEditableFields {
+    display: grid;
+    gap: 1rem;
+    margin: 1.5rem 0 1rem;
+}
+
+.textArea {
+    padding: 10px;
+    width: 400px;
+}
+
+.templateContainer {
+    width: clamp(450px, 70%, 1000px);
+    margin: 60px;
+}
+
+.templateContainer > h5 {
+    margin-bottom: 20px;
+}
+
+.templateButtonsContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.templateButtonsContainer > div {
+    display: flex;
+    gap: 0.5rem;
+}

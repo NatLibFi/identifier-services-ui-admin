@@ -1,0 +1,36 @@
+.infoCardDateTimeContainer {
+    width: 70%;
+}
+
+.infoCardDateTime {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    border: 1px solid #9E9E9E;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.infoCardStatisticsForm {
+    position: absolute;
+    top: 14.75rem;
+    left: 70%;
+    width: clamp(200px, 27vw, 400px);
+    font-family: "Open Sans", sans-serif !important;
+}
+
+@media (max-width: 1000px) {
+    .infoCardStatisticsForm {
+        position: relative;
+        width: 100%;
+        top: unset;
+        left: unset;
+    }
+}
+
+@media (max-width:550px) {
+    .infoCardDateTime {
+        font-size: 0.7rem !important;
+    }
+}

@@ -1,0 +1,20 @@
+.subRangesTitleColor, .subRangesTitleColorISMN {
+    color: #fff;
+    padding: 5px;
+    width: 100%;
+    text-align: center;
+}
+
+.subRangesTitleColor {
+    background-color: #5D7999;
+
+}
+
+.subRangesTitleColorISMN {
+    background-color: #A69271;
+}
+
+.subRangeCancelText {
+    display: grid;
+    gap: 1rem;
+}
