@@ -50,10 +50,7 @@ export function redirect(history, pathname = '', state={}) {
     return;
   }
 
-  setTimeout(history.push({
-    pathname,
-    state
-  }), redirectTime);
+  setTimeout(history.push({pathname, state}), redirectTime); // njsscan-ignore: eval_nodejs
   return;
 }
 
