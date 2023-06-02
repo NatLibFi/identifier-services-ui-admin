@@ -34,7 +34,6 @@ const STATISTICS_TYPES = {
 
 const STATISTICS_FILEFORMATS = {
   JSON: 'json',
-  CSV: 'csv',
   XLSX: 'xlsx'
 };
 

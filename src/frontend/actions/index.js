@@ -188,7 +188,6 @@ export async function deleteEntry({url, history, redirectRoute, authenticationTo
  */
 export async function downloadFile({url, method, requestBody, authenticationToken, downloadName=''}) {
   function getDownloadName(format) {
-    if(format.includes('text/csv')) return 'statistics.csv';
     if(format.includes('application/json')) return 'statistics.json';
     if(format.includes('application/vnd.ms-excel')) return 'statistics.xlsx';
 
