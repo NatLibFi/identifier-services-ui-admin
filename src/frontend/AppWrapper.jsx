@@ -55,7 +55,7 @@ function AppWrapper() {
       return false;
     }
 
-    const requiredKeys = ['authority', 'client_id', 'redirect_uri'];
+    const requiredKeys = ['authority', 'client_id'];
     return requiredKeys.every(key => Object.keys(configuration).includes(key));
   }
 
@@ -65,6 +65,7 @@ function AppWrapper() {
 
   const oidcConfig =  {
     ...configuration.oidcConfig,
+    redirect_uri: window.location.href,
     onSigninCallback: (user) => { // eslint-disable-line no-unused-vars
       window.history.replaceState(
         {},
