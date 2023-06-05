@@ -27,19 +27,16 @@
 
 import HttpStatus from 'http-status';
 
-import {DISABLE_TURNSTILE, NODE_ENV, SITE_KEY,
-  OIDC_AUTHORITY, OIDC_CLIENT_ID, OIDC_REDIRECT_URI, OIDC_POST_LOGOUT_REDIRECT_URI, MAINTENANCE_MODE} from './config';
+import {NODE_ENV,
+  OIDC_AUTHORITY, OIDC_CLIENT_ID, OIDC_POST_LOGOUT_REDIRECT_URI, MAINTENANCE_MODE} from './config';
 
 export function provideFrontendConfig(_, res) {
   const frontendConfig = {
-    siteKey: SITE_KEY,
     environment: NODE_ENV,
-    disableTurnstile: DISABLE_TURNSTILE,
     maintenance: MAINTENANCE_MODE,
     oidcConfig: {
       authority: OIDC_AUTHORITY,
       client_id: OIDC_CLIENT_ID,
-      redirect_uri: OIDC_REDIRECT_URI,
       post_logout_redirect_uri: OIDC_POST_LOGOUT_REDIRECT_URI
     }
   };

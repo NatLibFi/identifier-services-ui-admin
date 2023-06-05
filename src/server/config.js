@@ -40,12 +40,9 @@ export const TLS_CERT = readEnvironmentVariable('TLS_CERT', {defaultValue: ''});
 export const NODE_ENV = readEnvironmentVariable('NODE_ENV', {defaultValue: 'development'});
 
 export const MAINTENANCE_MODE = readEnvironmentVariable('MAINTENANCE_MODE', {defaultValue: true, format: parseBoolean});
-export const SITE_KEY = readEnvironmentVariable('SITE_KEY', {defaultValue: ''});
-export const DISABLE_TURNSTILE = readEnvironmentVariable('DISABLE_TURNSTILE', {defaultValue: false, format: parseBoolean});
 
 export const HELMET_CONFIG = readEnvironmentVariable('HELMET_CONFIG', {defaultValue: {}, format: JSON.parse});
 
 export const OIDC_AUTHORITY = readEnvironmentVariable('OIDC_AUTHORITY', {defaultValue: ''});
 export const OIDC_CLIENT_ID = readEnvironmentVariable('OIDC_CLIENT_ID', {defaultValue: ''});
-export const OIDC_REDIRECT_URI = readEnvironmentVariable('OIDC_REDIRECT_URI', {defaultValue: 'https://localhost:8080'});
 export const OIDC_POST_LOGOUT_REDIRECT_URI = readEnvironmentVariable('OIDC_POST_LOGOUT_REDIRECT_URI', {defaultValue: 'https://localhost:8080'});
