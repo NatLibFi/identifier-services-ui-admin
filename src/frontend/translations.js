@@ -241,7 +241,6 @@ const fi = {
   'statistics.type.PUBLICATIONS': 'Julkaisut',
   'statistics.type.FORMS': 'Pyynnöt',
   'statistics.format.json': 'JSON',
-  'statistics.format.csv': 'CSV',
   'statistics.format.xlsx': 'XLSX',
   'statistics.card.info': 'Jos haluatte saada kaikki tilastot, valitkaa alkupäivämääräksi 01/01/1970 ja loppupäivämääräksi kuuluva päivä.',
 
