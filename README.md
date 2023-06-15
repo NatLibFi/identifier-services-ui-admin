@@ -2,7 +2,7 @@
 
 Admin UI service of Identifier Services system.
 
-This repo contains implementation of Admin UI of the Identifier Services system. Based on the [Identifier Registry](https://github.com/petkivim/id-registry).
+This repo contains implementation of Admin UI of the Identifier Services system. Based on the [Identifier Registry](https://github.com/petkivim/id-registry) by [Petteri Kivimäki](https://github.com/petkivim/).
 
 
 ## License and copyright
