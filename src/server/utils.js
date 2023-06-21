@@ -27,17 +27,16 @@
 
 import HttpStatus from 'http-status';
 
-import {NODE_ENV,
-  OIDC_AUTHORITY, OIDC_CLIENT_ID, OIDC_POST_LOGOUT_REDIRECT_URI, MAINTENANCE_MODE} from './config';
+import * as config from './config';
 
 export function provideFrontendConfig(_, res) {
   const frontendConfig = {
-    environment: NODE_ENV,
-    maintenance: MAINTENANCE_MODE,
+    environment: config.NODE_ENV,
+    maintenance: config.MAINTENANCE_MODE,
     oidcConfig: {
-      authority: OIDC_AUTHORITY,
-      client_id: OIDC_CLIENT_ID,
-      post_logout_redirect_uri: OIDC_POST_LOGOUT_REDIRECT_URI
+      authority: config.OIDC_AUTHORITY,
+      client_id: config.OIDC_CLIENT_ID,
+      post_logout_redirect_uri: config.OIDC_POST_LOGOUT_REDIRECT_URI
     }
   };
 

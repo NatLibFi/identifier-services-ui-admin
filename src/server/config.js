@@ -28,9 +28,11 @@
 import {readEnvironmentVariable} from '@natlibfi/melinda-backend-commons';
 import {parseBoolean} from './utils';
 
-export const API_URL = readEnvironmentVariable('API_URL', {defaultValue: 'http://localhost:8081'});
-
+export const API_HOST = readEnvironmentVariable('API_HOST', {defaultValue: 'https://localhost:8081'});
+export const API_PATH_PREFIX = readEnvironmentVariable('API_PATH_PREFIX', {defaultValue: ''});
+export const API_KEY = readEnvironmentVariable('API_KEY', {defaultValue: ''});
 export const ALLOW_SELF_SIGNED = readEnvironmentVariable('ALLOW_SELF_SIGNED', {defaultValue: false, format: parseBoolean});
+
 export const HTTP_PORT = readEnvironmentVariable('HTTP_PORT', {defaultValue: 8080, format: v => Number(v)});
 export const HTTPS_PORT = readEnvironmentVariable('HTTPS_PORT', {defaultValue: 8080, format: v => Number(v)});
 

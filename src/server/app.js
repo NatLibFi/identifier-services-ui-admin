@@ -29,23 +29,15 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import fs from 'fs';
 import helmet from 'helmet';
-import httpProxy from 'express-http-proxy';
 import https from 'https';
 import path from 'path';
 
-import {ALLOW_SELF_SIGNED, API_URL, HELMET_CONFIG, NODE_ENV, TLS_CERT, TLS_KEY, HTTP_PORT, HTTPS_PORT} from './config';
+import {HELMET_CONFIG, NODE_ENV, TLS_CERT, TLS_KEY, HTTP_PORT, HTTPS_PORT} from './config';
 import {provideFrontendConfig} from './utils';
+import {getConfiguredProxy} from './proxy';
 
 export default async function startApp() {
   const app = express();
-  const proxyOpts = {};
-
-  if (ALLOW_SELF_SIGNED) {
-  proxyOpts.proxyReqOptDecorator = (proxyReqOpts, originalReq) => { // eslint-disable-line
-      proxyReqOpts.rejectUnauthorized = false;
-      return proxyReqOpts;
-    };
-  }
 
   // Header config
   app.disable('x-powered-by');
@@ -62,7 +54,7 @@ export default async function startApp() {
   app.get('/api/config', provideFrontendConfig);
 
   // Proxy API calls
-  app.use('/api', httpProxy(API_URL, proxyOpts));
+  app.use('/api', getConfiguredProxy());
 
   // Serve static files
   app.use(express.static(path.resolve(__dirname, 'public')));
