@@ -190,6 +190,7 @@ export async function downloadFile({url, method, requestBody, authenticationToke
   function getDownloadName(format) {
     if(format.includes('application/json')) return 'statistics.json';
     if(format.includes('application/vnd.ms-excel')) return 'statistics.xlsx';
+    if(format.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) return 'statistics.xlsx';
 
     throw new Error(`Unknown format: ${format}`);
   }
