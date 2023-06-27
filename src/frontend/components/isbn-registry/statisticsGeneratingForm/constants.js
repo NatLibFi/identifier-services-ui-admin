@@ -39,7 +39,8 @@ const STATISTICS_TYPES = {
 
 const STATISTICS_FILEFORMATS = {
   JSON: 'json',
-  XLSX: 'xlsx'
+  XLSX: 'xlsx',
+  CSV: 'csv'
 };
 
 export const STATISTIC_TYPE_OPTIONS = [

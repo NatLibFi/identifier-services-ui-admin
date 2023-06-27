@@ -191,6 +191,7 @@ export async function downloadFile({url, method, requestBody, authenticationToke
     if(format.includes('application/json')) return 'statistics.json';
     if(format.includes('application/vnd.ms-excel')) return 'statistics.xlsx';
     if(format.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) return 'statistics.xlsx';
+    if(format.includes('text/csv')) return 'statistics.csv';
 
     throw new Error(`Unknown format: ${format}`);
   }
