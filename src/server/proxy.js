@@ -33,6 +33,11 @@ function preprocessRequest(proxyReqOpts, _srcReq) {
     proxyReqOpts.rejectUnauthorized = false;
   }
 
+  if(config.API_CLIENT_CERTIFICATE_KEY && config.API_CLIENT_CERTIFICATE_CERT) {
+    proxyReqOpts.key = config.API_CLIENT_CERTIFICATE_KEY;
+    proxyReqOpts.cert = config.API_CLIENT_CERTIFICATE_CERT;
+  }
+
   if(config.API_KEY) {
     proxyReqOpts.headers['X-Api-Key'] = config.API_KEY;
   }

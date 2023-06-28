@@ -25,6 +25,7 @@
  *
  */
 
+import fs from 'fs';
 import HttpStatus from 'http-status';
 
 import * as config from './config';
@@ -53,4 +54,12 @@ export function parseBoolean(value) {
   }
 
   return Boolean(Number(value));
+}
+
+export function parseFile(path) {
+  if(fs.existsSync(path)) {
+    return fs.readFileSync(path, 'utf8');
+  }
+
+  throw new Error(`Could not read file from path ${path}`);
 }
