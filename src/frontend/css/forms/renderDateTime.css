@@ -1,0 +1,12 @@
+.dateContainer {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+    gap: 1rem;
+}
+
+@media (max-width:450px) {
+    .dateContainer {
+        display: grid;
+    }
+}

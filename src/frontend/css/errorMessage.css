@@ -1,0 +1,16 @@
+.errors {
+    position: absolute;
+    padding: 0;
+    right: 24px;
+    top: 30px;
+}
+
+.textAreaErrors {
+    position: absolute;
+    right: 1.5rem;
+    top: 11rem;
+}
+
+.selectErrors {
+    padding: 0
+}

@@ -1,0 +1,23 @@
+.welcomeMessage {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-transform: uppercase;
+    font-size: clamp(0.65rem, 0.586rem + 0.26vw, 0.875rem);
+    font-family: "Open Sans", Helvetica, sans-serif;
+}
+
+.logoutButton {
+    gap: 5px;
+}
+
+.logoutButton p {
+    font-size: clamp(0.65rem, 0.586rem + 0.26vw, 0.875rem);
+    color: var(--color-white) !important;
+}
+
+@media (max-width:550px) {
+    .welcomeMessage svg, .logoutButton svg {
+        width: 0.8em;
+    }
+}

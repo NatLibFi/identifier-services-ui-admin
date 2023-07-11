@@ -1,0 +1,11 @@
+.rangeCreationForm {
+    padding: 20px;
+    margin-bottom: 20px;
+    width: clamp(330px, 30vw, 600px);
+}
+
+.rangeCreationContainer {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,14 @@
+.rootPopover {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+}
+
+.popover {
+    pointer-events: none;
+}
+
+.paper {
+    padding: 5px;
+    max-width: 500px;
+}

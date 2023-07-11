@@ -1,0 +1,192 @@
+/* CSS Reset & MUI Styles Overrides */
+
+:root {
+  /* Colors introduced in the Style Guide */
+  --color-brand-darkBlue: #002855; /* Primary dark blue color - BLUE 100*/
+  --color-brand-darkBlue-20: #f2f5f7; /* Shade of primary dark blue - BLUE 20 */
+
+  --color-brand-green: #3a785e; /* Primary green color - GREEN 100 */
+  --color-brand-teal: #1b708c; /* Primary teal color - TEAL 100 */
+  --color-brand-teal-20: #e6f7fa; /* Shade of primary teal color - TEAL 20 */
+
+  --color-brand-gray: #707070; /* Primary gray color - GRAY 100 */
+  --color-brand-gray-20: #f5f5f5; /* Shade of primary gray color - GRAY 20 */
+
+  --color-brand-red: #a0270a; /* Primary red color - RED 100 */
+  --color-brand-red-80: #d6958b; /* Shade of primary red color - RED 80 */
+  --color-brand-red-20: #faefed; /* Shade of primary red color - RED 20 */
+
+  --color-brand-gold: #786444; /* Primary gold color - GOLD 100 */
+  --color-brand-yellow: #bd9562; /* Primary yellow color - YELLOW 100 */
+
+  /* Other colors */
+  --color-white: #ffffff; /* Plain white */
+  --color-whitesmoke: #f5f5f5; /* A bit darker shade of white */
+  --color-black: #000000; /* Plain black */
+}
+
+body {
+  margin: 0;
+  overflow: auto !important;
+  padding-right: 0 !important;
+  background: var(--color-white);
+}
+
+p,
+span,
+a,
+.MuiButton-root,
+.MuiTableCell-root,
+.MuiChip-root,
+.MuiTab-textColorPrimary,
+.MuiAccordionSummary-content,
+.MuiInputBase-input {
+  font-family: 'Open Sans', Helvetica, sans-serif !important;
+}
+
+a,
+li,
+.MuiAccordionSummary-content {
+  text-decoration: none !important;
+  color: var(--color-brand-darkBlue) !important;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Set colors for primary (contained) buttons */
+.MuiButton-contained {
+  background-color: var(--color-brand-darkBlue) !important;
+  color: var(--color-white) !important;
+}
+
+/* Set border-color for secondary (outlined) buttons */
+.MuiButton-outlined {
+  border-color: var(--color-brand-darkBlue) !important;
+}
+
+/* Set colors for disabled buttons */
+.MuiButton-root.Mui-disabled {
+  background-color: var(--color-brand-gray) !important;
+  color: var(--color-white) !important;
+  border: none !important;
+}
+
+/* Set colors for disabled ISSN modal buttons */
+.issnMobileStepper > .Mui-disabled {
+  color: hsla(0, 0%, 0%, 0.26) !important;
+  background-color: transparent !important;
+}
+
+/* Set default color for text content in the buttons & tabs */
+.MuiButton-text,
+.MuiButton-outlinedPrimary,
+.MuiTab-textColorPrimary.Mui-selected,
+/* Set default color for SVG icons */
+.MuiSvgIcon-colorPrimary,
+.MuiStepIcon-root {
+  color: var(--color-brand-darkBlue) !important;
+}
+
+/* Disable border & box-shadow in paper elements if they have table as a child */
+.MuiPaper-root:has(.MuiTableContainer-root) {
+  box-shadow: none !important;
+}
+
+/* Removes unneeded border-radius from dropdown menu container */
+.MuiPaper-root:has(ul) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* Set default font size for all the text content in the tables */
+.MuiTableCell-root {
+  font-size: 0.7rem !important;
+}
+
+/* Set custom text, background & border colors to different kinds of buttons */
+.MuiButton-containedError {
+  background-color: var(--color-brand-red) !important;
+}
+.MuiButton-containedSuccess {
+  background-color: var(--color-brand-green) !important;
+}
+.MuiButton-textError {
+  color: var(--color-brand-red) !important;
+}
+
+/* Set default background color to Fab-buttons and Mui Tabs indicator line (used in /publications/isbn-ismn */
+.MuiFab-root,
+.MuiTabs-indicator {
+  background-color: var(--color-brand-darkBlue) !important;
+}
+
+/* Set default color for Delete Fab Button */
+.MuiFab-warning {
+  background-color: var(--color-brand-red) !important;
+}
+
+/* Set font weight for selected Tab */
+.MuiTab-textColorPrimary.Mui-selected {
+  font-weight: 600;
+}
+
+/* Set dropdown menu borders, width & padding */
+.MuiMenu-list {
+  border-bottom: 1px solid var(--color-gray-20);
+  border-left: 1px solid var(--color-gray-20);
+  border-right: 1px solid var(--color-gray-20);
+  min-width: 200px;
+  padding: 0 !important;
+}
+.MuiMenu-list div:not(:last-child) {
+  border-bottom: 1px solid var(--color-gray-20);
+}
+
+/* Set margin & colors fpr Chip components */
+.MuiChip-root {
+  margin: 3px;
+  background-color: var(--color-brand-darkBlue) !important;
+  color: var(--color-white) !important;
+}
+
+/* Removes unneeded border from expandable dropdown menu items */
+.MuiAccordionSummary-content {
+  border: none !important;
+}
+
+/* Removes Grid-components related default margins */
+.MuiGrid-root {
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+/* Fix position & top padding of the items in the alert snackbar (success/error messages) */
+.MuiSnackbar-root > .MuiPaper-root {
+  align-items: center;
+}
+.MuiAlert-action {
+  padding-top: 0 !important;
+}
+
+/* Set the min-height and border to inner list elements of autocomplete dropdown, helps to distinguish the first empty element */
+.MuiAutocomplete-popper li {
+  min-height: 2rem !important;
+  border: 2px solid var(--color-gray-20);
+}
+
+/* Set the bold font weight for the active step label in the stepper */
+.MuiStepLabel-label.Mui-active {
+  font-weight: bold !important;
+}
+
+.MuiSvgIcon-root.Mui-active {
+  color: var(--color-brand-green) !important;
+}
+
+/* Set color for the disabled SVG icon-buttons */
+.Mui-disabled > .MuiSvgIcon-colorPrimary {
+  color: var(--color-brand-gray) !important;
+}

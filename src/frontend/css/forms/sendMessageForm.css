@@ -1,0 +1,38 @@
+.sendMessageContainer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.sendMessageContainer form {
+    width: 70%;
+}
+
+.sendMessageContainer form > p,
+.sendMessageContainer h6,
+.sendMessageContainer h5 {
+    margin: 20px 0;
+}
+
+.sendMessageButtons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.sendMessageLinks {
+    display: grid;
+    gap: 5px;
+}
+
+.sendMessageLinks > p {
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.messageSubjectFields {
+    display: grid;
+    margin-bottom: 10px;
+    gap: 10px;
+}

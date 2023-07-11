@@ -1,0 +1,34 @@
+.menuIconPublisher {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.adminMenu {
+    display: flex;
+    justify-content: space-around;
+    background-color: #1C7291;
+}
+
+.adminMenu button {
+    text-decoration: none;
+}
+
+.issnAdminMenu {
+    background-color: #8AB59C;
+}
+
+.issnAdminMenu .menuItemLoggedIn {
+    color: black;
+}
+
+@media (max-width:550px) {
+    .adminMenu {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding-left: 10%;
+    }
+    .adminMenu > div {
+        width: 100px;
+    }
+}

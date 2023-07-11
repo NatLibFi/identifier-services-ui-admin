@@ -1,0 +1,44 @@
+.bodyContainer {
+  margin-bottom: 40px;
+  justify-content: center;
+}
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 125vh;
+}
+
+.errorWrapper {
+  place-content: center;
+}
+
+.appWrapper {
+  /* Using important to override the default display value of MUI component */
+  display: grid !important;
+  height: 100vh;
+  grid-template-rows: 1fr 0 0.4fr 9fr 2fr;
+}
+
+.skipLink {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skipLink:focus {
+  display: inline-block;
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  padding: 0.5rem;
+  margin: 0.5rem;
+}
+
+/* Hide TinyMCE Upgrade Message */
+.tox-promotion {
+  display: none;
+}

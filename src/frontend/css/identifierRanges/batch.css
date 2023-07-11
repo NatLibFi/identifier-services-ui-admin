@@ -1,0 +1,56 @@
+.batchContainer {
+  display: grid !important;
+  justify-content: center;
+  width: 100% !important ;
+}
+
+.batchButtonsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.batchButtonsContainer > div {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.batchButtonsContainer > div button:not(:first-child) {
+  height: 50px;
+}
+
+.batchesTitleColor {
+  background-color: #b8c9db;
+  padding: 5px;
+  width: 100%;
+  text-align: center;
+}
+
+.batchesTitleColorISMN {
+  background-color: #c6b9a3;
+  padding: 5px;
+  width: 100%;
+  text-align: center;
+}
+
+.batchesTitleColorPublic {
+  padding: 5px;
+  width: 100%;
+  text-align: center;
+  margin-top: 0.5rem !important;
+}
+
+.publicBatchContainer {
+  margin-top: 2rem;
+}
+
+.publicModal {
+  width: clamp(430px, 40%, 600px);
+}
+
+.publicBatchButtons {
+  display: grid;
+  gap: 1.5rem;
+}

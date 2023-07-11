@@ -1,0 +1,201 @@
+.modal {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: clamp(500px, 70vw, 1200px);
+    max-height: 80vh;
+    min-height: 80vh;
+    border: 2px solid var(--color-black);
+    background-color: var(--color-white);
+    box-shadow: 2px 2px var(--color-brand-darkBlue);
+    padding: 20px;
+    overflow: auto;
+}
+
+.modal > div:nth-child(1), .modal > div:nth-child(2) {
+    align-self: flex-start;
+    justify-self: flex-start;
+}
+
+.createListModal {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600;
+    border: 2px solid var(--color-black);
+    background-color: var(--color-white);
+    box-shadow: 2px 2px var(--color-brand-darkBlue);
+    padding: 20px;
+}
+
+.createListModal h6 {
+    margin-bottom: 15px;
+}
+
+.createListInnerContainer {
+    width: 400px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px !important;
+}
+
+.creatingIdMessage {
+    margin-top: 20px !important;
+}
+
+.creatingIdSubRange {
+    text-align: center;
+    color: var(--color-brand-darkBlue);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+}
+
+.amountOfIdentifiersInput {
+    margin-top: 10px;
+    width: 400px;
+}
+
+.marcModal,
+.savePublisherModal,
+.publicationRequestModal {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 40%;
+    max-width: 60%;
+    min-height: 45%;
+    max-height: 80%;
+    border: 2px solid var(--color-black);
+    background-color: var(--color-white);
+    box-shadow: 2px 2px var(--color-brand-darkBlue);
+    padding: 1.5rem;
+    overflow: auto;
+}
+
+/* Set divider line to the bottom of first <pre> item if there is more than one such items */
+.marcModal > pre:first-child:not(:only-child) {
+    border-bottom:  1px solid var(--color-black);
+    padding-bottom: 2rem;
+}
+
+.marcModal pre {
+    font-size: clamp(10px, 1.5vw, 16px);
+}
+
+.issnPublicationModalButtons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.issnPublicationModalContainer {
+    display: grid;
+    place-items: center;
+}
+
+.archiveRecordContainer {
+    margin-top: 1rem;
+}
+
+.archiveRecordContainer > div,
+.savePublisherModalContainer > div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+}
+
+.archiveRecordContainer > div > p:first-child,
+.savePublisherModalContainer > div > p:first-child {
+    font-weight: 700;
+}
+
+.savePublisherModal > h4 {
+    margin-bottom: 1rem;
+}
+
+.savePublisherModal > div > div {
+    min-width: 40rem;
+}
+
+/* using important to override default position of the row (affects only one div) */
+.otherIdentifiers {
+    align-items: flex-start !important;
+}
+
+.issnRequestModal h5 {
+    width: 100%;
+    text-align: center;
+    color: var(--color-white);
+    background-color: var(--color-brand-darkBlue);
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.issnLinkedPublicationEditModal {
+    gap: 0.25rem
+}
+
+.issnLinkedPublicationEditModal > div {
+    padding: 1rem 2.5rem;
+}
+
+.issnLinkedPublicationEditModal > div:not(:last-child)::before {
+    content: "";
+    width: 0.25rem;
+    height: 0.25rem;
+    border-radius: 50%;
+    background-color: var(--color-black);
+}
+
+.issnLinkedPublicationEditModal > h5 {
+    margin-bottom: 1rem;
+}
+
+.issnLinkedPublicationInnerContainer {
+    display: grid;
+    gap: 0.5rem;
+    place-items: center;
+}
+
+.issnLinkedPublicationInnerContainer ~ button > svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--color-brand-darkBlue);
+}
+
+.issnMobileStepper {
+    width: 100%;
+    margin: 1rem 0;
+    /* Using important to override default padding of MUI MobileStepper component */
+    padding: 0 !important;
+}
+
+.editableContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.editableContainer > button {
+    /* Using important to override default color of MUI Fab component */
+    background-color: #8AB59C !important;
+}
+
+.issnPulisherContactsModalButton {
+    /* Using important to override default size of MUI Fab component */
+    min-height: 1rem !important;
+    width: 2rem !important;
+    height: 2rem !important;
+}

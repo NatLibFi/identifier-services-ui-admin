@@ -1,0 +1,66 @@
+.label {
+    font-weight: 700;
+}
+
+.createdResourceLink {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.full {
+    flex-direction: column;
+}
+
+.selectField {
+    width: 100%;
+}
+
+#react-select-2-placeholder,
+#react-select-3-placeholder {
+    color: hsla(0, 0%, 0%, 0.55);
+}
+
+.listComponentTextArea {
+    width: 100%;
+    background: #f5f3f3;
+}
+
+.classificationCodes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+}
+
+.classificationCodes div:first-child {
+    min-width: 100%;
+}
+
+.classificationCodes > div:nth-child(2) {
+    width: 95%;
+}
+
+.arrayContainer {
+    display: grid !important;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+}
+
+.arrayContainer div {
+    max-width: 100%;
+    flex-basis: unset;
+}
+
+.arrayContainer div div{
+    width: auto;
+}
+
+.editForm {
+    width: 100%;
+}
+
+.comments {
+    font-family: "Open Sans", Helvetica, sans-serif;
+    white-space: pre-wrap;
+}

@@ -1,0 +1,39 @@
+.statisticsForm, .statisticsForm button {
+    margin: 2rem 0;
+}
+
+.statisticsForm h5 {
+    margin-bottom: 1rem;
+}
+
+.statisticsFieldsContainer {
+    display: grid;
+    gap: 2rem;
+}
+
+.statisticsFieldsContainer > div > div, .statisticsFieldsContainer > div > div > div {
+    width: 400px;
+}
+
+.statisticsFieldsContainer button > svg {
+    position: absolute;
+    bottom: 0.2rem;
+    right: 0.5rem;
+}
+
+.statisticsSpinner {
+    margin-top: 2rem;
+}
+
+.statisticsDateInvalidMessage {
+    color: #d32f2f;
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    margin-top: 0.5rem !important;
+    font-size: 0.75rem !important;
+}
+
+.statisticsDateInvalidMessage > svg {
+    font-size: 1rem !important;
+}

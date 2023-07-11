@@ -1,0 +1,20 @@
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 5rem;
+    padding: 3rem;
+    max-height: 50%;
+}
+
+.errorHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-brand-darkBlue);
+}
+
+.errorText {
+    letter-spacing: 0.1px;
+    max-width: 60vw;
+}

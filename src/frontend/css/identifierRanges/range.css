@@ -1,0 +1,94 @@
+.rangeContainer {
+    display: flex;
+    flex-direction: column !important;
+    align-items: center;
+}
+
+.rangeButtonsContainer {
+    display: flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 2rem;
+    margin: 1rem 0 2.5rem 12.5rem;
+}
+
+.rangeButtonsContainer button:not(:first-child) {
+    height: 50px;
+    width: 150px;
+}
+
+.rangesTitleColor,
+.rangesTitleColorISMN,
+.rangesTitleColorISSN  {
+    color: var(--color-white);
+    padding: 5px;
+    width: 100%;
+    text-align: center;
+}
+
+.rangesTitleColor {
+    background-color: var(--color-brand-darkBlue);
+}
+
+.rangesTitleColorISMN {
+    background-color: var(--color-brand-gold);
+}
+
+.rangesTitleColorISSN {
+    background-color: var(--color-brand-green);
+}
+
+.identifierCreationModal {
+    margin-top: 10px;
+}
+
+.active,
+.inactive {
+    font-weight: 700;
+}
+
+.active {
+    color: var(--color-brand-green);
+}
+
+.inactive {
+    color: var(--color-brand-red);
+}
+
+@media (max-width: 1300px) {
+    .rangeButtonsContainer {
+        margin: 1rem 0 2.5rem 10rem;
+    }
+}
+
+@media (max-width: 1000px) {
+    .rangeButtonsContainer {
+        margin: 1rem 0 2.5rem 4rem;
+    }
+}
+
+@media (max-width:800px) {
+    .rangeButtonsContainer button:not(:first-child) {
+        font-size: 0.7rem;
+        height: 40px;
+        width: 120px;
+    }
+}
+
+@media (max-width:600px) {
+    .rangeButtonsContainer {
+        gap: 10px
+    }
+    .rangeButtonsContainer button:first-child {
+        min-height: 25px;
+        width: 25px;
+    }
+    .rangeButtonsContainer svg {
+        font-size: 1.3rem;
+    }
+    .rangeButtonsContainer button:not(:first-child) {
+        font-size: 0.6rem;
+        height: 30px;
+        width: 110px;
+    }
+}

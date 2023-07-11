@@ -1,0 +1,42 @@
+.messageBoxContainer {
+    display: grid;
+    gap: 4px;
+}
+
+.messageBoxContainer > div > div:first-child {
+    font-weight: 700;
+}
+
+.messageTextContainer {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    min-height: 300px;
+    max-width: clamp(500px, 70%, 1000px);
+}
+
+.messageTextContainer > p  {
+    font-weight: 400;
+}
+
+.messageContainer {
+    min-width: 100%;
+    padding: 3rem;
+}
+
+.messageButtonsContainer {
+    display: flex;
+    gap: 1.5rem;
+    padding-bottom: 15px;
+    align-items: center;
+}
+
+.listItemSpinner {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.messageLink {
+    display: flex;
+    gap: 0.2rem;
+}
