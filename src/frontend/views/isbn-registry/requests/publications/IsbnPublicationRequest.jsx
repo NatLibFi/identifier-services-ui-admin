@@ -41,13 +41,15 @@ import {
   DialogActions,
   DialogTitle,
   DialogContent,
-  DialogContentText
+  DialogContentText,
+  Backdrop
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import BookIcon from '@mui/icons-material/Book';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import useItem from '/src/frontend/hooks/useItem';
 import {redirect} from '/src/frontend/actions/util';
@@ -82,7 +84,6 @@ function IsbnPublicationRequest(props) {
   const {authenticationToken} = userInfo;
 
   const intl = useIntl();
-
   const {id} = match.params;
 
   const [publicationRequest, setPublicationRequest] = useState({});
@@ -97,6 +98,9 @@ function IsbnPublicationRequest(props) {
   // State for the modal window for generating identifierbatch for the publication
   const [open, setOpen] = useState(false);
   const [isGrantingIdentifiers, setIsGrantingIdentifiers] = useState(false);
+
+  // State for the spinner shown while saving to Melinda or downloading MARC
+  const [showSpinner, setShowSpinner] = useState(false);
 
   // Fetching data of the current request
   const {
@@ -159,6 +163,11 @@ function IsbnPublicationRequest(props) {
     setIsEdit(false);
   }
 
+  /* Handles closing of the Save to Melinda spinner */
+  function handleCloseBackdrop () {
+    setLoading(false);
+  }
+
   /* Handles going back to the previous page */
   function handleGoBack() {
     if (history.location?.state?.redirectFromPublicationModal) {
@@ -197,6 +206,7 @@ function IsbnPublicationRequest(props) {
     setIdentifierType('');
   };
 
+  // Handles copying of the current request
   async function handleCopyRequest() {
     const result = await makeApiRequest({
       url: `/api/isbn-registry/requests/publications/${publicationRequest.id}/copy`,
@@ -212,8 +222,9 @@ function IsbnPublicationRequest(props) {
     setCopyModalIsOpen(false);
   }
 
+  /* Handles saving data to Melinda */
   async function handleSaveToMelinda() {
-    // eslint-disable-line
+    setShowSpinner(true);
     const result = await makeApiRequest({
       url: `/api/isbn-registry/marc/${id}/send-to-melinda`,
       method: 'POST',
@@ -225,6 +236,7 @@ function IsbnPublicationRequest(props) {
         severity: 'error',
         message: 'Melindaan tallentaminen ei onnistunut. Ota yhteyttä sovellusylläpitoon.'
       });
+      setShowSpinner(false);
       return;
     }
 
@@ -235,6 +247,7 @@ function IsbnPublicationRequest(props) {
         message:
           'Melindaan tallennuksen aikana tapahtui virheitä. Kaikkia tietueita ei välttämättä tallennettu'
       });
+      setShowSpinner(false);
       return;
     }
 
@@ -251,6 +264,7 @@ function IsbnPublicationRequest(props) {
         severity: 'error',
         message: `Tietuetta ei tallennettu, löytyi jo Melindasta ks. id: ${melindaIds}`
       });
+      setShowSpinner(false);
       return;
     }
 
@@ -263,6 +277,7 @@ function IsbnPublicationRequest(props) {
         message:
           'Osaa tietueista ei tallennettu, koska näitä vastaavat tietueet löytyivät jo Melindasta.'
       });
+      setShowSpinner(false);
       return;
     }
 
@@ -274,6 +289,7 @@ function IsbnPublicationRequest(props) {
         severity: 'success',
         message: 'Melindaan tallentaminen onnistui'
       });
+      setShowSpinner(false);
       return;
     }
 
@@ -283,6 +299,8 @@ function IsbnPublicationRequest(props) {
       message:
         'Kävi savolaisittain: saattaa olla, että Melindaan tallentaminen joiltain osin onnistui tai saattaa olla, että ei onnistunut'
     });
+
+    setShowSpinner(false);
   }
 
   // Handles granting an id
@@ -325,12 +343,14 @@ function IsbnPublicationRequest(props) {
 
   // Handles downloading marc data
   async function handleDownloadMarc() {
+    setShowSpinner(true);
     await downloadFile({
       url: `/api/isbn-registry/marc/${publicationRequest.id}?format=iso2709&download=true`,
       method: 'GET',
       authenticationToken,
       downloadName: `isbnregistry-publication-${publicationRequest.id}.mrc`
     });
+    setShowSpinner(false);
   }
 
   // Click handlers for the modal window for approving granting an id
@@ -699,6 +719,7 @@ function IsbnPublicationRequest(props) {
                 </DialogActions>
               </Dialog>
 
+              {/* Edit mode button - On/Off */}
               <Fab
                 color="secondary"
                 size="small"
@@ -710,6 +731,10 @@ function IsbnPublicationRequest(props) {
             </>
           )}
         </div>
+        {/* Show loading spinner during Saving to Melinda and downloading MARC */}
+        <Backdrop open={showSpinner} onClick={handleCloseBackdrop}>
+          <CircularProgress size={100} color="inherit" />
+        </Backdrop>
         <div className="listItemSpinner">{dataComponent}</div>
       </div>
     );

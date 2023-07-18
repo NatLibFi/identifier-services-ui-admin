@@ -39,11 +39,13 @@ import {
   DialogActions,
   DialogTitle,
   DialogContent,
-  DialogContentText
+  DialogContentText,
+  Backdrop
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import useItem from '/src/frontend/hooks/useItem';
 import {
@@ -79,6 +81,10 @@ function IssnPublication(props) {
   const [isEdit, setIsEdit] = useState(false);
   const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
 
+  // State for the spinner shown while saving to Melinda or downloading MARC
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  // Fetching data of the current publication
   const {
     data: initialData,
     loading: initialLoading,
@@ -112,6 +118,11 @@ function IssnPublication(props) {
   const handleCancel = () => {
     setIsEdit(false);
   };
+
+  /* Handles closing of the Save to Melinda spinner */
+  function handleCloseBackdrop () {
+    setLoading(false);
+  }
 
   /* Handles going back to the previous page */
   const handleGoBack = () => {
@@ -167,14 +178,17 @@ function IssnPublication(props) {
 
   /* Handles saving data to Melinda */
   async function handleSaveToMelinda() {
+    setShowSpinner(true);
     await makeApiRequest({
       url: `/api/issn-registry/marc/${id}/send-to-melinda`,
       method: 'POST',
       authenticationToken,
       setSnackbarMessage
     });
+    setShowSpinner(false);
   }
 
+  // Handles starting of the granting an id process
   async function handleGrantIssn() {
     const updateResult = await makeApiRequest({
       url: `/api/issn-registry/publications/${id}/get-issn`,
@@ -188,6 +202,7 @@ function IssnPublication(props) {
     }
   }
 
+  // Handles starting of the withdrawing an id process
   async function handleWithDrawIssn() {
     const updateResult = await makeApiRequest({
       url: `/api/issn-registry/publications/${id}/delete-issn`,
@@ -203,12 +218,14 @@ function IssnPublication(props) {
 
   /* Handles downloading marc data */
   async function handleDownloadMarc() {
+    setShowSpinner(true);
     await downloadFile({
       url: `/api/issn-registry/marc/${issnPublication.id}?format=iso2709&download=true`,
       method: 'GET',
       authenticationToken,
       downloadName: `issnregistry-publication-${issnPublication.id}.mrc`
     });
+    setShowSpinner(false);
   }
 
   // Handles the state of Melinda buttons (disabled/enabled)
@@ -390,6 +407,10 @@ function IssnPublication(props) {
               </Fab>
             </div>
           </div>
+          {/* Show loading spinner during Saving to Melinda and downloading MARC */}
+          <Backdrop open={showSpinner} onClick={handleCloseBackdrop}>
+            <CircularProgress size={100} color="inherit" />
+          </Backdrop>
           <div className="listItemSpinner">{dataComponent}</div>
         </div>
       )}
