@@ -48,7 +48,15 @@ import BatchIdentifiersModal from '/src/frontend/components/isbn-registry/subCom
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 import {MESSAGE_CODES} from '/src/frontend/components/common/form/constants';
 
-function Batch({identifierBatch, intl, history, downloadBatch, deleteBatch}) {
+function Batch(props) {
+  const {
+    identifierBatch,
+    intl,
+    history,
+    downloadBatch,
+    deleteBatch,
+    showSpinner
+  } = props;
   const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -160,7 +168,7 @@ function Batch({identifierBatch, intl, history, downloadBatch, deleteBatch}) {
       </div>
 
       {/* Show loading spinner while deleting batch */}
-      <Backdrop open={loading} onClick={handleCloseBackdrop}>
+      <Backdrop open={loading && showSpinner} onClick={handleCloseBackdrop}>
         <CircularProgress size={100} color="inherit" />
       </Backdrop>
 
@@ -245,7 +253,8 @@ Batch.propTypes = {
   intl: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   downloadBatch: PropTypes.func.isRequired,
-  deleteBatch: PropTypes.func.isRequired
+  deleteBatch: PropTypes.func.isRequired,
+  showSpinner: PropTypes.bool.isRequired
 };
 
 export default Batch;
