@@ -33,7 +33,6 @@ import {Button, Typography, Box, Link} from '@mui/material';
 
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
-import {redirect} from '/src/frontend/actions/util';
 
 import '/src/frontend/css/forms/sendMessageForm.css';
 
@@ -95,7 +94,17 @@ function IsbnMessageForm(props) {
     });
 
     if (result) {
-      redirect(history, `/isbn-registry/messages/${result.id}`);
+      // Redirect to the message details page
+      history.push({
+        pathname: `/isbn-registry/messages/${result.id}`,
+        // Add values to the history state for the back button to work correctly
+        state: {
+          messageCode,
+          publisherId,
+          publicationId,
+          identifierBatchId
+        }
+      });
     }
   }
 

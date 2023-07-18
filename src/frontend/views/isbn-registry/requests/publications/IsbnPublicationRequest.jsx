@@ -165,10 +165,18 @@ function IsbnPublicationRequest(props) {
       history.push({
         pathname: history.location.state.redirectFromPublicationModal
       },{});
-    } else {
+    }
+
+    if (history.location?.state?.searchBody){
       history.push({
         pathname: '/isbn-registry/requests/publications',
         state: {searchBody: history.location.state.searchBody}
+      });
+    }
+
+    if (history.location?.state?.publisherId){
+      history.push({
+        pathname: `/isbn-registry/publishers/${history.location.state.publisherId}`
       });
     }
   }
