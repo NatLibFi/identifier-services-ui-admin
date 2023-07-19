@@ -170,12 +170,6 @@ function IsbnPublicationRequest(props) {
 
   /* Handles going back to the previous page */
   function handleGoBack() {
-    if (history.location?.state?.redirectFromPublicationModal) {
-      history.push({
-        pathname: history.location.state.redirectFromPublicationModal
-      },{});
-    }
-
     if (history.location?.state?.searchBody){
       history.push({
         pathname: '/isbn-registry/requests/publications',
