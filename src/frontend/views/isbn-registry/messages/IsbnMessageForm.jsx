@@ -101,8 +101,7 @@ function IsbnMessageForm(props) {
         state: {
           messageCode,
           publisherId,
-          publicationId,
-          identifierBatchId
+          publicationId
         }
       });
     }

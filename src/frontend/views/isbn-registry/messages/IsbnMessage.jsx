@@ -70,9 +70,15 @@ function IsbnMessage(props) {
 
   // Handles back button click
   const handleGoBack = () => {
-    // If coming from publisher registration - redirect to publisher page
-    if (history.location.state.messageCode === 'publisher_registered_isbn'
-      || history.location.state.messageCode === 'publisher_registered_ismn') {
+    const redirectToPublisherPageArray = [
+      'publisher_registered_isbn',
+      'publisher_registered_ismn',
+      'big_publisher_isbn',
+      'big_publisher_ismn'
+    ];
+
+    // If coming from publisher registration or from batch page - redirect to publisher page
+    if (redirectToPublisherPageArray.includes(history.location.state.messageCode)) {
       return history.push({
         pathname: `/isbn-registry/publishers/${history.location.state.publisherId}`
       });
@@ -83,14 +89,6 @@ function IsbnMessage(props) {
       || history.location.state.messageCode === 'identifier_created_ismn') {
       return history.push({
         pathname: `/isbn-registry/requests/publications/${history.location.state.publicationId}`
-      });
-    }
-
-    // If coming from batch page - redirect to batch page
-    if (history.location.state.messageCode === 'big_publisher_isbn'
-      || history.location.state.messageCode === 'big_publisher_ismn') {
-      return history.push({
-        pathname: `/isbn-registry/identifierbatches/${history.location.state.identifierBatchId}`
       });
     }
 
