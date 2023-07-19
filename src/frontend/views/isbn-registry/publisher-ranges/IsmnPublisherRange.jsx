@@ -52,7 +52,6 @@ import '/src/frontend/css/identifierRanges/subRange.css';
 
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
-import PublisherRangePublicationListModal from '/src/frontend/components/isbn-registry/subComponents/modals/PublisherRangePublicationListModal.jsx';
 
 import {getIdentifiersAvailable, getIdentifiersUsed} from '/src/frontend/rangeFormattingUtils';
 
@@ -191,12 +190,6 @@ function IsmnPublisherRange(props) {
         >
           <ArrowBackIcon />
         </Fab>
-        <PublisherRangePublicationListModal
-          publisherRangeId={id}
-          identifierType={'ismn'}
-          history={history}
-          authenticationToken={authenticationToken}
-        />
         {subRange.taken === 0 && (
           <>
             <Button

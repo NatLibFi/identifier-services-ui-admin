@@ -34,7 +34,6 @@ import moment from 'moment';
 
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
-import {redirect} from '/src/frontend/actions/util';
 
 import {Grid, Link, Fab, Typography} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -71,6 +70,28 @@ function IsbnMessage(props) {
 
   // Handles back button click
   const handleGoBack = () => {
+    const redirectToPublisherPageArray = [
+      'publisher_registered_isbn',
+      'publisher_registered_ismn',
+      'big_publisher_isbn',
+      'big_publisher_ismn'
+    ];
+
+    // If coming from publisher registration or from batch page - redirect to publisher page
+    if (redirectToPublisherPageArray.includes(history.location.state.messageCode)) {
+      return history.push({
+        pathname: `/isbn-registry/publishers/${history.location.state.publisherId}`
+      });
+    }
+
+    // If coming from publication request page - redirect to publication request page
+    if (history.location.state.messageCode === 'identifier_created_isbn'
+      || history.location.state.messageCode === 'identifier_created_ismn') {
+      return history.push({
+        pathname: `/isbn-registry/requests/publications/${history.location.state.publicationId}`
+      });
+    }
+
     // Disallow backwards travel to message send form page
     if (history.location.state?.sendMessage) {
       // Empty state
@@ -104,7 +125,14 @@ function IsbnMessage(props) {
     });
 
     if (result) {
-      redirect(history, `/isbn-registry/messages/${result.id}`);
+      history.push({
+        pathname: `/isbn-registry/messages/${result.id}`,
+        state: {
+          messageCode: history.location.state.messageCode,
+          publisherId: history.location.state.publisherId,
+          publicationId: history.location.state.publicationId
+        }
+      });
     }
   }
 

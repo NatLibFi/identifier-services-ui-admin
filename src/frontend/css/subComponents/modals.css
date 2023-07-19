@@ -94,12 +94,6 @@
     font-size: clamp(10px, 1.5vw, 16px);
 }
 
-.issnPublicationModalButtons {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
 .issnPublicationModalContainer {
     display: grid;
     place-items: center;

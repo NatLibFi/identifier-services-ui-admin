@@ -25,7 +25,7 @@
  *
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 
@@ -45,6 +45,7 @@ import AdminDataComponent from '/src/frontend/components/isbn-registry/identifie
 function IsbnIdentifierBatch(props) {
   const {userInfo, match, history, setSnackbarMessage} = props;
   const {authenticationToken} = userInfo;
+  const [showSpinner, setShowSpinner] = useState(true);
 
   const {id} = match.params;
   const intl = useIntl();
@@ -88,9 +89,13 @@ function IsbnIdentifierBatch(props) {
       setSnackbarMessage
     });
 
+    // Redirect if delete process is finished successfully (result === true)
     if (result) {
       redirect(history, `/isbn-registry/publishers/${identifierBatch.publisherId}`);
     }
+
+    // Hide spinner after delete process is finished unsuccessfully (result === false)
+    setShowSpinner(result);
   }
 
   if (error) {
@@ -120,6 +125,7 @@ function IsbnIdentifierBatch(props) {
           authenticationToken={authenticationToken}
           intl={intl}
           history={history}
+          showSpinner={showSpinner}
         />
       </Grid>
     </Grid>
