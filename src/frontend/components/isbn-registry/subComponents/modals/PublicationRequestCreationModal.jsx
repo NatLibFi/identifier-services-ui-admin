@@ -204,12 +204,12 @@ function PublicationRequestCreationModal(props) {
 
             <FormControl className="createListInnerContainer">
               <InputLabel>
-                <FormattedMessage id="common.name" />
+                <FormattedMessage id="form.common.name" />
               </InputLabel>
               <OutlinedInput
                 value={form.publisherName || ''}
                 onChange={(event) => updateForm({publisherName: event.target.value})}
-                label={<FormattedMessage id="common.name" />}
+                label={<FormattedMessage id="form.common.name" />}
               />
             </FormControl>
 

@@ -16,8 +16,20 @@ function createProxyOpts() {
   proxyOpts.proxyReqOptDecorator = preprocessRequest;
   proxyOpts.proxyReqPathResolver = appendPrefixToPath;
   proxyOpts.https = config.API_HOST.startsWith('https://');
+  proxyOpts.filter = filterRequest;
 
   return proxyOpts;
+}
+
+// Disallow proxy during maintenance
+// eslint-disable-next-line no-unused-vars
+function filterRequest(_req, _res) {
+  if(config.MAINTENANCE_MODE) {
+    console.log('Maintenance mode is enabled: won\'t proxy calls to api');
+    return false;
+  }
+
+  return true;
 }
 
 // Append the prefix to path if it's defined in env

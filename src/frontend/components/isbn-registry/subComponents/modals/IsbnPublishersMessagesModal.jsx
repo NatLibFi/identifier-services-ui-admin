@@ -72,7 +72,13 @@ function IsbnPublisherMessagesModal(props) {
   }
 
   const handleTableRowClick = (id) => {
-    history.push(`/isbn-registry/messages/${id}`);
+    history.push({
+      pathname: `/isbn-registry/messages/${id}`,
+      // Passes publisher id for the back button
+      state: {
+        publisherId: publisher.id
+      }
+    });
   };
 
   function updatePageNumber(pageIdx) {

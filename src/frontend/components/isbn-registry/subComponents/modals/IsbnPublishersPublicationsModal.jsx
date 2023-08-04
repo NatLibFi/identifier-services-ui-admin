@@ -72,7 +72,12 @@ function IsbnPublishersPublicationsModal(props) {
 
   // Event handler for viewing a single publication
   const handleTableRowClick = (id) => {
-    history.push(`/isbn-registry/requests/publications/${id}`);
+    history.push({
+      pathname: `/isbn-registry/requests/publications/${id}`,
+      state: {
+        publisherId: publisher.id
+      }
+    });
   };
 
   function updatePageNumber(pageIdx) {
