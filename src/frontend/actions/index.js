@@ -25,7 +25,6 @@
  *
  */
 
-import fetch from 'node-fetch';
 import HttpStatus from 'http-status';
 
 import {getHeaders, formatBody, redirect, removeMetadataFields} from '/src/frontend/actions/util';
