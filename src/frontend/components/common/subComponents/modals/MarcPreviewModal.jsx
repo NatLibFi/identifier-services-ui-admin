@@ -42,7 +42,7 @@ function MarcPreviewModal({url, method, buttonLabelId, authenticationToken}) {
     url,
     method,
     authenticationToken,
-    dependencies: [isModalOpen, authenticationToken],
+    dependencies: [isModalOpen],
     prefetch: false,
     fetchOnce: false,
     requireAuth: true,

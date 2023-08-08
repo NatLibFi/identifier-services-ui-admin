@@ -82,7 +82,7 @@ function IssnRequest(props) {
     url: `/api/issn-registry/requests/${id}`,
     method: 'GET',
     authenticationToken,
-    dependencies: [authenticationToken, id],
+    dependencies: [id],
     prefetch: true,
     fetchOnce: false,
     requireAuth: true

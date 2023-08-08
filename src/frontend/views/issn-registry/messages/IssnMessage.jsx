@@ -62,7 +62,7 @@ function IssnMessage(props) {
     url: `/api/issn-registry/messages/${id}`,
     method: 'GET',
     authenticationToken,
-    dependencies: [id, authenticationToken],
+    dependencies: [id],
     prefetch: true,
     fetchOnce: false,
     requireAuth: true

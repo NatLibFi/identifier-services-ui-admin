@@ -63,7 +63,7 @@ function IsbnRange(props) {
     url: `/api/isbn-registry/ranges/isbn/${id}`,
     method: 'GET',
     authenticationToken,
-    dependencies: [authenticationToken, id],
+    dependencies: [id],
     prefetch: true,
     fetchOnce: false,
     requireAuth: true

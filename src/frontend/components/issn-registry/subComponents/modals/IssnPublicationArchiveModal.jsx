@@ -47,7 +47,7 @@ function IssnPublicationArchiveModal({userInfo, publicationId}) {
     url: `/api/issn-registry/publications/${publicationId}/get-archive-entry`,
     method: 'GET',
     authenticationToken,
-    dependencies: [publicationId, isModalOpen, authenticationToken],
+    dependencies: [publicationId, isModalOpen],
     prefetch: false,
     fetchOnce: true,
     requireAuth: true

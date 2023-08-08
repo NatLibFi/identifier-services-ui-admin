@@ -111,7 +111,7 @@ function IsbnPublicationRequest(props) {
     url: `/api/isbn-registry/requests/publications/${id}`,
     method: 'GET',
     authenticationToken,
-    dependencies: [authenticationToken, id],
+    dependencies: [id],
     prefetch: true,
     fetchOnce: false,
     requireAuth: true

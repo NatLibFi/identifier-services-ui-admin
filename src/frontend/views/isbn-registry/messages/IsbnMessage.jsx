@@ -62,7 +62,7 @@ function IsbnMessage(props) {
     url: `/api/isbn-registry/messages/${id}`,
     method: 'GET',
     authenticationToken,
-    dependencies: [id, authenticationToken],
+    dependencies: [id],
     prefetch: true,
     fetchOnce: false,
     requireAuth: true
