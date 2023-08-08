@@ -31,7 +31,7 @@ import helmet from 'helmet';
 import https from 'https';
 import path from 'path';
 
-import {HELMET_CONFIG, NODE_ENV, TLS_CERT, TLS_KEY, HTTP_PORT, HTTPS_PORT} from './config';
+import {HELMET_CONFIG, TLS_CERT, TLS_KEY, HTTP_PORT, HTTPS_PORT} from './config';
 import {provideFrontendConfig} from './utils';
 import {getConfiguredProxy} from './proxy';
 
@@ -41,10 +41,7 @@ export default async function startApp() {
   // Header config
   app.disable('x-powered-by');
 
-  // Use helmet everywhere but development with its associated config
-  if(NODE_ENV !== 'development') {
-    app.use(helmet(HELMET_CONFIG));
-  }
+  app.use(helmet(HELMET_CONFIG));
 
   // Parse application/json, required for turnstile auth
   app.use(bodyParser.json());
