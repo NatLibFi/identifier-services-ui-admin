@@ -60,7 +60,13 @@ import 'tinymce/plugins/visualblocks';
 import 'tinymce/plugins/visualchars';
 import 'tinymce/plugins/wordcount';
 
+// Import files as string via raw-loader
+import contentCss from '!!raw-loader!tinymce/skins/content/default/content.min.css';
+import contentUiCss from '!!raw-loader!tinymce/skins/ui/oxide/content.min.css';
+
 function BundledEditor(props) {
+  const customStyle = 'body { font-family: "Open Sans", sans-serif; font-size: 0.9rem }';
+
   const bundledEditorConfig = {
     height: 500,
     plugins: [
@@ -89,8 +95,10 @@ function BundledEditor(props) {
       'bold italic underline forecolor | alignleft aligncenter ' +
       'alignright alignjustify | bullist numlist | ' +
       'link charmap removeformat | fullscreen preview',
-    // Styles of the editor content
-    content_style: 'body { font-family: "Open Sans", sans-serif; font-size: 0.9rem }',
+    // Styles of the editor content given as string
+    skin: false,
+    content_css: false,
+    content_style: [contentCss, contentUiCss, customStyle || ''].join('\n'),
     entity_encoding: 'raw'
   };
 
