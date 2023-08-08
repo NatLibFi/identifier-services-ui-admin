@@ -74,7 +74,7 @@ function IsbnPublisherRange(props) {
     url: `/api/isbn-registry/publisher-ranges/isbn/${id}`,
     method: 'GET',
     authenticationToken,
-    dependencies: [authenticationToken, id],
+    dependencies: [id],
     prefetch: true,
     fetchOnce: false,
     requireAuth: true

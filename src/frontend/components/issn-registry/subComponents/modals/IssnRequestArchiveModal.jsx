@@ -46,7 +46,7 @@ function IssnRequestArchiveModal({formId, userInfo}) {
     url: '/api/issn-registry/archived-requests/search',
     method: 'POST',
     body: {formId},
-    dependencies: [formId, isModalOpen, authenticationToken],
+    dependencies: [formId, isModalOpen],
     prefetch: false,
     fetchOnce: true,
     requireAuth: true,

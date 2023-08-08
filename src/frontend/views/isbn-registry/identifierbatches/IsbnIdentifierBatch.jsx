@@ -59,7 +59,7 @@ function IsbnIdentifierBatch(props) {
     url: `/api/isbn-registry/identifierbatches/${id}`,
     method: 'GET',
     authenticationToken,
-    dependencies: [id, authenticationToken],
+    dependencies: [id],
     prefetch: true,
     fetchOnce: false,
     requireAuth: true

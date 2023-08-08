@@ -81,7 +81,7 @@ function IssnPublisher(props) {
     url: `/api/issn-registry/publishers/${id}`,
     method: 'GET',
     authenticationToken,
-    dependencies: [authenticationToken, id],
+    dependencies: [id],
     prefetch: true,
     fetchOnce: false,
     requireAuth: true

@@ -62,7 +62,7 @@ function IssnRange(props) {
     url: `/api/issn-registry/ranges/${id}`,
     method: 'GET',
     authenticationToken,
-    dependencies: [authenticationToken, id],
+    dependencies: [id],
     prefetch: true,
     fetchOnce: false,
     requireAuth: true
