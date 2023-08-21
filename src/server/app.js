@@ -31,16 +31,18 @@ import helmet from 'helmet';
 import https from 'https';
 import path from 'path';
 
-import {HELMET_CONFIG, TLS_CERT, TLS_KEY, HTTP_PORT, HTTPS_PORT} from './config';
+import {createLogger} from '@natlibfi/melinda-backend-commons';
+
+import {HELMET_CONFIG, TLS_CERT, TLS_KEY, HTTP_PORT, HTTPS_PORT, MAINTENANCE_MODE} from './config';
 import {provideFrontendConfig} from './utils';
 import {getConfiguredProxy} from './proxy';
 
 export default async function startApp() {
+  const logger = createLogger();
   const app = express();
 
   // Header config
   app.disable('x-powered-by');
-
   app.use(helmet(HELMET_CONFIG));
 
   // Parse application/json, required for turnstile auth
@@ -63,9 +65,14 @@ export default async function startApp() {
   // Error management
   app.use(handleErrors);
 
+  // Log config options if necessary
+  if(MAINTENANCE_MODE) {
+    logger.warn('Maintenance mode is enabled. Proxy will not send requests to API.');
+  }
+
   // If TLS configuration is not provided, start HTTP server
   if (!TLS_CERT || !TLS_KEY) {
-    const server = app.listen(HTTP_PORT, () => console.log('info', `HTTP server started on PORT ${HTTP_PORT}`));
+    const server = app.listen(HTTP_PORT, () => logger.info('info', `HTTP server started on PORT ${HTTP_PORT}`));
     return server;
   }
 
@@ -76,15 +83,19 @@ export default async function startApp() {
   };
 
   const server = https.createServer(tlsConfig, app).listen(HTTPS_PORT, () => {
-    console.log(`Started identifier-services-api https server on port ${HTTPS_PORT}`);
+    logger.info(`Started identifier-services-api https server on port ${HTTPS_PORT}`);
   });
 
   return server;
 
   function handleErrors(err, req, res, next) {
     if(err) {
+      logger.warn('Proxy has encountered an error');
+      logger.debug(`${err.message}`);
       return res.status(500).json({message: 'Unknown error occurred'});
     }
+
+    logger.debug('Unknown error occurred!');
 
     next();
   }

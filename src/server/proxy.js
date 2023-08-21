@@ -25,7 +25,6 @@ function createProxyOpts() {
 // eslint-disable-next-line no-unused-vars
 function filterRequest(_req, _res) {
   if(config.MAINTENANCE_MODE) {
-    console.log('Maintenance mode is enabled: won\'t proxy calls to api');
     return false;
   }
 
@@ -57,7 +56,6 @@ function preprocessRequest(proxyReqOpts, srcReq) {
   delete proxyReqOpts.headers['x-forwarded-for'];
   delete proxyReqOpts.headers['X-Forwarded-For'];
 
-  proxyReqOpts.headers['X-Forwarded-For'] = srcReq.socket.remoteAddress;
-
+  proxyReqOpts.headers['X-Forwarded-For'] = srcReq.ip;
   return proxyReqOpts;
 }
