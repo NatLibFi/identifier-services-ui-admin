@@ -51,3 +51,5 @@ export const HELMET_CONFIG = readEnvironmentVariable('HELMET_CONFIG', {defaultVa
 export const OIDC_AUTHORITY = readEnvironmentVariable('OIDC_AUTHORITY', {defaultValue: ''});
 export const OIDC_CLIENT_ID = readEnvironmentVariable('OIDC_CLIENT_ID', {defaultValue: ''});
 export const OIDC_POST_LOGOUT_REDIRECT_URI = readEnvironmentVariable('OIDC_POST_LOGOUT_REDIRECT_URI', {defaultValue: 'https://localhost:8080'});
+
+export const PROXY_CUSTOM_HEADER = readEnvironmentVariable('PROXY_CUSTOM_HEADER', {defaultValue: ''});
