@@ -38,8 +38,7 @@ function appendPrefixToPath(req) {
 }
 
 // Set decorator options based on the environment configuration
-// eslint-disable-next-line no-unused-vars
-function preprocessRequest(proxyReqOpts, _srcReq) {
+function preprocessRequest(proxyReqOpts, srcReq) {
   // For development purposes only
   if(config.ALLOW_SELF_SIGNED) {
     proxyReqOpts.rejectUnauthorized = false;
@@ -53,6 +52,12 @@ function preprocessRequest(proxyReqOpts, _srcReq) {
   if(config.API_KEY) {
     proxyReqOpts.headers['X-Api-Key'] = config.API_KEY;
   }
+
+  // Rewrite XFF based on origin IP
+  delete proxyReqOpts.headers['x-forwarded-for'];
+  delete proxyReqOpts.headers['X-Forwarded-For'];
+
+  proxyReqOpts.headers['X-Forwarded-For'] = srcReq.socket.remoteAddress;
 
   return proxyReqOpts;
 }
