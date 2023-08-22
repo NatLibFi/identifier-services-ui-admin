@@ -52,12 +52,6 @@ function preprocessRequest(proxyReqOpts, srcReq) {
     proxyReqOpts.headers['X-Api-Key'] = config.API_KEY;
   }
 
-  // Rewrite XFF
-  delete proxyReqOpts.headers['x-forwarded-for'];
-  delete proxyReqOpts.headers['X-Forwarded-For'];
-
-  proxyReqOpts.headers['X-Forwarded-For'] = srcReq.ip;
-
   // Add originating IP to custom header, if it's defined
   if(config.PROXY_CUSTOM_HEADER && config.PROXY_CUSTOM_HEADER.startsWith('x-')) {
     proxyReqOpts.headers[config.PROXY_CUSTOM_HEADER] = srcReq.ip;
