@@ -95,7 +95,7 @@ export default async function startApp() {
       return res.status(500).json({message: 'Unknown error occurred'});
     }
 
-    logger.debug('Unknown error occurred!');
+    logger.warn('Unknown error occurred!');
 
     next();
   }
