@@ -25,7 +25,6 @@ function createProxyOpts() {
 // eslint-disable-next-line no-unused-vars
 function filterRequest(_req, _res) {
   if(config.MAINTENANCE_MODE) {
-    console.log('Maintenance mode is enabled: won\'t proxy calls to api');
     return false;
   }
 
@@ -38,8 +37,7 @@ function appendPrefixToPath(req) {
 }
 
 // Set decorator options based on the environment configuration
-// eslint-disable-next-line no-unused-vars
-function preprocessRequest(proxyReqOpts, _srcReq) {
+function preprocessRequest(proxyReqOpts, srcReq) {
   // For development purposes only
   if(config.ALLOW_SELF_SIGNED) {
     proxyReqOpts.rejectUnauthorized = false;
@@ -52,6 +50,17 @@ function preprocessRequest(proxyReqOpts, _srcReq) {
 
   if(config.API_KEY) {
     proxyReqOpts.headers['X-Api-Key'] = config.API_KEY;
+  }
+
+  // Rewrite XFF
+  delete proxyReqOpts.headers['x-forwarded-for'];
+  delete proxyReqOpts.headers['X-Forwarded-For'];
+
+  proxyReqOpts.headers['X-Forwarded-For'] = srcReq.ip;
+
+  // Add originating IP to custom header, if it's defined
+  if(config.PROXY_CUSTOM_HEADER && config.PROXY_CUSTOM_HEADER.startsWith('x-')) {
+    proxyReqOpts.headers[config.PROXY_CUSTOM_HEADER] = srcReq.ip;
   }
 
   return proxyReqOpts;
