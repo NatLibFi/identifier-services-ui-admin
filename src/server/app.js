@@ -72,7 +72,7 @@ export default async function startApp() {
 
   // If TLS configuration is not provided, start HTTP server
   if (!TLS_CERT || !TLS_KEY) {
-    const server = app.listen(HTTP_PORT, () => logger.info('info', `HTTP server started on PORT ${HTTP_PORT}`));
+    const server = app.listen(HTTP_PORT, () => logger.info(`Started identifier-services-ui-admin HTTP server on PORT ${HTTP_PORT}`));
     return server;
   }
 
@@ -83,7 +83,7 @@ export default async function startApp() {
   };
 
   const server = https.createServer(tlsConfig, app).listen(HTTPS_PORT, () => {
-    logger.info(`Started identifier-services-api https server on port ${HTTPS_PORT}`);
+    logger.info(`Started identifier-services-ui-admin HTTPS server on port ${HTTPS_PORT}`);
   });
 
   return server;
