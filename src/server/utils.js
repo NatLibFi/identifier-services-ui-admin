@@ -57,6 +57,10 @@ export function parseBoolean(value) {
 }
 
 export function parseFile(path) {
+  if(!path || path === '') {
+    return false;
+  }
+
   if(fs.existsSync(path)) {
     return fs.readFileSync(path, 'utf8');
   }
