@@ -1,0 +1,28 @@
+.groupMessageForm,
+.groupMessageForm button {
+    margin: 2rem 0;
+}
+
+.groupMessageForm h4 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.groupMessageForm h5 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.groupMessageFieldsContainer {
+    display: grid;
+    gap: 2rem;
+}
+
+.groupMessageFieldsContainer > div > div,
+.groupMessageFieldsContainer > div > div > div {
+    width: 400px;
+}
+
+.groupMessageSpinner {
+    margin-top: 2rem;
+}
