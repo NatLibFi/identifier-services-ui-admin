@@ -54,6 +54,7 @@ const fi = {
   'common.true': 'Kyllä',
   'common.false': 'Ei',
   'common.statistics': 'Tilastot',
+  'common.groupmessages': 'Ryhmäviestit',
   'common.noData': 'Ei hakutuloksia',
   'common.blank': 'Tyhjä',
   'common.search.inputPlaceholder': 'Hae...',
@@ -79,6 +80,7 @@ const fi = {
   'common.other': 'muu',
   'common.errorPage': 'Virhesivu',
   'common.skipLink': 'Hyppää pääsisältöön',
+  'common.download': 'Lataa',
 
   // Numbers
   'common.one': 'Yksi',
@@ -170,6 +172,7 @@ const fi = {
   'menu.identifierRanges': 'Tunnistelohkot',
   'menu.messages': 'Viestit',
   'menu.messageTemplates': 'Viestipohjat',
+  'menu.groupMessages': 'Ryhmäviestit',
 
   // Footer
   'footer.privacyPolicy': 'Lue henkilökohtaisten tietojen hallinnasta',
@@ -948,6 +951,21 @@ const fi = {
   'messages.templates.form.instructions.example.ids': 'Annetut tunnukset (10kpl): ',
   'messages.templates.form.instructions.example.regards': 'Terveisin,',
   'messages.templates.form.instructions.example.publications': 'Julkaisut ja niiden ISSN-tunnukset: ',
+
+  // Group messages
+  'form.groupmessages.type.label': 'Kustantajan tyyppi*',
+  'form.groupmessages.category.label': 'Kategoria*',
+  'form.groupmessages.language.label': 'Kieli*',
+  'form.groupmessages.downloademail': 'Lataa sähköpostilista',
+  'form.groupmessages.category.1': '1-merkkiset',
+  'form.groupmessages.category.2': '2-merkkiset',
+  'form.groupmessages.category.3': '3-merkkiset',
+  'form.groupmessages.category.4': '4-merkkiset',
+  'form.groupmessages.category.5': '5-merkkiset',
+  'form.groupmessages.category.6': '6-merkkiset',
+  'form.groupmessages.category.7': '7-merkkiset',
+
+  'error.groupmessage.invalidcategory': 'Virheellinen kategoria valitulle tunnustyypille',
 
   // Modals - used in multiple places in modal components
   'modal.resendMessage.addRecipient': 'Kirjoita vastaanottajan sähköpostiosoite',
