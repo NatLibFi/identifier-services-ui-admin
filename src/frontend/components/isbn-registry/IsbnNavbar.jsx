@@ -86,6 +86,10 @@ function IsbnNavbar({userInfo}) {
         {
           label: <FormattedMessage id="menu.messages" />,
           path: 'isbn-registry/messages'
+        },
+        {
+          label: <FormattedMessage id="menu.groupMessages" />,
+          path: 'isbn-registry/groupmessages'
         }
       ]
     },

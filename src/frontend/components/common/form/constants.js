@@ -333,3 +333,9 @@ export const monthsOptions = [
   {value: '11', label: 'form.month.Nov'},
   {value: '12', label: 'form.month.Dec'}
 ];
+
+export const identifierTypeOptionsIsbn = [
+  {label: '', value: ''},
+  {label: 'common.isbn', value: 'ISBN'},
+  {label: 'common.ismn', value: 'ISMN'}
+];

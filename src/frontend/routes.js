@@ -84,6 +84,9 @@ import IsbnMessage from '/src/frontend/views/isbn-registry/messages/IsbnMessage.
 import IssnMessageList from '/src/frontend/views/issn-registry/messages/IssnMessageList.jsx';
 import IssnMessage from '/src/frontend/views/issn-registry/messages/IssnMessage.jsx';
 
+// Group messages
+import GroupMessageList from '/src/frontend/views/isbn-registry/groupmessages/GroupMessageList.jsx';
+
 // Routes
 export const routeList = [
   /* Common */
@@ -115,6 +118,10 @@ export const routeList = [
   {path: '/isbn-registry/messages', component: IsbnMessageList},
   {path: '/isbn-registry/messages/:id', component: IsbnMessage},
   {path: '/isbn-registry/messages/form/send', component: IsbnMessageForm},
+
+  // Group messages
+  {path: '/isbn-registry/groupmessages', component: GroupMessageList},
+
   // Identifier batch
   {path: '/isbn-registry/identifierbatches/:id', component: IsbnIdentifierBatch},
   // Statistics
