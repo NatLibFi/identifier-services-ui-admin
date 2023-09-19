@@ -34,7 +34,7 @@ import {downloadFile} from '/src/frontend/actions';
 
 import {Button, Typography, Box, CircularProgress} from '@mui/material';
 
-import '/src/frontend/css/forms/statisticsGeneratingForm.css';
+import '/src/frontend/css/forms/groupMessageForm.css';
 
 import RenderElement from '/src/frontend/components/common/form/RenderElement.jsx';
 import {validate} from '/src/frontend/components/isbn-registry/groupMessages/validation';
@@ -76,7 +76,7 @@ function IsbnGroupMessageList(props) {
         validate={validate}
       >
         {({handleSubmit, valid}) => (
-          <form className='statisticsForm' onSubmit={handleSubmit} >
+          <form className='groupMessageForm' onSubmit={handleSubmit} >
             <Typography variant="h4">
               <FormattedMessage id="common.groupmessages"/>
             </Typography>
@@ -85,7 +85,7 @@ function IsbnGroupMessageList(props) {
               <FormattedMessage id="form.groupmessages.downloademail"/>
             </Typography>
 
-            <div className='statisticsFieldsContainer'>
+            <div className='groupMessageFieldsContainer'>
               {dataComponent}
             </div>
 
@@ -99,7 +99,7 @@ function IsbnGroupMessageList(props) {
             </Button>
 
             {loading &&
-                <div className='statisticsSpinner'>
+                <div className='groupMessageSpinner'>
                   <Typography>
                     <FormattedMessage id='statistics.generating'/>
                   </Typography>
