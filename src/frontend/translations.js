@@ -81,6 +81,7 @@ const fi = {
   'common.errorPage': 'Virhesivu',
   'common.skipLink': 'Hyppää pääsisältöön',
   'common.download': 'Lataa',
+  'common.noActiveIdentifiers': 'Ei aktiivisia tunnuksia',
 
   // Numbers
   'common.one': 'Yksi',

@@ -37,8 +37,15 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  ListSubheader
+  ListSubheader,
+  Tooltip
 } from '@mui/material';
+
+import {
+  MenuBook,
+  MusicNote,
+  HourglassEmpty
+} from '@mui/icons-material';
 
 import '/src/frontend/css/common.css';
 
@@ -132,6 +139,50 @@ function IsbnPublisherList(props) {
     return;
   }
 
+  // Get the icon for the publisher type - book, music, both or none
+  const getPublisherTypeIcon = ({activeIdentifierIsbn, activeIdentifierIsmn}) => {
+    // Publishers with both ISBN and ISMN active identifiers
+    if (activeIdentifierIsbn.length && activeIdentifierIsmn.length) {
+      return (
+        <Tooltip title={<FormattedMessage id="common.isbn-ismn" />}>
+          <div className="bothPublicationTypes">
+            <span>
+              <MenuBook />
+            </span>
+            <span>
+              <MusicNote />
+            </span>
+          </div>
+        </Tooltip>
+      );
+    }
+
+    // Publishers with only ISBN active identifier
+    if (activeIdentifierIsbn.length) {
+      return (
+        <Tooltip title={<FormattedMessage id="common.isbn" />}>
+          <MenuBook />
+        </Tooltip>
+      );
+    }
+
+    // Publishers with only ISMN active identifier
+    if (activeIdentifierIsmn.length) {
+      return (
+        <Tooltip title={<FormattedMessage id="common.ismn" />}>
+          <MusicNote />
+        </Tooltip>
+      );
+    }
+
+    // Publishers with no active identifiers
+    return (
+      <Tooltip title={<FormattedMessage id="common.noActiveIdentifiers" />}>
+        <HourglassEmpty />
+      </Tooltip>
+    );
+  };
+
   // Formatting the data to be displayed in the table
   function formatSearchResult(item) {
     const {
@@ -146,6 +197,7 @@ function IsbnPublisherList(props) {
     } = item;
     return {
       id,
+      type: getPublisherTypeIcon({activeIdentifierIsbn, activeIdentifierIsmn}),
       name: officialName,
       otherNames,
       email,
@@ -156,6 +208,7 @@ function IsbnPublisherList(props) {
   }
 
   const headRows = [
+    {id: 'type', intlId: 'form.common.type'},
     {id: 'name', intlId: 'form.common.name'},
     {id: 'otherNames', intlId: 'form.common.otherNames'},
     {id: 'email', intlId: 'form.common.email'},
@@ -199,7 +252,10 @@ function IsbnPublisherList(props) {
         rowsPerPage={searchBody.limit}
         setRowsPerPage={updateRowsPerPage}
         // Those are not displayed on small screens (mobile devices etc)
+        // screen < 900px
         unprioritizedRows={['email', 'contactPerson']}
+        // screen < 550px
+        unprioritizedMobileRows={['type']}
       />
     );
   }
