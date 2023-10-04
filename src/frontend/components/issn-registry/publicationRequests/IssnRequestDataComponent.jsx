@@ -46,10 +46,13 @@ function IssnRequestDataComponent(props) {
   const intl = useIntl();
 
   // Autocomplete
-  const initialSearchBody = {searchText: issnRequest.publisherName ?? ''};
+  const initialSearchBody = {searchText: ''};
+
   const [searchBody, updateSearchBody] = useReducer((prev, next) => {
+    // Refetch default when searchText has been emptied
     // Trigger autocomplete only after three or more characters
-    if(next.searchText.length > 3) {
+
+    if(next.searchText.length > 3 || next.searchText.length === 0) {
       return {...prev, ...next};
     }
 
@@ -81,7 +84,7 @@ function IssnRequestDataComponent(props) {
 
   /* Refreshes list from API */
   function updateSearchText(event) {
-    if (event && event.target?.value && event.target.value !== searchBody.searchText) {
+    if ((event && event.target?.value && event.target.value !== searchBody.searchText) || event?.target?.value === '') {
       updateSearchBody({searchText: event.target.value});
     }
   }
@@ -149,9 +152,9 @@ function IssnRequestDataComponent(props) {
         <div className="publisherInformationContainer">
           <div className="autoCompleteInnerContainer">
             <Autocomplete
+              disableClearable
               disablePortal
-              clearOnEscape
-              clearOnBlur
+              clearOnBlur={false}
               renderOption={(props, option) => (
                 <li {...props}>
                   <Box>{option.label}</Box>
@@ -165,7 +168,7 @@ function IssnRequestDataComponent(props) {
                   label={<FormattedMessage id="request.issn.choosePublisher" />}
                 />
               )}
-              value={issnRequest.publisherName || ' '}
+              value={issnRequest.publisherName || ''}
               isOptionEqualToValue={(option, value) => option.id === value.id}
               onChange={handleChangePublisher}
               onInputChange={updateSearchText}
