@@ -59,6 +59,7 @@ import '/src/frontend/css/common.css';
 import '/src/frontend/css/requests/isbnIsmn/request.css';
 
 import MarcPreviewModal from '/src/frontend/components/common/subComponents/modals/MarcPreviewModal.jsx';
+import MelindaResponseModal from '/src/frontend/components/common/subComponents/modals/MelindaResponseModal.jsx';
 import IssnGrantIdModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnGrantIdModal.jsx';
 import IssnWithdrawIdModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnWithdrawIdModal.jsx';
 import IssnPublicationArchiveModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnPublicationArchiveModal.jsx';
@@ -83,6 +84,7 @@ function IssnPublication(props) {
 
   // State for the spinner shown while saving to Melinda or downloading MARC
   const [showSpinner, setShowSpinner] = useState(false);
+  const [melindaApiResponse, setMelindaApiResponse] = useState(null);
 
   // Fetching data of the current publication
   const {
@@ -179,13 +181,28 @@ function IssnPublication(props) {
   /* Handles saving data to Melinda */
   async function handleSaveToMelinda() {
     setShowSpinner(true);
-    await makeApiRequest({
+    const result = await makeApiRequest({
       url: `/api/issn-registry/marc/${id}/send-to-melinda`,
       method: 'POST',
-      authenticationToken,
-      setSnackbarMessage
+      authenticationToken
     });
+
     setShowSpinner(false);
+
+    if (!result) {
+      setSnackbarMessage({
+        severity: 'error',
+        message: 'Melindaan tallentaminen ei onnistunut. Ota yhteyttä sovellusylläpitoon.'
+      });
+      return;
+    }
+
+    // Display result in Modal
+    setMelindaApiResponse(result);
+  }
+
+  function closeMelindaResponseModal() {
+    setMelindaApiResponse(null);
   }
 
   // Handles starting of the granting an id process
@@ -372,6 +389,13 @@ function IssnPublication(props) {
               >
                 <DeleteIcon />
               </Fab>
+
+              {/* Show modal if Melinda api response is available */}
+              <MelindaResponseModal
+                apiResponse={melindaApiResponse}
+                closeMelindaResponseModal={closeMelindaResponseModal}
+              />
+
               <Dialog
                 open={deleteModalIsOpen}
                 onClose={() => setDeleteModalIsOpen(false)}

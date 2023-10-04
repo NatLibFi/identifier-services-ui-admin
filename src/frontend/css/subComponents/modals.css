@@ -66,6 +66,7 @@
 
 .marcModal,
 .savePublisherModal,
+.melindaResultModal,
 .publicationRequestModal {
     display: grid;
     place-items: center;
@@ -259,4 +260,16 @@
     min-height: 1rem !important;
     width: 2rem !important;
     height: 2rem !important;
+}
+
+.melindaResultModal > div {
+  min-width: 40rem;
+}
+
+.melindaItem {
+  padding-bottom: 2rem;
+}
+
+.melindaHeader {
+  padding-bottom: 2rem;
 }
