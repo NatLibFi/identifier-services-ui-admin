@@ -907,6 +907,7 @@ const fi = {
   'messages.sentMessages': 'Lähetetyt viestit',
   'messages.sent': 'Lähetetty',
   'messages.sendMessage': 'Lähetä viesti',
+  'messages.messageWasSent': 'Viesti jo lähetetty',
   'messages.sendMessageAgain': 'Lähetä uudelleen',
   'messages.subject': 'Viestin aihe',
   'messages.messageTemplate': 'Viestipohja',
