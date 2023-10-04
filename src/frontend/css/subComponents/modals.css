@@ -84,6 +84,46 @@
     overflow: auto;
 }
 
+.savePublisherModal {
+    min-width: 50%;
+}
+
+.savePublisherModalSwitch {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    place-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+
+    & p {
+        letter-spacing: 0.05rem;
+        cursor: pointer;
+    }
+
+    & p:after {
+        content: "";
+        display: block;
+        width: 0;
+        height: 0.125rem;
+        background-color: transparent;
+    }
+
+    & p[data-checked="true"] {
+        text-shadow:
+        -0.0125rem -0.0125rem 0 currentColor,
+        0.0125rem -0.0125rem 0 currentColor,
+        -0.0125rem 0.0125rem 0 currentColor,
+        0.0125rem 0.0125rem 0 currentColor;
+        transition: all 0.5s;
+    }
+
+    & p[data-checked="true"]:after {
+        width: 100%;
+        background-color: currentColor;
+        transition: all 0.5s;
+    }
+}
+
 /* Set divider line to the bottom of first <pre> item if there is more than one such items */
 .marcModal > pre:first-child:not(:only-child) {
     border-bottom:  1px solid var(--color-black);
@@ -103,6 +143,11 @@
     margin-top: 1rem;
 }
 
+.savePublisherModalContainer {
+    display: grid;
+    gap: 0.125rem;
+}
+
 .archiveRecordContainer > div,
 .savePublisherModalContainer > div {
     display: grid;
@@ -113,6 +158,28 @@
 .archiveRecordContainer > div > p:first-child,
 .savePublisherModalContainer > div > p:first-child {
     font-weight: 700;
+}
+
+.savePublisherModalContainer.authors {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 1rem;
+
+    & > div {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.125rem;
+
+        & > section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+
+            & > p {
+                max-width: 10rem;
+            }
+        }
+    }
 }
 
 .savePublisherModal > h4 {

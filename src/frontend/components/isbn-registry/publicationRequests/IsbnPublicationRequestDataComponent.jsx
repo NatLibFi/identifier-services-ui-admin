@@ -52,7 +52,7 @@ import '/src/frontend/css/requests/isbnIsmn/dataComponent.css';
 
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 import {PUBLICATION_TYPES} from '/src/frontend/components/common/form/constants';
-import SavePublisherModal from '/src/frontend/components/isbn-registry/subComponents/modals/SavePublisherModal.jsx';
+import SavePublisherModal from '/src/frontend/components/isbn-registry/subComponents/modals/SavePublisherModal/ModalComponent.jsx';
 
 function IsbnPublicationRequestDataComponent(props) {
   const {
@@ -345,7 +345,7 @@ function IsbnPublicationRequestDataComponent(props) {
           </div>
         </div>
         <SavePublisherModal
-          publicationRequestId={currentRequest.id}
+          publicationRequest={currentRequest}
           publisherId={publisher.value} // Note: autocomplete formatting maps publisher.id to publisher.value
           setPublicationRequest={setPublicationRequest}
           savePublisherModalOpen={savePublisherModalOpen}

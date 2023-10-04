@@ -37,6 +37,7 @@ const fi = {
   'common.publisher.isbn': 'Kustantaja',
   'common.publishers.isbn': 'Kustantajat',
   'common.publisherDetails.isbn': 'Kustantajan tiedot',
+  'common.publisherDetails.isbnRequest': 'Asiakkaan ilmoittamat kustantajan tiedot',
   'common.publisher.issn': 'Julkaisija',
   'common.publishers.issn': 'Julkaisijat',
   'common.publisherDetails.issn': 'Julkaisijan tiedot',
@@ -82,6 +83,7 @@ const fi = {
   'common.skipLink': 'Hyppää pääsisältöön',
   'common.download': 'Lataa',
   'common.noActiveIdentifiers': 'Ei aktiivisia tunnuksia',
+  'common.author': '{digit} tekijä',
 
   // Numbers
   'common.one': 'Yksi',
