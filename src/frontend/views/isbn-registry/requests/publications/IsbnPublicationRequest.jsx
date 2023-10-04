@@ -73,6 +73,7 @@ import {
 } from '/src/frontend/components/common/form/constants';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import MarcPreviewModal from '/src/frontend/components/common/subComponents/modals/MarcPreviewModal.jsx';
+import MelindaResponseModal from '/src/frontend/components/common/subComponents/modals/MelindaResponseModal.jsx';
 import FormEditErrorCard from '/src/frontend/components/isbn-registry/subComponents/cards/FormEditErrorCard.jsx';
 
 import IsbnPublicationRequestDataComponent from '/src/frontend/components/isbn-registry/publicationRequests/IsbnPublicationRequestDataComponent.jsx';
@@ -101,6 +102,7 @@ function IsbnPublicationRequest(props) {
 
   // State for the spinner shown while saving to Melinda or downloading MARC
   const [showSpinner, setShowSpinner] = useState(false);
+  const [melindaApiResponse, setMelindaApiResponse] = useState(null);
 
   // Fetching data of the current request
   const {
@@ -225,76 +227,22 @@ function IsbnPublicationRequest(props) {
       authenticationToken
     });
 
+    setShowSpinner(false);
+
     if (!result) {
       setSnackbarMessage({
         severity: 'error',
         message: 'Melindaan tallentaminen ei onnistunut. Ota yhteyttä sovellusylläpitoon.'
       });
-      setShowSpinner(false);
       return;
     }
 
-    // Snackbar messages interpretation is here since result needs to be interpreted
-    if (result.errors !== 0) {
-      setSnackbarMessage({
-        severity: 'error',
-        message:
-          'Melindaan tallennuksen aikana tapahtui virheitä. Kaikkia tietueita ei välttämättä tallennettu'
-      });
-      setShowSpinner(false);
-      return;
-    }
+    // Display result in Modal
+    setMelindaApiResponse(result);
+  }
 
-    if (
-      result.records.length ===
-      result.records.filter((r) => r.recordStatus === 'DUPLICATE').length
-    ) {
-      const melindaIds = result.records
-        .filter((r) => r.ids && r.ids.length > 0)
-        .map((r) => r.ids)
-        .flat()
-        .join(', ');
-      setSnackbarMessage({
-        severity: 'error',
-        message: `Tietuetta ei tallennettu, löytyi jo Melindasta ks. id: ${melindaIds}`
-      });
-      setShowSpinner(false);
-      return;
-    }
-
-    if (
-      result.records.length > 0 &&
-      result.records.filter((r) => r.recordStatus === 'DUPLICATE').length > 0
-    ) {
-      setSnackbarMessage({
-        severity: 'error',
-        message:
-          'Osaa tietueista ei tallennettu, koska näitä vastaavat tietueet löytyivät jo Melindasta.'
-      });
-      setShowSpinner(false);
-      return;
-    }
-
-    if (
-      result.records.length ===
-      result.records.filter((r) => r.recordStatus === 'CREATED').length
-    ) {
-      setSnackbarMessage({
-        severity: 'success',
-        message: 'Melindaan tallentaminen onnistui'
-      });
-      setShowSpinner(false);
-      return;
-    }
-
-    // Inform users that we are not entirely sure what has happened
-    setSnackbarMessage({
-      severity: 'error',
-      message:
-        'Kävi savolaisittain: saattaa olla, että Melindaan tallentaminen joiltain osin onnistui tai saattaa olla, että ei onnistunut'
-    });
-
-    setShowSpinner(false);
+  function closeMelindaResponseModal() {
+    setMelindaApiResponse(null);
   }
 
   // Handles granting an id
@@ -495,7 +443,7 @@ function IsbnPublicationRequest(props) {
       );
     }
 
-    return(
+    return (
       <div className="listItem">
         <Typography variant="h5" className="titleTopSticky">
           {publicationRequest?.title ?? ''} -{' '}
@@ -506,6 +454,7 @@ function IsbnPublicationRequest(props) {
           <FormattedMessage id="common.requestDetails" />
         </Typography>
         <div className="requestButtonsContainer">
+          {/* Display if granting identifiers */}
           {isGrantingIdentifiers ? (
             <div className="grantAnIdButtonsContainer">
               <Button variant="contained" color="error" onClick={handleCancelGrantAnId}>
@@ -689,6 +638,13 @@ function IsbnPublicationRequest(props) {
               >
                 <DeleteIcon />
               </Fab>
+
+              {/* Show modal if Melinda api response is available */}
+              <MelindaResponseModal
+                apiResponse={melindaApiResponse}
+                closeMelindaResponseModal={closeMelindaResponseModal}
+              />
+
               <Dialog
                 open={deleteModalIsOpen}
                 onClose={() => setDeleteModalIsOpen(false)}

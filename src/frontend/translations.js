@@ -1099,7 +1099,17 @@ const fi = {
   'snackbarMessage.successfullSubRangeClose': 'Kustantajatunnuksen sulkeminen onnistui',
   'snackbarMessage.unsuccessfullSubRangeClose': 'Kustantajatunnuksen sulkeminen epäonnistui',
   'snackbarMessage.successfullSubRangeDelete': 'Kustantajatunnuksen poistaminen onnistui',
-  'snackbarMessage.unsuccessfullSubRangeDelete': 'Kustantajatunnuksen poistaminen epäonnistui'
+  'snackbarMessage.unsuccessfullSubRangeDelete': 'Kustantajatunnuksen poistaminen epäonnistui',
+
+  // Melinda API result display
+  'melinda.response.header': 'Melinda-viennin tulos',
+  'melinda.response.createdRecords': 'Luodut tietueet',
+  'melinda.response.noCreatedRecords': 'Yhtään tietuetta ei luotu',
+  'melinda.response.errors': 'Virheet',
+  'melinda.response.databaseId': 'Tietueen id',
+  'melinda.response.standardIdentifiers': 'Tunnisteet',
+  'melinda.response.errorStatus': 'Virheen koodi',
+  'melinda.response.errorPayload': 'Virheviesti'
 };
 
 export default fi;
