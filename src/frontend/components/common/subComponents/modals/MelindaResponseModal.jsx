@@ -86,7 +86,7 @@ function MelindaResponseModal({apiResponse, closeMelindaResponseModal}) {
     function getRecordItem(record, idx) {
       const {databaseId, recordStatus, recordMetadata} = record;
       const standardIdentifiers = recordMetadata?.standardIdentifiers?.join(', ');
-      const databaseIdentifiers = recordMetadata?.ids?.join(', ');
+      const databaseIdentifiers = record?.ids?.join(', ');
 
       return (
         <div key={idx} className='melindaItem'>
