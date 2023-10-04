@@ -56,7 +56,7 @@ function MelindaResponseModal({apiResponse, closeMelindaResponseModal}) {
               aria-controls="panel1a-content"
             >
               <Typography>
-                <FormattedMessage id="melinda.response.createdRecords" />
+                <FormattedMessage id="melinda.response.records" />
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
@@ -84,8 +84,9 @@ function MelindaResponseModal({apiResponse, closeMelindaResponseModal}) {
     );
 
     function getRecordItem(record, idx) {
-      const {databaseId, recordMetadata} = record;
-      const standardIdentifiers = recordMetadata?.standardIdentifiers.join(', ');
+      const {databaseId, recordStatus, recordMetadata} = record;
+      const standardIdentifiers = recordMetadata?.standardIdentifiers?.join(', ');
+      const databaseIdentifiers = recordMetadata?.ids?.join(', ');
 
       return (
         <div key={idx} className='melindaItem'>
@@ -93,7 +94,13 @@ function MelindaResponseModal({apiResponse, closeMelindaResponseModal}) {
             <FormattedMessage id="melinda.response.databaseId" />: {databaseId ?? 'Unknown ID'}
           </Typography>
           <Typography>
+            <FormattedMessage id="melinda.response.itemStatus" />: {recordStatus ?? 'Unknown status'}
+          </Typography>
+          <Typography>
             <FormattedMessage id="melinda.response.standardIdentifiers" />: {standardIdentifiers ?? '-'}
+          </Typography>
+          <Typography>
+            <FormattedMessage id="melinda.response.databaseIds" />: {databaseIdentifiers ?? '-'}
           </Typography>
         </div>
       );

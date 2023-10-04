@@ -1103,10 +1103,12 @@ const fi = {
 
   // Melinda API result display
   'melinda.response.header': 'Melinda-viennin tulos',
-  'melinda.response.createdRecords': 'Luodut tietueet',
+  'melinda.response.records': 'Tietueet',
   'melinda.response.noCreatedRecords': 'Yhtään tietuetta ei luotu',
   'melinda.response.errors': 'Virheet',
-  'melinda.response.databaseId': 'Tietueen id',
+  'melinda.response.databaseId': 'Luodun tietueen id',
+  'melinda.response.itemStatus': 'Luontiyrityksen vastauksen tarkenne',
+  'melinda.response.databaseIds': 'Tuplatietueet',
   'melinda.response.standardIdentifiers': 'Tunnisteet',
   'melinda.response.errorStatus': 'Virheen koodi',
   'melinda.response.errorPayload': 'Virheviesti'
