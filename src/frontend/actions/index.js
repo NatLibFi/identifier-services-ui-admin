@@ -264,6 +264,7 @@ export async function makeApiRequest({url, method, values, history, redirectRout
       const result = await response.json();
       return result;
     }
+
     // Return API message
     const body = await response.json();
 
