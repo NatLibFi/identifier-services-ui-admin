@@ -485,12 +485,6 @@ function IsbnPublicationRequestDataComponent(props) {
             <FormattedMessage id="form.common.publishingActivities" />
           </Typography>
           <ListComponent
-            edit={isEdit && isEditable('publishingActivityAmount')}
-            fieldName="publishingActivityAmount"
-            label={<FormattedMessage id="request.publication.publishingFrequency" />}
-            value={currentRequest.publishingActivityAmount}
-          />
-          <ListComponent
             edit={isEdit && isEditable('publishedBefore')}
             fieldName="publishedBefore"
             label={<FormattedMessage id="request.publication.previouslyPublished" />}
@@ -511,6 +505,12 @@ function IsbnPublicationRequestDataComponent(props) {
                 })
                 : ''
             }
+          />
+          <ListComponent
+            edit={isEdit && isEditable('publishingActivityAmount')}
+            fieldName="publishingActivityAmount"
+            label={<FormattedMessage id="request.publication.publishingFrequency" />}
+            value={currentRequest.publishingActivityAmount}
           />
         </div>
       )}

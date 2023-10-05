@@ -836,7 +836,7 @@ const fi = {
   'request.publication.locality': 'Paikkakunta',
   'request.publication.contactLanguage': 'Asiointikieli',
   'request.publication.publicationLanguage': 'Julkaisun kieli',
-  'request.publication.publishingFrequency': 'Arvio kustannusmäärästä',
+  'request.publication.publishingFrequency': 'Kustannusmäärä vuodessa',
   'request.publication.previouslyPublished': 'Kustantanut aiemmin',
   'request.publication.electronic': 'Sähköiset julkaisut - ISBN',
   'request.publication.printed': 'Painetut julkaisut - ISBN',
