@@ -77,8 +77,10 @@ function IsbnPublicationRequestDataComponent(props) {
   const initialSearchBody = {searchText: ''};
 
   const [searchBody, updateSearchBody] = useReducer((prev, next) => {
+    // Refetch default when searchText has been emptied
     // Trigger autocomplete only after three or more characters
-    if(next.searchText.length > 3) {
+
+    if(next.searchText.length > 3 || next.searchText.length === 0) {
       return {...prev, ...next};
     }
 
@@ -144,7 +146,7 @@ function IsbnPublicationRequestDataComponent(props) {
 
   /* Refreshes list from API */
   function updateSearchText(event) {
-    if (event && event.target?.value && event.target.value !== searchBody.searchText) {
+    if ((event && event.target?.value && event.target.value !== searchBody.searchText) || event?.target?.value === '') {
       updateSearchBody({searchText: event.target.value});
     }
   }
@@ -287,10 +289,7 @@ function IsbnPublicationRequestDataComponent(props) {
                 )}
                 value={
                   currentRequest.publisherId && !publisher.value
-                    ? {
-                      label: currentRequest.publisherName,
-                      value: currentRequest.publisherId
-                    }
+                    ? {label: currentRequest.publisherName, value: currentRequest.publisherId}
                     : publisher
                 }
                 getOptionLabel={(option) => option.label || ''}
