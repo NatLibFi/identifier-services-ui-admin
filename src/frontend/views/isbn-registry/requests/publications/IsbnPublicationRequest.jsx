@@ -558,6 +558,7 @@ function IsbnPublicationRequest(props) {
               {hasIdentifiers() && (
                 <Button
                   className="requestButton"
+                  disabled={publicationRequest?.hasAssociatedMessage === true}
                   variant="contained"
                   color="primary"
                   onClick={() =>
@@ -566,7 +567,7 @@ function IsbnPublicationRequest(props) {
                     )
                   }
                 >
-                  <FormattedMessage id="messages.sendMessage" />
+                  <FormattedMessage id={publicationRequest?.hasAssociatedMessage === true ? 'messages.messageWasSent' : 'messages.sendMessage'} />
                 </Button>
               )}
               <Button
