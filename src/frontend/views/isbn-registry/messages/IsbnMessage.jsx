@@ -28,27 +28,23 @@
 import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-
 import {FormattedMessage} from 'react-intl';
 import moment from 'moment';
+
+import {Grid, Link, Fab, Typography} from '@mui/material';
+import {ArrowBack, Link as LinkIcon} from '@mui/icons-material';
 
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
 
-import {Grid, Link, Fab, Typography} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import LinkIcon from '@mui/icons-material/Link';
-
 import '/src/frontend/css/messages/message.css';
 
 import BundledEditor from '/src/frontend/components/common/BundledEditor.jsx';
-
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import ResendMessageModal from '/src/frontend/components/common/subComponents/modals/ResendMessageModal.jsx';
 
 function IsbnMessage(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+  const {userInfo: {authenticationToken}, match, history, setSnackbarMessage} = props;
 
   // ID of a current template
   const {id} = match.params;
@@ -115,18 +111,34 @@ function IsbnMessage(props) {
     history.goBack();
   };
 
+  // Handles resending a message with a new recipient and message body
   async function resendEmailMessageIsbn(recipient) {
+    const sendMessageParams = {
+      // data from original message
+      publisherId: message.publisherId,
+      publicationId: message.publicationId,
+      batchId: message.batchId,
+      langCode: message.langCode,
+      messageTemplateId: message.messageTemplateId,
+      subject: message.subject,
+      // new data
+      recipient,
+      messageBody: editorRef ? editorRef.current.getContent() : undefined
+    };
+
     const result = await makeApiRequest({
-      url: `/api/isbn-registry/messages/resend/${id}`,
+      url: '/api/isbn-registry/messages/send',
       method: 'POST',
-      values: {recipient},
+      values: sendMessageParams,
       authenticationToken,
       setSnackbarMessage
     });
 
     if (result) {
+      // Redirect to the message details page
       history.push({
         pathname: `/isbn-registry/messages/${result.id}`,
+        // Add values to the history state for the back button to work correctly
         state: {
           messageCode: history.location.state.messageCode,
           publisherId: history.location.state.publisherId,
@@ -159,7 +171,7 @@ function IsbnMessage(props) {
           className="iconButton"
           onClick={() => handleGoBack()}
         >
-          <ArrowBackIcon />
+          <ArrowBack />
         </Fab>
         <ResendMessageModal resendEmailMessage={resendEmailMessageIsbn} />
       </div>
@@ -216,11 +228,12 @@ function IsbnMessage(props) {
             <Grid item xs={10}>
               {message.publicationId && message.publicationId !== 0 ? (
                 <Link
+                  className="messageLink"
                   href={`/isbn-registry/requests/publications/${message.publicationId}`}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <FormattedMessage id="common.publicationDetails" />
+                  <FormattedMessage id="common.publicationDetails" /> <LinkIcon />
                 </Link>
               ) : (
                 <FormattedMessage id="common.noValue" />
@@ -245,9 +258,8 @@ function IsbnMessage(props) {
           </Grid>
           <div className="messageTextContainer">
             <BundledEditor
-              onInit={(evt, editor) => (editorRef.current = editor)}
+              onInit={(_evt, editor) => (editorRef.current = editor)}
               initialValue={message.message}
-              disabled={true}
             />
           </div>
         </div>
