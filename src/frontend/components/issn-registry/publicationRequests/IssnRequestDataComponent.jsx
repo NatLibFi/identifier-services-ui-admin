@@ -46,13 +46,10 @@ function IssnRequestDataComponent(props) {
   const intl = useIntl();
 
   // Autocomplete
-  const initialSearchBody = {searchText: ''};
-
+  const initialSearchBody = {searchText: issnRequest.publisherName ?? ''};
   const [searchBody, updateSearchBody] = useReducer((prev, next) => {
-    // Refetch default when searchText has been emptied
     // Trigger autocomplete only after three or more characters
-
-    if(next.searchText.length > 3 || next.searchText.length === 0) {
+    if(next.searchText.length > 3) {
       return {...prev, ...next};
     }
 
@@ -84,7 +81,7 @@ function IssnRequestDataComponent(props) {
 
   /* Refreshes list from API */
   function updateSearchText(event) {
-    if ((event && event.target?.value && event.target.value !== searchBody.searchText) || event?.target?.value === '') {
+    if (event && event.target?.value && event.target.value !== searchBody.searchText) {
       updateSearchBody({searchText: event.target.value});
     }
   }
@@ -152,9 +149,9 @@ function IssnRequestDataComponent(props) {
         <div className="publisherInformationContainer">
           <div className="autoCompleteInnerContainer">
             <Autocomplete
-              disableClearable
               disablePortal
-              clearOnBlur={false}
+              clearOnEscape
+              clearOnBlur
               renderOption={(props, option) => (
                 <li {...props}>
                   <Box>{option.label}</Box>

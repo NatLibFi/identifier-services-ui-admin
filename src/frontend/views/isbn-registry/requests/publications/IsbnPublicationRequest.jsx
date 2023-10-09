@@ -186,6 +186,26 @@ function IsbnPublicationRequest(props) {
     }
   }
 
+  // Display modal only if it would contain meaningful information
+  function displayMelindaResponseDetails(apiResponse) {
+    if(!apiResponse || typeof apiResponse !== 'object') {
+      return false;
+    }
+
+    const numSystemErrors = apiResponse?.errors?.length;
+    const numRecordErrors = apiResponse?.records?.filter(({recordStatus}) => recordStatus !== 'CREATED').length;
+
+    if(numSystemErrors === undefined || numRecordErrors === undefined) {
+      return false;
+    }
+
+    if(numSystemErrors > 0 || numRecordErrors > 0) {
+      return true;
+    }
+
+    return false;
+  }
+
   // Handles starting of the granting an id process
   const handleGrantAnId = () => {
     const identifierTypeValue =
@@ -229,16 +249,18 @@ function IsbnPublicationRequest(props) {
 
     setShowSpinner(false);
 
-    if (!result) {
-      setSnackbarMessage({
-        severity: 'error',
-        message: 'Melindaan tallentaminen ei onnistunut. Ota yhteyttä sovellusylläpitoon.'
-      });
-      return;
+    // Everything is fine, display banner
+    if (result && typeof result === 'object' && !displayMelindaResponseDetails(result)) {
+      return setSnackbarMessage({severity: 'success', message: `Melindaan tallentaminen onnistui. Luotiin ${result.records.length} uutta tietuetta.`});
     }
 
-    // Display result in Modal
-    setMelindaApiResponse(result);
+    // System integration has problem, notify with red banner
+    if (!result && typeof result !== 'object') {
+      return setSnackbarMessage({severity: 'error', message: 'Melindaan tallentaminen ei onnistunut järjestelmävirheen vuoksi. Ota yhteyttä sovellusylläpitoon.'});
+    }
+
+    // Something was not right in the API response, display result in Modal with detailed information
+    return setMelindaApiResponse(result);
   }
 
   function closeMelindaResponseModal() {
@@ -644,6 +666,7 @@ function IsbnPublicationRequest(props) {
               <MelindaResponseModal
                 apiResponse={melindaApiResponse}
                 closeMelindaResponseModal={closeMelindaResponseModal}
+                showModal={displayMelindaResponseDetails(melindaApiResponse)}
               />
 
               <Dialog
