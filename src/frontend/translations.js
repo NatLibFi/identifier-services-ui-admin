@@ -837,6 +837,7 @@ const fi = {
   'request.publication.previouslyPublished': 'Kustantanut aiemmin',
   'request.publication.electronic': 'Sähköiset julkaisut - ISBN',
   'request.publication.printed': 'Painetut julkaisut - ISBN',
+  'request.publication.autocomplete.notSaved': 'Muista tallentaa kustantaja tallenna-painikkeesta!',
 
   // ISSN request
   'request.issn.title': 'Etsi ISSN-lomake nimikkeellä',
