@@ -77,7 +77,15 @@ function PublisherBatchIdsModal(props) {
 
   // Event handler for viewing a single batch
   const handleTableRowClick = (id) => {
-    history.push(`/isbn-registry/identifierbatches/${id}`);
+    history.push({
+      pathname: `/isbn-registry/identifierbatches/${id}`,
+      state: {
+        // Publisher id for the back button
+        publisherId: publisher.id,
+        // Message code for the redirect after batch is sent as a message
+        messageCode: 'publisher_batch_modal'
+      }
+    });
   };
 
   // Filters data to be shown in the table
