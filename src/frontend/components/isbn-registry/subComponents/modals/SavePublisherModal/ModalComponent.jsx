@@ -95,7 +95,8 @@ function ModalComponent(props) {
       return <Spinner />;
     }
 
-    if (Object.keys(data).length === 0) {
+    // Display a message if object is empty, or data is not a type of object
+    if (Object.keys(data).length === 0 || typeof data !== 'object') {
       return (
         <div>
           <Typography>
@@ -115,7 +116,7 @@ function ModalComponent(props) {
     // Display publisher details if the switch is off (default)
     return (
       <PublisherDetails
-        data={data}
+        publisher={data}
         publisherId={publisherId}
         publicationRequest={publicationRequest}
         setPublicationRequest={setPublicationRequest}

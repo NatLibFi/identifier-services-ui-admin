@@ -47,7 +47,7 @@ import {getIdentifiersAvailable} from '/src/frontend/rangeFormattingUtils';
 
 function PublisherDetails (props) {
   const {
-    data,
+    publisher,
     publisherId,
     publicationRequest,
     setPublicationRequest,
@@ -103,39 +103,39 @@ function PublisherDetails (props) {
               <Typography>
                 <FormattedMessage id="form.common.name" />:
               </Typography>
-              <Typography>{data?.officialName}</Typography>
+              <Typography>{publisher?.officialName}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.phone" />:
               </Typography>
-              <Typography>{data?.phone}</Typography>
+              <Typography>{publisher?.phone}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.language" />:
               </Typography>
               <Typography>
-                <FormattedMessage id={`common.${data?.langCode}`} />
+                <FormattedMessage id={`common.${publisher?.langCode}`} />
               </Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.email" />:
               </Typography>
-              <Typography>{data?.email ?? '-'}</Typography>
+              <Typography>{publisher?.email ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.contactPerson" />:
               </Typography>
-              <Typography>{data?.contactPerson ?? '-'}</Typography>
+              <Typography>{publisher?.contactPerson ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.website" />:
               </Typography>
-              <Typography>{data?.www ?? '-'}</Typography>
+              <Typography>{publisher?.www ?? '-'}</Typography>
             </div>
           </AccordionDetails>
         </Accordion>
@@ -155,25 +155,25 @@ function PublisherDetails (props) {
               <Typography>
                 <FormattedMessage id="form.common.address" />:
               </Typography>
-              <Typography>{data?.address}</Typography>
+              <Typography>{publisher?.address}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.addressLine1" />:
               </Typography>
-              <Typography>{data?.addressLine1 ?? '-'}</Typography>
+              <Typography>{publisher?.addressLine1 ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.zip" />:
               </Typography>
-              <Typography>{data?.zip}</Typography>
+              <Typography>{publisher?.zip}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.city" />:
               </Typography>
-              <Typography>{data?.city}</Typography>
+              <Typography>{publisher?.city}</Typography>
             </div>
           </AccordionDetails>
         </Accordion>
@@ -190,12 +190,12 @@ function PublisherDetails (props) {
           </AccordionSummary>
           <AccordionDetails className="savePublisherModalContainer">
             <List>
-              {data?.isbnSubRanges && data?.isbnSubRanges.length > 0 && (
+              {publisher?.isbnSubRanges && publisher?.isbnSubRanges.length > 0 && (
                 <div>
                   <Typography>ISBN: </Typography>
                   <ul>
-                    {data?.isbnSubRanges?.map((isbnSubRange) => {
-                      if (isbnSubRange.publisherIdentifier === data.activeIdentifierIsbn) {
+                    {publisher?.isbnSubRanges?.map((isbnSubRange) => {
+                      if (isbnSubRange.publisherIdentifier === publisher.activeIdentifierIsbn) {
                         return (
                           <li key={isbnSubRange.publisherIdentifier}>
                             <strong>
@@ -219,12 +219,12 @@ function PublisherDetails (props) {
                 </div>
               )}
 
-              {data?.ismnSubRanges && data?.ismnSubRanges.length > 0 && (
+              {publisher?.ismnSubRanges && publisher?.ismnSubRanges.length > 0 && (
                 <div>
                   <Typography>ISMN: </Typography>
                   <ul>
-                    {data?.ismnSubRanges?.map((ismnSubRange) => {
-                      if (ismnSubRange.publisherIdentifier === data.activeIdentifierIsmn) {
+                    {publisher?.ismnSubRanges?.map((ismnSubRange) => {
+                      if (ismnSubRange.publisherIdentifier === publisher.activeIdentifierIsmn) {
                         return (
                           <li key={ismnSubRange.publisherIdentifier}>
                             <strong>
@@ -266,25 +266,25 @@ function PublisherDetails (props) {
               <Typography>
                 <FormattedMessage id="form.common.affiliates" />:
               </Typography>
-              <Typography>{data?.affiliates ?? '-'}</Typography>
+              <Typography>{publisher?.affiliates ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.affiliateOf" />:
               </Typography>
-              <Typography>{data?.affiliateOf ?? '-'}</Typography>
+              <Typography>{publisher?.affiliateOf ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.distributors" />:
               </Typography>
-              <Typography>{data?.distributors ?? '-'}</Typography>
+              <Typography>{publisher?.distributors ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.distributorOf" />:
               </Typography>
-              <Typography>{data?.distributorOf ?? '-'}</Typography>
+              <Typography>{publisher?.distributorOf ?? '-'}</Typography>
             </div>
           </AccordionDetails>
         </Accordion>
@@ -304,14 +304,14 @@ function PublisherDetails (props) {
               <Typography>
                 <FormattedMessage id="modal.savePublisher.otherNameForms" />:
               </Typography>
-              <Typography>{data?.otherNames ?? '-'}</Typography>
+              <Typography>{publisher?.otherNames ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.previousNames" />:
               </Typography>
               <Typography>
-                {data?.previousNames?.map((name) => name).join(', ') ?? '-'}
+                {publisher?.previousNames?.map((name) => name).join(', ') ?? '-'}
               </Typography>
             </div>
           </AccordionDetails>
@@ -332,20 +332,20 @@ function PublisherDetails (props) {
               <Typography>
                 <FormattedMessage id="modal.savePublisher.currentYear" />:
               </Typography>
-              <Typography>{data?.frequencyCurrent ?? '-'}</Typography>
+              <Typography>{publisher?.frequencyCurrent ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="modal.savePublisher.nextYear" />:
               </Typography>
-              <Typography>{data?.frequencyNext ?? '-'}</Typography>
+              <Typography>{publisher?.frequencyNext ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.classification" />:
               </Typography>
               <Typography>
-                {data?.classification
+                {publisher?.classification
                   ?.map((item) =>
                     intl.formatMessage({
                       id: classificationCodes.find((code) => code.value === item)?.label
@@ -358,14 +358,14 @@ function PublisherDetails (props) {
               <Typography>
                 <FormattedMessage id="form.common.classificationOther" />:
               </Typography>
-              <Typography>{data?.classificationOther ?? '-'}</Typography>
+              <Typography>{publisher?.classificationOther ?? '-'}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="modal.savePublisher.publisherHasQuitted" />:
               </Typography>
               <Typography>
-                <FormattedMessage id={data?.hasQuitted ? 'common.yes' : 'common.no'} />
+                <FormattedMessage id={publisher?.hasQuitted ? 'common.yes' : 'common.no'} />
               </Typography>
             </div>
             <div>
@@ -373,7 +373,7 @@ function PublisherDetails (props) {
                 <FormattedMessage id="modal.savePublisher.yearInactivated" />:
               </Typography>
               <Typography>
-                {data?.yearQuitted === '' ? '-' : data?.yearQuitted}
+                {publisher?.yearQuitted === '' ? '-' : publisher?.yearQuitted}
               </Typography>
             </div>
           </AccordionDetails>
@@ -395,30 +395,30 @@ function PublisherDetails (props) {
                 <FormattedMessage id="form.common.created" />:
               </Typography>
               <Typography>
-                {data?.created === undefined ? '-' : moment(data.created).format('LLL')}
+                {publisher?.created === undefined ? '-' : moment(publisher.created).format('LLL')}
               </Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.createdBy" />:
               </Typography>
-              <Typography>{data?.createdBy}</Typography>
+              <Typography>{publisher?.createdBy}</Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.modified" />:
               </Typography>
               <Typography>
-                {data?.modified === undefined
+                {publisher?.modified === undefined
                   ? '-'
-                  : moment(data?.modified).format('LLL')}
+                  : moment(publisher?.modified).format('LLL')}
               </Typography>
             </div>
             <div>
               <Typography>
                 <FormattedMessage id="form.common.modifiedBy" />:
               </Typography>
-              <Typography>{data?.modifiedBy}</Typography>
+              <Typography>{publisher?.modifiedBy}</Typography>
             </div>
           </AccordionDetails>
         </Accordion>
@@ -439,7 +439,7 @@ function PublisherDetails (props) {
                 <FormattedMessage id="form.common.additionalDetails" />:
               </Typography>
               <Typography>
-                {data?.additionalInfo === '' ? '-' : data?.additionalInfo}
+                {publisher?.additionalInfo === '' ? '-' : publisher?.additionalInfo}
               </Typography>
             </div>
           </AccordionDetails>
@@ -462,7 +462,7 @@ function PublisherDetails (props) {
 }
 
 PublisherDetails.propTypes = {
-  data: PropTypes.object.isRequired,
+  publisher: PropTypes.object.isRequired,
   publisherId: PropTypes.number.isRequired,
   publicationRequest: PropTypes.object.isRequired,
   setPublicationRequest: PropTypes.func.isRequired,

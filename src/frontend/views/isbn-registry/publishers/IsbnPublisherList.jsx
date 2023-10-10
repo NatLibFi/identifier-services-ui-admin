@@ -140,9 +140,14 @@ function IsbnPublisherList(props) {
   }
 
   // Get the icon for the publisher type - book, music, both or none
-  const getPublisherTypeIcon = ({activeIdentifierIsbn, activeIdentifierIsmn}) => {
+  function getPublisherTypeIcon({activeIdentifierIsbn, activeIdentifierIsmn}) {
+    // If parameters are undefined - return no icon
+    if (activeIdentifierIsbn === undefined && activeIdentifierIsmn === undefined) {
+      return '';
+    }
+
     // Publishers with both ISBN and ISMN active identifiers
-    if (activeIdentifierIsbn.length && activeIdentifierIsmn.length) {
+    if (activeIdentifierIsbn && activeIdentifierIsmn) {
       return (
         <Tooltip title={<FormattedMessage id="common.isbn-ismn" />}>
           <div className="bothPublicationTypes">
@@ -158,7 +163,7 @@ function IsbnPublisherList(props) {
     }
 
     // Publishers with only ISBN active identifier
-    if (activeIdentifierIsbn.length) {
+    if (activeIdentifierIsbn) {
       return (
         <Tooltip title={<FormattedMessage id="common.isbn" />}>
           <MenuBook />
@@ -167,7 +172,7 @@ function IsbnPublisherList(props) {
     }
 
     // Publishers with only ISMN active identifier
-    if (activeIdentifierIsmn.length) {
+    if (activeIdentifierIsmn) {
       return (
         <Tooltip title={<FormattedMessage id="common.ismn" />}>
           <MusicNote />
@@ -181,7 +186,7 @@ function IsbnPublisherList(props) {
         <HourglassEmpty />
       </Tooltip>
     );
-  };
+  }
 
   // Formatting the data to be displayed in the table
   function formatSearchResult(item) {
