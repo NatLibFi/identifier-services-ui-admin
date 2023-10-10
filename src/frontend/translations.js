@@ -37,6 +37,7 @@ const fi = {
   'common.publisher.isbn': 'Kustantaja',
   'common.publishers.isbn': 'Kustantajat',
   'common.publisherDetails.isbn': 'Kustantajan tiedot',
+  'common.publisherDetails.isbnRequest': 'Asiakkaan ilmoittamat kustantajan tiedot',
   'common.publisher.issn': 'Julkaisija',
   'common.publishers.issn': 'Julkaisijat',
   'common.publisherDetails.issn': 'Julkaisijan tiedot',
@@ -81,6 +82,8 @@ const fi = {
   'common.errorPage': 'Virhesivu',
   'common.skipLink': 'Hyppää pääsisältöön',
   'common.download': 'Lataa',
+  'common.noActiveIdentifiers': 'Ei aktiivisia tunnuksia',
+  'common.author': '{digit} tekijä',
 
   // Numbers
   'common.one': 'Yksi',
@@ -833,10 +836,11 @@ const fi = {
   'request.publication.locality': 'Paikkakunta',
   'request.publication.contactLanguage': 'Asiointikieli',
   'request.publication.publicationLanguage': 'Julkaisun kieli',
-  'request.publication.publishingFrequency': 'Arvio kustannusmäärästä',
+  'request.publication.publishingFrequency': 'Kustannusmäärä vuodessa',
   'request.publication.previouslyPublished': 'Kustantanut aiemmin',
   'request.publication.electronic': 'Sähköiset julkaisut - ISBN',
   'request.publication.printed': 'Painetut julkaisut - ISBN',
+  'request.publication.autocomplete.notSaved': 'Muista tallentaa kustantaja tallenna-painikkeesta!',
 
   // ISSN request
   'request.issn.title': 'Etsi ISSN-lomake nimikkeellä',

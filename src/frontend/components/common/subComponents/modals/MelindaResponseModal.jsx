@@ -34,7 +34,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/subComponents/modals.css';
 
-function MelindaResponseModal({apiResponse, closeMelindaResponseModal}) {
+function MelindaResponseModal({apiResponse, closeMelindaResponseModal, showModal}) {
   const component = getComponent();
 
   function getComponent() {
@@ -124,7 +124,7 @@ function MelindaResponseModal({apiResponse, closeMelindaResponseModal}) {
 
   return (
     <>
-      <Modal open={apiResponse !== null} onClose={() => closeMelindaResponseModal()}>
+      <Modal open={showModal} onClose={() => closeMelindaResponseModal()}>
         <Box className="melindaResultModal">{component}</Box>
       </Modal>
     </>
@@ -133,7 +133,8 @@ function MelindaResponseModal({apiResponse, closeMelindaResponseModal}) {
 
 MelindaResponseModal.propTypes = {
   apiResponse: PropTypes.object,
-  closeMelindaResponseModal: PropTypes.func.isRequired
+  closeMelindaResponseModal: PropTypes.func.isRequired,
+  showModal: PropTypes.bool.isRequired
 };
 
 export default MelindaResponseModal;
