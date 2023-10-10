@@ -96,7 +96,7 @@ function ModalComponent(props) {
     }
 
     // Display a message if object is empty, or data is not a type of object
-    if (Object.keys(data).length === 0 || typeof data !== 'object') {
+    if (typeof data !== 'object' || Object.keys(data).length === 0) {
       return (
         <div>
           <Typography>
