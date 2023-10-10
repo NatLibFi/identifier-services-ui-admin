@@ -143,11 +143,10 @@
   margin-top: 20px;
 }
 
-.categoryFilterContainer {
-  width: 69%;
+div.categoryFilterContainer {
+  width: 75%;
   max-width: 1200px;
-  /* Important used to override the default margin value of MUI FormControl component*/
-  margin-bottom: 1rem !important;
+  margin-bottom: 1rem;
 }
 
 .issnQuickformContainer {
@@ -240,6 +239,12 @@
   .mainContainer {
     grid-template-columns: 1fr;
     justify-items: center;
+  }
+}
+
+@media (max-width: 800px) {
+  div.categoryFilterContainer {
+    width: 100%;
   }
 }
 
