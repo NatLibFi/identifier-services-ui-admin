@@ -38,7 +38,8 @@ import {
   Select,
   MenuItem,
   ListSubheader,
-  Tooltip
+  Tooltip,
+  Switch
 } from '@mui/material';
 
 import {
@@ -48,6 +49,7 @@ import {
 } from '@mui/icons-material';
 
 import '/src/frontend/css/common.css';
+import '/src/frontend/css/publishers/adminSearch.css';
 
 import SearchComponent from '/src/frontend/components/common/SearchComponent.jsx';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
@@ -69,7 +71,7 @@ function IsbnPublisherList(props) {
     return {...prev, ...next};
   }, initialSearchBody);
 
-  function getInitialFilterValue(history) {
+  function getInitialCategoryFilterValue(history) {
     if (
       !history?.location?.state?.searchBody?.category ||
       !history?.location?.state?.searchBody?.identifierType
@@ -83,7 +85,15 @@ function IsbnPublisherList(props) {
     return `${category}-${identifierType}`;
   }
 
-  const [filterValue, setFilterValue] = useState(getInitialFilterValue(history));
+  // Returns initial state for filter from history if it exists
+  // Returns null in case history does not have value defined in state
+  function getInitialFilterState(filterName, history) {
+    return history?.location?.state?.searchBody?.[filterName] || null;
+  }
+
+  const [categoryFilterValue, setCategoryFilterValue] = useState(getInitialCategoryFilterValue(history));
+  const [hasQuittedFilter, setHasQuittedFilter] = useState(getInitialFilterState('hasQuitted', history) ?? false);
+  const [identifierTypeFilter, setIdentifierTypeFilter] = useState(getInitialFilterState('identifierType', history) ?? 'ISBN');
 
   // Empty search state from history object after its use
   useEffect(() => {
@@ -124,19 +134,35 @@ function IsbnPublisherList(props) {
   }
 
   function updateCategoryFilter(event) {
-    const filterValue = event.target.value;
-    setFilterValue(filterValue);
+    const categoryFilterValue = event.target.value;
+    setCategoryFilterValue(categoryFilterValue);
 
-    if (filterValue !== '') {
+    if (categoryFilterValue !== '') {
+      const newIdentifierType = categoryFilterValue.substring(2);
       updateSearchBody({
-        category: Number(filterValue.substring(0, 1)),
-        identifierType: filterValue.substring(2)
+        category: Number(categoryFilterValue.substring(0, 1)),
+        identifierType: newIdentifierType
       });
+
+      setIdentifierTypeFilter(newIdentifierType);
       return;
     }
 
-    updateSearchBody({category: undefined, identifierType: undefined});
+    // Set filters to defaults
+    setIdentifierTypeFilter('ISBN');
+    updateSearchBody({category: undefined, identifierType: 'ISBN'});
     return;
+  }
+
+  function handleHasQuittedFilterChange() {
+    updateSearchBody({hasQuitted: !hasQuittedFilter});
+    setHasQuittedFilter(!hasQuittedFilter);
+  }
+
+  function handleIdentifierTypeFilterChange() {
+    const newFilterValue = identifierTypeFilter === 'ISBN' ? 'ISMN' : 'ISBN';
+    updateSearchBody({identifierType: newFilterValue});
+    setIdentifierTypeFilter(newFilterValue);
   }
 
   // Get the icon for the publisher type - book, music, both or none
@@ -265,36 +291,85 @@ function IsbnPublisherList(props) {
     );
   }
 
-  const FilterOptions = (
-    <FormControl className="categoryFilterContainer">
-      <InputLabel id="filter-by-category">
-        <FormattedMessage id="publisherRegistry.filterByRangeCategory" />
-      </InputLabel>
-      <Select
-        labelId="filter-by-category"
-        value={filterValue}
-        label={<FormattedMessage id="publisherRegistry.filterByRangeCategory" />}
-        onChange={updateCategoryFilter}
-      >
-        <MenuItem value={''}>
-          <em>
-            <FormattedMessage id="common.blank" />
-          </em>
-        </MenuItem>
-        <ListSubheader>ISBN</ListSubheader>
-        <MenuItem value="1-ISBN">1</MenuItem>
-        <MenuItem value="2-ISBN">2</MenuItem>
-        <MenuItem value="3-ISBN">3</MenuItem>
-        <MenuItem value="4-ISBN">4</MenuItem>
-        <MenuItem value="5-ISBN">5</MenuItem>
-        <ListSubheader>ISMN</ListSubheader>
-        <MenuItem value="3-ISMN">3</MenuItem>
-        <MenuItem value="5-ISMN">5</MenuItem>
-        <MenuItem value="6-ISMN">6</MenuItem>
-        <MenuItem value="7-ISMN">7</MenuItem>
-      </Select>
-    </FormControl>
-  );
+  function getCategoryFilterOptions() {
+    return (
+      <FormControl className="categoryFilterContainer">
+        <InputLabel id="filter-by-category">
+          <FormattedMessage id="publisherRegistry.filterByRangeCategory" />
+        </InputLabel>
+
+        <Select
+          labelId="filter-by-category"
+          value={categoryFilterValue}
+          label={<FormattedMessage id="publisherRegistry.filterByRangeCategory" />}
+          onChange={updateCategoryFilter}
+        >
+          <MenuItem value={''}>
+            <em>
+              <FormattedMessage id="common.blank" />
+            </em>
+          </MenuItem>
+          <ListSubheader>ISBN</ListSubheader>
+          <MenuItem value="1-ISBN">1</MenuItem>
+          <MenuItem value="2-ISBN">2</MenuItem>
+          <MenuItem value="3-ISBN">3</MenuItem>
+          <MenuItem value="4-ISBN">4</MenuItem>
+          <MenuItem value="5-ISBN">5</MenuItem>
+          <ListSubheader>ISMN</ListSubheader>
+          <MenuItem value="3-ISMN">3</MenuItem>
+          <MenuItem value="5-ISMN">5</MenuItem>
+          <MenuItem value="6-ISMN">6</MenuItem>
+          <MenuItem value="7-ISMN">7</MenuItem>
+        </Select>
+      </FormControl>
+    );
+  }
+
+  function getHasQuittedFilter() {
+    return (
+      <div className="hasQuittedSwitch">
+        <Typography
+          data-checked={hasQuittedFilter}
+        >
+          <FormattedMessage id="publisherRegistry.search.hasQuitted.true" />
+        </Typography>
+        <Switch
+          label="switch between hasQuitted filter"
+          checked={!hasQuittedFilter}
+          onChange={handleHasQuittedFilterChange}
+          inputProps={{'aria-label': 'controlled switch'}}
+        />
+        <Typography
+          data-checked={!hasQuittedFilter}
+        >
+          <FormattedMessage id="publisherRegistry.search.hasQuitted.false" />
+        </Typography>
+      </div>
+    );
+  }
+
+  function getIdentifierTypeFilter() {
+    return (
+      <div className="identifierTypeSwitch">
+        <Typography
+          data-checked={identifierTypeFilter === 'ISBN'}
+        >
+          <FormattedMessage id="common.isbn" />
+        </Typography>
+        <Switch
+          label="switch between identifierType filter"
+          checked={identifierTypeFilter === 'ISMN'}
+          onChange={handleIdentifierTypeFilterChange}
+          inputProps={{'aria-label': 'controlled switch'}}
+        />
+        <Typography
+          data-checked={identifierTypeFilter === 'ISMN'}
+        >
+          <FormattedMessage id="common.ismn" />
+        </Typography>
+      </div>
+    );
+  }
 
   return (
     <div className="listSearch">
@@ -303,11 +378,17 @@ function IsbnPublisherList(props) {
           <FormattedMessage id="publisherRegistry.title" />
         </Typography>
       </InputLabel>
-      <SearchComponent
-        initialValue={initialSearchBody.searchText}
-        searchFunction={updateSearchText}
-      />
-      {FilterOptions}
+      <div className="listSearchBoxFilters">
+        <div className="searchInput">
+          <SearchComponent
+            initialValue={initialSearchBody.searchText}
+            searchFunction={updateSearchText}
+          />
+        </div>
+        {getHasQuittedFilter()}
+        {getIdentifierTypeFilter()}
+      </div>
+      {getCategoryFilterOptions()}
       {dataComponent}
     </div>
   );

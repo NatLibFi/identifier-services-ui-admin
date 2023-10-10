@@ -1,0 +1,47 @@
+.listSearchBoxFilters {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.searchInput {
+  min-width: 500px;
+}
+
+.hasQuittedSwitch, .identifierTypeSwitch {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  place-items: center;
+
+  & p {
+      letter-spacing: 0.05rem;
+      cursor: pointer;
+  }
+
+  & p:after {
+      content: "";
+      display: block;
+      width: 0;
+      height: 0.125rem;
+      background-color: transparent;
+  }
+
+  & p[data-checked="true"] {
+      text-shadow:
+      -0.0125rem -0.0125rem 0 currentColor,
+      0.0125rem -0.0125rem 0 currentColor,
+      -0.0125rem 0.0125rem 0 currentColor,
+      0.0125rem 0.0125rem 0 currentColor;
+      transition: all 0.5s;
+  }
+
+  & p[data-checked="true"]:after {
+      width: 100%;
+      background-color: currentColor;
+      transition: all 0.5s;
+  }
+}
+
+.identifierTypeSwitch {
+  margin-left: 5em;
+}

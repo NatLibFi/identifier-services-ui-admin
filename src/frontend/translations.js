@@ -875,6 +875,8 @@ const fi = {
   'publisherRegistry.publisher.run': 'Painoksen suuruus',
   'publisherRegistry.publisher.edition': 'Painos',
   'publisherRegistry.publisher.role': 'Rooli',
+  'publisherRegistry.search.hasQuitted.true': 'Lopettaneet',
+  'publisherRegistry.search.hasQuitted.false': 'Aktiiviset',
 
   // ISSN publisher
   'publisher.issn.title':'Hae julkaisijaa nimellä',
