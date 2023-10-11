@@ -116,15 +116,22 @@ function IsbnMessage(props) {
     const sendMessageParams = {
       // data from original message
       publisherId: message.publisherId,
-      publicationId: message.publicationId,
-      batchId: message.batchId,
       langCode: message.langCode,
       messageTemplateId: message.messageTemplateId,
       subject: message.subject,
       // new data
       recipient,
-      messageBody: editorRef ? editorRef.current.getContent() : undefined
+      messageBody: editorRef ? editorRef.current.getContent() : ''
     };
+
+    // Add publicationId and batchId if they exist
+    if (message.publicationId) {
+      sendMessageParams.publicationId = message.publicationId;
+    }
+
+    if (message.batchId) {
+      sendMessageParams.batchId = message.batchId;
+    }
 
     const result = await makeApiRequest({
       url: '/api/isbn-registry/messages/send',
@@ -173,7 +180,11 @@ function IsbnMessage(props) {
         >
           <ArrowBack />
         </Fab>
-        <ResendMessageModal resendEmailMessage={resendEmailMessageIsbn} />
+        <ResendMessageModal
+          resendEmailMessage={resendEmailMessageIsbn}
+          message={message}
+          editorRef={editorRef}
+        />
       </div>
       <div>
         <div className="messageBoxContainer">
@@ -260,6 +271,7 @@ function IsbnMessage(props) {
             <BundledEditor
               onInit={(_evt, editor) => (editorRef.current = editor)}
               initialValue={message.message}
+              disabled
             />
           </div>
         </div>

@@ -28,20 +28,25 @@
 import React, {useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+
 import {
   Button,
   Typography,
   Modal,
   Box,
-  FormControl,
-  InputLabel,
-  Input
+  Link,
+  TextField
 } from '@mui/material';
+import {Link as LinkIcon} from '@mui/icons-material';
+
+import BundledEditor from '/src/frontend/components/common/BundledEditor.jsx';
 
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/subComponents/modals.css';
 
-function ResendMessageModal({resendEmailMessage}) {
+function ResendMessageModal(props) {
+  const {message, resendEmailMessage, editorRef} = props;
   const intl = useIntl();
 
   // State for the modal window (open/close)
@@ -81,19 +86,101 @@ function ResendMessageModal({resendEmailMessage}) {
       </Button>
       {/* Modal window for resending a message */}
       <Modal open={openResendMessageModal} onClose={handleCloseResendMessageModal}>
-        <Box className="createListModal">
-          <Typography variant="h6">
-            <FormattedMessage id="modal.resendMessage.addRecipient" />
+        <Box className="createListModal resendMessageModal">
+          <Typography variant="h4">
+            <FormattedMessage id="modal.resendMessage.title" />
           </Typography>
-          {/* Input field for passing a recipient's email address */}
-          <FormControl className="createListInnerContainer">
-            <InputLabel>{intl.formatMessage({id: 'form.common.email'})}</InputLabel>
-            <Input
-              label="form.common.email"
-              value={recipient}
-              onChange={handleChangeRecipient}
-            />
-          </FormControl>
+
+          <Typography variant="h5">
+            <FormattedMessage id="form.common.provideNewEmail" />
+          </Typography>
+          {/* Input field for passing a new email address */}
+          <TextField
+            variant="outlined"
+            label={intl.formatMessage({id: 'form.common.newEmail'})}
+            value={recipient}
+            onChange={handleChangeRecipient}
+          />
+
+          <Typography variant="h5">
+            <FormattedMessage id="form.common.originalEmailInfo" />
+          </Typography>
+          {/* Information about the original message */}
+          <div className="messageBoxContainer">
+            <p>
+              <span><FormattedMessage id="form.common.email" />:</span>
+              <span>{message.recipient}</span>
+            </p>
+
+            <p>
+              <span><FormattedMessage id="common.publisher.isbn" />:</span>
+              <span>{message.publisherId && message.publisherId !== 0 ? (
+                <Link
+                  className="messageLink"
+                  href={`/isbn-registry/publishers/${message.publisherId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FormattedMessage id="common.publisherDetails.isbn" /> <LinkIcon />
+                </Link>
+              ) : (
+                <FormattedMessage id="common.noValue" />
+              )}
+              </span>
+            </p>
+
+            {message.batchId && message.batchId !== 0 && !message.publicationId && (
+              <p>
+                <span><FormattedMessage id="common.batch" />:</span>
+                <span>
+                  <Link
+                    className="messageLink"
+                    href={`/isbn-registry/identifierbatches/${message.batchId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FormattedMessage id="common.batchDetails" /> <LinkIcon />
+                  </Link>
+                </span>
+              </p>
+            )}
+
+            <p>
+              <span><FormattedMessage id="common.publication" />:</span>
+              <span>
+                {message.publicationId && message.publicationId !== 0 ? (
+                  <Link
+                    className="messageLink"
+                    href={`/isbn-registry/requests/publications/${message.publicationId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FormattedMessage id="common.publicationDetails" /> <LinkIcon />
+                  </Link>
+                ) : (
+                  <FormattedMessage id="common.noValue" />
+                )}
+              </span>
+            </p>
+
+            <p>
+              <span><FormattedMessage id="messages.sent" />:</span>
+              <span>{moment(message.sent).format('LLL')} ({message.sentBy})</span>
+            </p>
+
+            <p>
+              <span><FormattedMessage id="messages.subject" />:</span>
+              <span>{message.subject}</span>
+            </p>
+
+            <div className="messageTextContainer">
+              <BundledEditor
+                onInit={(_evt, editor) => (editorRef.current = editor)}
+                initialValue={message.message}
+              />
+            </div>
+          </div>
+
           {/* Buttons for approving/rejecting the process of resending a message */}
           <div className="createListInnerContainer">
             <Button
@@ -119,7 +206,9 @@ function ResendMessageModal({resendEmailMessage}) {
 }
 
 ResendMessageModal.propTypes = {
-  resendEmailMessage: PropTypes.func.isRequired
+  resendEmailMessage: PropTypes.func.isRequired,
+  message: PropTypes.object.isRequired,
+  editorRef: PropTypes.object.isRequired
 };
 
 export default ResendMessageModal;

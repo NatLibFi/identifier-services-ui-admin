@@ -139,7 +139,11 @@ function IssnMessage(props) {
         >
           <ArrowBack />
         </Fab>
-        <ResendMessageModal resendEmailMessage={resendEmailMessageIssn} />
+        <ResendMessageModal
+          resendEmailMessage={resendEmailMessageIssn}
+          message={message}
+          editorRef={editorRef}
+        />
       </div>
       <div className="messageBoxContainer">
         <Grid container>
@@ -208,6 +212,7 @@ function IssnMessage(props) {
           <BundledEditor
             onInit={(_evt, editor) => (editorRef.current = editor)}
             initialValue={message.message}
+            disabled
           />
         </div>
       </div>
