@@ -297,6 +297,9 @@ const fi = {
   'form.common.previousNames': 'Aikaisemmat nimet',
   'form.common.phone': 'Puhelinnumero',
   'form.common.email': 'Sähköposti',
+  'form.common.newEmail': 'Uusi sähköposti',
+  'form.common.provideNewEmail': 'Anna uusi sähköpostiosoite:',
+  'form.common.originalEmailInfo': 'Alkuperäisen viestin tiedot:',
   'form.common.contactPerson': 'Yhteyshenkilö',
   'form.common.website': 'Verkkosivu',
   'form.common.address': 'Lähiosoite',
@@ -975,7 +978,7 @@ const fi = {
   'error.groupmessage.invalidcategory': 'Virheellinen kategoria valitulle tunnustyypille',
 
   // Modals - used in multiple places in modal components
-  'modal.resendMessage.addRecipient': 'Kirjoita vastaanottajan sähköpostiosoite',
+  'modal.resendMessage.title': 'Lähetä viesti uuudelleen',
   'modal.deleteBatch.title': 'Tunnuslistan poistaminen',
   'modal.deleteBatch.approve': 'Oletko varma, että haluat yrittää poistaa tunnuslistan?',
   'modal.deleteBatch.text': 'Huom. Tunnuslista poistetaan vain, jos se täyttää seuraavat ehdot:',
