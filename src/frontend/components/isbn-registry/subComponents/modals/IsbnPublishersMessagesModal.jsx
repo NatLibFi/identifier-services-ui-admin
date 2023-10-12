@@ -74,9 +74,11 @@ function IsbnPublisherMessagesModal(props) {
   const handleTableRowClick = (id) => {
     history.push({
       pathname: `/isbn-registry/messages/${id}`,
-      // Passes publisher id for the back button
       state: {
-        publisherId: publisher.id
+        // Publisher id for the back button
+        publisherId: publisher.id,
+        // Message code for the redirect after message is sent
+        messageCode: 'publisher_message_modal'
       }
     });
   };
