@@ -110,8 +110,20 @@ function IssnMessage(props) {
     });
 
     if (result) {
-      // Redirect to the message details page
-      redirect(history, `/issn-registry/messages/${result.id}`);
+      const {messageCode} = history?.location?.state || {};
+
+      // When originally coming from the request page (via modal) - redirect back to the request page
+      if (messageCode === 'formId') {
+        return redirect(history, `/issn-registry/requests/${message.formId}`);
+      }
+
+      // When originally coming from the publisher page (via modal) - redirect back to the publisher page
+      if (messageCode === 'publisherId') {
+        return redirect(history, `/issn-registry/publishers/${message.publisherId}`);
+      }
+
+      // Otherwise redirect to the messages list page
+      return redirect(history, '/issn-registry/messages');
     }
   }
 

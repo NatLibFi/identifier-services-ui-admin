@@ -69,7 +69,14 @@ function IssnMessagesModal(props) {
 
   // Event handler for viewing a single publication
   const handleTableRowClick = (id) => {
-    history.push(`/issn-registry/messages/${id}`);
+    history.push({
+      pathname: `/issn-registry/messages/${id}`,
+      state: {
+        // Passes the searchAttribute value to distinguish between different cases for redirecting:
+        // coming from the request or from the publisher page
+        messageCode: searchAttribute
+      }
+    });
   };
 
   function updatePageNumber(pageIdx) {

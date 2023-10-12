@@ -32,7 +32,8 @@ import {FormattedMessage} from 'react-intl';
 import moment from 'moment';
 
 import {Grid, Link, Fab, Typography} from '@mui/material';
-import {ArrowBack, Link as LinkIcon} from '@mui/icons-material';
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import LinkIcon from '@mui/icons-material/Link';
 
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
@@ -44,7 +45,15 @@ import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import ResendMessageModal from '/src/frontend/components/common/subComponents/modals/ResendMessageModal.jsx';
 
 function IsbnMessage(props) {
-  const {userInfo: {authenticationToken}, match, history, setSnackbarMessage} = props;
+  const {userInfo, match, history, setSnackbarMessage} = props;
+  const {authenticationToken} = userInfo;
+  const {
+    messageCode,
+    publisherId,
+    publicationId,
+    searchBody,
+    sendMessage
+  } = history.location.state;
 
   // ID of a current template
   const {id} = match.params;
@@ -74,22 +83,22 @@ function IsbnMessage(props) {
     ];
 
     // If coming from publisher registration or from batch page - redirect to publisher page
-    if (redirectToPublisherPageArray.includes(history.location.state.messageCode)) {
+    if (redirectToPublisherPageArray.includes(messageCode)) {
       return history.push({
-        pathname: `/isbn-registry/publishers/${history.location.state.publisherId}`
+        pathname: `/isbn-registry/publishers/${publisherId}`
       });
     }
 
     // If coming from publication request page - redirect to publication request page
-    if (history.location.state.messageCode === 'identifier_created_isbn'
-      || history.location.state.messageCode === 'identifier_created_ismn') {
+    if (messageCode === 'identifier_created_isbn'
+      || messageCode === 'identifier_created_ismn') {
       return history.push({
-        pathname: `/isbn-registry/requests/publications/${history.location.state.publicationId}`
+        pathname: `/isbn-registry/requests/publications/${publicationId}`
       });
     }
 
     // Disallow backwards travel to message send form page
-    if (history.location.state?.sendMessage) {
+    if (sendMessage) {
       // Empty state
       history.replace({state: {}});
       const redirectRoute = message.publicationId
@@ -102,7 +111,7 @@ function IsbnMessage(props) {
     if (history.location?.state?.searchBody) {
       return history.push({
         pathname: '/isbn-registry/messages',
-        state: {searchBody: history.location.state.searchBody}
+        state: {searchBody: searchBody}
       });
     }
 
@@ -142,14 +151,30 @@ function IsbnMessage(props) {
     });
 
     if (result) {
-      // Redirect to the message details page
+      const redirectToPublisherPage = [
+        'publisher_message_modal',
+        'publisher_batch_modal',
+        'publisher_publications_modal'
+      ];
+
+      // When coming from the publisher's modals - redirect back to the publisher's page
+      if(redirectToPublisherPage.includes(messageCode)) {
+        return history.push({
+          pathname: `/isbn-registry/publishers/${publisherId}`,
+          state: {
+            messageCode: messageCode,
+            publisherId: publisherId
+          }
+        });
+      }
+
+      // Base case - redirect back to the messages list page
       history.push({
-        pathname: `/isbn-registry/messages/${result.id}`,
-        // Add values to the history state for the back button to work correctly
+        pathname: '/isbn-registry/messages/',
         state: {
-          messageCode: history.location.state.messageCode,
-          publisherId: history.location.state.publisherId,
-          publicationId: history.location.state.publicationId
+          messageCode: messageCode,
+          publisherId: publisherId,
+          publicationId: publicationId
         }
       });
     }

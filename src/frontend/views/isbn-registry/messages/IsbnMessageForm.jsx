@@ -51,14 +51,45 @@ function IsbnMessageForm(props) {
     return;
   }
 
-  const {messageCode, identifierBatchId, publisherId, publicationId} =
-    history.location.state;
+  const {
+    messageCode,
+    identifierBatchId,
+    publisherId,
+    publicationId
+  } = history.location.state;
+
   const editorRef = useRef(null);
+
   const generateMessageParameters = {
     code: messageCode,
     publisherId,
     publicationId,
     identifierBatchId
+  };
+
+  // Generate a redirect link based on the message code
+  const generateRedirectLink = ({messageCode, publisherId, publicationId}) => {
+    const redirectToPublisherPage = [
+      'publisher_registered_isbn',
+      'publisher_registered_ismn',
+      'big_publisher_isbn',
+      'big_publisher_ismn'
+    ];
+
+    const redirectToPublicationPage = [
+      'identifier_created_isbn',
+      'identifier_created_ismn'
+    ];
+
+    // Redirect to the publisher's page
+    if (redirectToPublisherPage.includes(messageCode)) {
+      return `/isbn-registry/publishers/${publisherId}`;
+    }
+
+    // Redirect to the publication's page
+    if (redirectToPublicationPage.includes(messageCode)) {
+      return `/isbn-registry/requests/publications/${publicationId}`;
+    }
   };
 
   const {data, loading, error} = useItem({
@@ -96,7 +127,7 @@ function IsbnMessageForm(props) {
     if (result) {
       // Redirect to the message details page
       history.push({
-        pathname: `/isbn-registry/messages/${result.id}`,
+        pathname: generateRedirectLink({messageCode, publisherId, publicationId}),
         // Add values to the history state for the back button to work correctly
         state: {
           messageCode,
