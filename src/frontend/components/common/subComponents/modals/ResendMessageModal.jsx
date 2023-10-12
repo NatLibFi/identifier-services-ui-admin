@@ -44,9 +44,10 @@ import BundledEditor from '/src/frontend/components/common/BundledEditor.jsx';
 
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/subComponents/modals.css';
+import {regexPatterns} from '../../validation';
 
 function ResendMessageModal(props) {
-  const {message, resendEmailMessage, editorRef} = props;
+  const {message, resendEmailMessage, editorRef, registry} = props;
   const intl = useIntl();
 
   // State for the modal window (open/close)
@@ -73,6 +74,10 @@ function ResendMessageModal(props) {
     setRecipient('');
   };
 
+  function recipientEmailIsValid(emailAddr) {
+    return regexPatterns.email.test(emailAddr);
+  }
+
   return (
     <>
       {/* Button that oppens a modal window */}
@@ -96,6 +101,7 @@ function ResendMessageModal(props) {
           </Typography>
           {/* Input field for passing a new email address */}
           <TextField
+            error={!recipientEmailIsValid(recipient)}
             variant="outlined"
             label={intl.formatMessage({id: 'form.common.newEmail'})}
             value={recipient}
@@ -117,7 +123,7 @@ function ResendMessageModal(props) {
               <span>{message.publisherId && message.publisherId !== 0 ? (
                 <Link
                   className="messageLink"
-                  href={`/isbn-registry/publishers/${message.publisherId}`}
+                  href={`/${registry}/publishers/${message.publisherId}`}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -129,7 +135,7 @@ function ResendMessageModal(props) {
               </span>
             </p>
 
-            {message.batchId && message.batchId !== 0 && !message.publicationId && (
+            {registry === 'isbn-registry' && message.batchId && message.batchId !== 0 && !message.publicationId && (
               <p>
                 <span><FormattedMessage id="common.batch" />:</span>
                 <span>
@@ -145,23 +151,45 @@ function ResendMessageModal(props) {
               </p>
             )}
 
-            <p>
-              <span><FormattedMessage id="common.publication" />:</span>
-              <span>
-                {message.publicationId && message.publicationId !== 0 ? (
-                  <Link
-                    className="messageLink"
-                    href={`/isbn-registry/requests/publications/${message.publicationId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <FormattedMessage id="common.publicationDetails" /> <LinkIcon />
-                  </Link>
-                ) : (
-                  <FormattedMessage id="common.noValue" />
-                )}
-              </span>
-            </p>
+            {registry === 'isbn-registry' && (
+              <p>
+                <span><FormattedMessage id="common.publication" />:</span>
+                <span>
+                  {message.publicationId && message.publicationId !== 0 ? (
+                    <Link
+                      className="messageLink"
+                      href={`/isbn-registry/requests/publications/${message.publicationId}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <FormattedMessage id="common.publicationDetails" /> <LinkIcon />
+                    </Link>
+                  ) : (
+                    <FormattedMessage id="common.noValue" />
+                  )}
+                </span>
+              </p>
+            )}
+
+            {registry === 'issn-registry' && (
+              <p>
+                <span><FormattedMessage id="common.request" />:</span>
+                <span>
+                  {message.formId && message.formId !== 0 ? (
+                    <Link
+                      className="messageLink"
+                      href={`/issn-registry/requests/${message.formId}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <FormattedMessage id="common.requestDetails" /> <LinkIcon />
+                    </Link>
+                  ) : (
+                    <FormattedMessage id="common.noValue" />
+                  )}
+                </span>
+              </p>
+            )}
 
             <p>
               <span><FormattedMessage id="messages.sent" />:</span>
@@ -186,7 +214,7 @@ function ResendMessageModal(props) {
             <Button
               variant="contained"
               color="success"
-              disabled={!recipient}
+              disabled={!recipientEmailIsValid(recipient)}
               onClick={handleApproveResending}
             >
               <FormattedMessage id="form.button.label.submit" />
@@ -208,7 +236,8 @@ function ResendMessageModal(props) {
 ResendMessageModal.propTypes = {
   resendEmailMessage: PropTypes.func.isRequired,
   message: PropTypes.object.isRequired,
-  editorRef: PropTypes.object.isRequired
+  editorRef: PropTypes.object.isRequired,
+  registry: PropTypes.string.isRequired
 };
 
 export default ResendMessageModal;

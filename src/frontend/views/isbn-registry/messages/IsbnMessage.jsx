@@ -58,6 +58,7 @@ function IsbnMessage(props) {
   // ID of a current template
   const {id} = match.params;
   const editorRef = useRef(null);
+  const resendEditorRef = useRef(null);
 
   const {
     data: message,
@@ -125,12 +126,14 @@ function IsbnMessage(props) {
     const sendMessageParams = {
       // data from original message
       publisherId: message.publisherId,
+      publicationId: message.publicationId,
+      batchId: message.batchId,
       langCode: message.langCode,
       messageTemplateId: message.messageTemplateId,
       subject: message.subject,
       // new data
       recipient,
-      messageBody: editorRef ? editorRef.current.getContent() : ''
+      messageBody: resendEditorRef ? resendEditorRef.current.getContent() : undefined
     };
 
     // Add publicationId and batchId if they exist
@@ -208,7 +211,8 @@ function IsbnMessage(props) {
         <ResendMessageModal
           resendEmailMessage={resendEmailMessageIsbn}
           message={message}
-          editorRef={editorRef}
+          editorRef={resendEditorRef}
+          registry='isbn-registry'
         />
       </div>
       <div>

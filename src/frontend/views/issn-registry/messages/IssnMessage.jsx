@@ -50,6 +50,7 @@ function IssnMessage(props) {
   // ID of a current template
   const {id} = match.params;
   const editorRef = useRef(null);
+  const resendEditorRef = useRef(null);
 
   const {
     data: message,
@@ -92,13 +93,13 @@ function IssnMessage(props) {
     const sendMessageParams = {
       // data from original message
       publisherId: message.publisherId,
-      formId: message.formId ?? undefined,
-      langCode: message.langCode,
+      formId: message.formId,
       messageTemplateId: message.messageTemplateId,
+      langCode: message.langCode,
       subject: message.subject,
       // new data
       recipient,
-      messageBody: editorRef ? editorRef.current.getContent() : undefined
+      messageBody: resendEditorRef ? resendEditorRef.current.getContent() : undefined
     };
 
     const result = await makeApiRequest({
@@ -154,7 +155,8 @@ function IssnMessage(props) {
         <ResendMessageModal
           resendEmailMessage={resendEmailMessageIssn}
           message={message}
-          editorRef={editorRef}
+          editorRef={resendEditorRef}
+          registry='issn-registry'
         />
       </div>
       <div className="messageBoxContainer">
