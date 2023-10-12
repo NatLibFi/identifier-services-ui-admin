@@ -101,7 +101,7 @@ function ResendMessageModal(props) {
           </Typography>
           {/* Input field for passing a new email address */}
           <TextField
-            error={!recipientEmailIsValid(recipient)}
+            error={recipient !== '' || !recipientEmailIsValid(recipient)}
             variant="outlined"
             label={intl.formatMessage({id: 'form.common.newEmail'})}
             value={recipient}
