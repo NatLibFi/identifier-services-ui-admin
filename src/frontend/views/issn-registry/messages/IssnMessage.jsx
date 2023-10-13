@@ -28,17 +28,15 @@
 import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-
 import {FormattedMessage} from 'react-intl';
 import moment from 'moment';
+
+import {Grid, Link, Fab, Typography} from '@mui/material';
+import {ArrowBack, Link as LinkIcon} from '@mui/icons-material';
 
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
 import {redirect} from '/src/frontend/actions/util';
-
-import {Grid, Link, Fab, Typography} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import LinkIcon from '@mui/icons-material/Link';
 
 import '/src/frontend/css/messages/message.css';
 
@@ -47,12 +45,12 @@ import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import ResendMessageModal from '/src/frontend/components/common/subComponents/modals/ResendMessageModal.jsx';
 
 function IssnMessage(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+  const {userInfo: {authenticationToken}, match, history, setSnackbarMessage} = props;
 
   // ID of a current template
   const {id} = match.params;
   const editorRef = useRef(null);
+  const resendEditorRef = useRef(null);
 
   const {
     data: message,
@@ -90,17 +88,43 @@ function IssnMessage(props) {
     history.goBack();
   };
 
+  // Handles resending a message with a new recipient and message body
   async function resendEmailMessageIssn(recipient) {
+    const sendMessageParams = {
+      // data from original message
+      publisherId: message.publisherId,
+      formId: message.formId,
+      messageTemplateId: message.messageTemplateId,
+      langCode: message.langCode,
+      subject: message.subject,
+      // new data
+      recipient,
+      messageBody: resendEditorRef ? resendEditorRef.current.getContent() : undefined
+    };
+
     const result = await makeApiRequest({
-      url: `/api/issn-registry/messages/resend/${id}`,
+      url: '/api/issn-registry/messages/send',
       method: 'POST',
-      values: {recipient},
+      values: sendMessageParams,
       authenticationToken,
       setSnackbarMessage
     });
 
     if (result) {
-      redirect(history, `/issn-registry/messages/${result.id}`);
+      const {messageCode} = history?.location?.state || {};
+
+      // When originally coming from the request page (via modal) - redirect back to the request page
+      if (messageCode === 'formId') {
+        return redirect(history, `/issn-registry/requests/${message.formId}`);
+      }
+
+      // When originally coming from the publisher page (via modal) - redirect back to the publisher page
+      if (messageCode === 'publisherId') {
+        return redirect(history, `/issn-registry/publishers/${message.publisherId}`);
+      }
+
+      // Otherwise redirect to the messages list page
+      return redirect(history, '/issn-registry/messages');
     }
   }
 
@@ -126,9 +150,14 @@ function IssnMessage(props) {
           className="iconButton"
           onClick={() => handleGoBack()}
         >
-          <ArrowBackIcon />
+          <ArrowBack />
         </Fab>
-        <ResendMessageModal resendEmailMessage={resendEmailMessageIssn} />
+        <ResendMessageModal
+          resendEmailMessage={resendEmailMessageIssn}
+          message={message}
+          editorRef={resendEditorRef}
+          registry='issn-registry'
+        />
       </div>
       <div className="messageBoxContainer">
         <Grid container>
@@ -195,9 +224,9 @@ function IssnMessage(props) {
         </Grid>
         <div className="messageTextContainer">
           <BundledEditor
-            onInit={(evt, editor) => (editorRef.current = editor)}
+            onInit={(_evt, editor) => (editorRef.current = editor)}
             initialValue={message.message}
-            disabled={true}
+            disabled
           />
         </div>
       </div>

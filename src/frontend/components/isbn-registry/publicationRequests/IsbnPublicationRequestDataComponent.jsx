@@ -25,7 +25,7 @@
  *
  */
 
-import React, {useState, useReducer} from 'react';
+import React, {useState, useEffect, useReducer} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {v4 as uuidv4} from 'uuid';
 import PropTypes from 'prop-types';
@@ -52,7 +52,7 @@ import '/src/frontend/css/requests/isbnIsmn/dataComponent.css';
 
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 import {PUBLICATION_TYPES} from '/src/frontend/components/common/form/constants';
-import SavePublisherModal from '/src/frontend/components/isbn-registry/subComponents/modals/SavePublisherModal.jsx';
+import SavePublisherModal from '/src/frontend/components/isbn-registry/subComponents/modals/SavePublisherModal/ModalComponent.jsx';
 
 function IsbnPublicationRequestDataComponent(props) {
   const {
@@ -68,6 +68,8 @@ function IsbnPublicationRequestDataComponent(props) {
 
   // Publisher selected from the list
   const [publisher, setPublisher] = useState({});
+  const [autocompleteInput, setAutocompleteInput] = useState('');
+  const [autocompleteIsPristine, setAutocompleteIsPristine] = useState(true);
 
   // Modal for saving a publisher
   const [savePublisherModalOpen, setSavePublisherModalOpen] = useState(false);
@@ -77,8 +79,9 @@ function IsbnPublicationRequestDataComponent(props) {
   const initialSearchBody = {searchText: ''};
 
   const [searchBody, updateSearchBody] = useReducer((prev, next) => {
+    // Refetch default when searchText has been emptied
     // Trigger autocomplete only after three or more characters
-    if(next.searchText.length > 3) {
+    if(next.searchText.length > 3 || next.searchText.length === 0) {
       return {...prev, ...next};
     }
 
@@ -109,6 +112,11 @@ function IsbnPublicationRequestDataComponent(props) {
     isbnPublisher: publisher.isbnSubRanges?.length ? 'ISBN' : '',
     ismnPublisher: publisher.ismnSubRanges?.length ? 'ISMN' : ''
   }));
+
+  // Reset pristine information when request changes
+  useEffect(() => {
+    setAutocompleteIsPristine(true);
+  }, [currentRequest]);
 
   /* Non-editable fields depending on user's role */
   const isEditable = (key) => {
@@ -143,9 +151,29 @@ function IsbnPublicationRequestDataComponent(props) {
   };
 
   /* Refreshes list from API */
-  function updateSearchText(event) {
-    if (event && event.target?.value && event.target.value !== searchBody.searchText) {
-      updateSearchBody({searchText: event.target.value});
+  function updateSearchText(event, value, reason) {
+    // During first event, set pristine to false
+    if(autocompleteIsPristine && event) {
+      setAutocompleteIsPristine(false);
+    }
+
+    // Manage autocomplete text state, search body state and publisher state
+    // based on input type and value
+    if (['input', 'reset'].includes(reason) && (value || value === '')) {
+      if(reason === 'reset') {
+        setAutocompleteInput({label: value, value: null});
+      } else {
+        // Note: used for autocomplete state value getter evaluation
+        // Saving requires call of setPublisher function to set
+        // publisher value that contains publisherId
+        setAutocompleteInput({label: value, value: true});
+      }
+
+      if(value === '') {
+        setPublisher({label: '', value: null});
+      }
+
+      return updateSearchBody({searchText: value});
     }
   }
 
@@ -161,7 +189,10 @@ function IsbnPublicationRequestDataComponent(props) {
   // Handles closing the save publisher modal
   const handleCloseSavePublisherModal = () => {
     setSavePublisherModalOpen(false);
-    setPublisher({});
+
+    // Reset publisher information as request is re-loaded and thus
+    // autoComplete input resetted through useEffect
+    setPublisher({label: '', value: null});
   };
 
   /* Handles resetting of a publisher */
@@ -177,7 +208,10 @@ function IsbnPublicationRequestDataComponent(props) {
     });
 
     setPublicationRequest(updatedRequest);
-    setPublisher({});
+
+    // Manually reset publisher and autocomplet input value so that state stays intact
+    setPublisher({label: '', value: null});
+    setAutocompleteInput('');
   }
 
   /* Identifier cancellation/removal handlers. Note: these will make redirect to same page using history.go(0) when process succeeds */
@@ -220,6 +254,36 @@ function IsbnPublicationRequestDataComponent(props) {
     }
 
     return genAuthors(tempAuthorsArray, index + 1);
+  }
+
+  // Getter for autocomplete value
+  function getAutocompleteValue(){
+    const requestPublisherValue = currentRequest.publisherId ? {label: currentRequest.publisherName, value: currentRequest.publisherId} : {label: '', value: null};
+    const currentPublisherValue = publisher.value ? publisher : {label: '', value: null};
+
+    // If user has not started using autocomplete, display current request value
+    if(autocompleteIsPristine) {
+      return requestPublisherValue;
+    }
+
+    // If autocomplete input is ongoing, display it
+    // Otherwise display selected publisher
+    return autocompleteInput?.value ? autocompleteInput : currentPublisherValue;
+  }
+
+  function autocompleteHasSavedValue() {
+    if(autocompleteIsPristine) {
+      return true;
+    }
+
+    const requestPublisherValue = currentRequest.publisherId || null;
+    const currentPublisherValue = publisher.value || null;
+
+    if(currentPublisherValue === requestPublisherValue) {
+      return true;
+    }
+
+    return false;
   }
 
   return (
@@ -280,19 +344,13 @@ function IsbnPublicationRequestDataComponent(props) {
                     /* Warning (red) color in case of error,
                     Success (green) color in case of successfull save,
                     and Primary (blue) color by default */
-                    color={hasIdentifiers ? 'success' : 'primary'}
+                    color={hasIdentifiers ? 'success' : autocompleteHasSavedValue() ? 'primary' : 'error'}
+                    helperText={autocompleteHasSavedValue() ? '' : intl.formatMessage({id: 'request.publication.autocomplete.notSaved'})}
                     size="small"
                     label={<FormattedMessage id="request.publication.choosePublisher" />}
                   />
                 )}
-                value={
-                  currentRequest.publisherId && !publisher.value
-                    ? {
-                      label: currentRequest.publisherName,
-                      value: currentRequest.publisherId
-                    }
-                    : publisher
-                }
+                value={getAutocompleteValue()}
                 getOptionLabel={(option) => option.label || ''}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 onChange={handleChangePublisher}
@@ -345,7 +403,7 @@ function IsbnPublicationRequestDataComponent(props) {
           </div>
         </div>
         <SavePublisherModal
-          publicationRequestId={currentRequest.id}
+          publicationRequest={currentRequest}
           publisherId={publisher.value} // Note: autocomplete formatting maps publisher.id to publisher.value
           setPublicationRequest={setPublicationRequest}
           savePublisherModalOpen={savePublisherModalOpen}
@@ -485,12 +543,6 @@ function IsbnPublicationRequestDataComponent(props) {
             <FormattedMessage id="form.common.publishingActivities" />
           </Typography>
           <ListComponent
-            edit={isEdit && isEditable('publishingActivityAmount')}
-            fieldName="publishingActivityAmount"
-            label={<FormattedMessage id="request.publication.publishingFrequency" />}
-            value={currentRequest.publishingActivityAmount}
-          />
-          <ListComponent
             edit={isEdit && isEditable('publishedBefore')}
             fieldName="publishedBefore"
             label={<FormattedMessage id="request.publication.previouslyPublished" />}
@@ -511,6 +563,12 @@ function IsbnPublicationRequestDataComponent(props) {
                 })
                 : ''
             }
+          />
+          <ListComponent
+            edit={isEdit && isEditable('publishingActivityAmount')}
+            fieldName="publishingActivityAmount"
+            label={<FormattedMessage id="request.publication.publishingFrequency" />}
+            value={currentRequest.publishingActivityAmount}
           />
         </div>
       )}

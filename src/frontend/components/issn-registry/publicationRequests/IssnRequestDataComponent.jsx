@@ -165,7 +165,7 @@ function IssnRequestDataComponent(props) {
                   label={<FormattedMessage id="request.issn.choosePublisher" />}
                 />
               )}
-              value={issnRequest.publisherName || ' '}
+              value={issnRequest.publisherName || ''}
               isOptionEqualToValue={(option, value) => option.id === value.id}
               onChange={handleChangePublisher}
               onInputChange={updateSearchText}

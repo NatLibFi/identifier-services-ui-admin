@@ -47,6 +47,7 @@ export const formatPublicationValues = (values) => {
     publicationsPublic,
     publicationType,
     publicationFormat,
+    hasAssociatedMessage,
     id,
     ...updatedValues
   } = {
@@ -78,6 +79,7 @@ export const formatPublicationRequestValues = (values) => {
     publicationIdentifierElectronical,
     publicationIdentifierType,
     identifierBatchId,
+    hasAssociatedMessage,
     ...updatedValues
   } = {
     ...values,

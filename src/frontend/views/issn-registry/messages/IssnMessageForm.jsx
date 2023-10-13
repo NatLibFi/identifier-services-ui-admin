@@ -92,7 +92,13 @@ function IssnMessageForm(props) {
     });
 
     if (result) {
-      redirect(history, `/issn-registry/messages/${result.id}`);
+      // Redirect to the current request details page
+      if (messageCode === 'form_handled') {
+        return redirect(history, `/issn-registry/requests/${formId}`);
+      }
+
+      // Redirect to the requests list page
+      return redirect(history, '/issn-registry/requests');
     }
   }
 

@@ -28,31 +28,37 @@
 import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-
 import {FormattedMessage} from 'react-intl';
 import moment from 'moment';
+
+import {Grid, Link, Fab, Typography} from '@mui/material';
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import LinkIcon from '@mui/icons-material/Link';
 
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
 
-import {Grid, Link, Fab, Typography} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import LinkIcon from '@mui/icons-material/Link';
-
 import '/src/frontend/css/messages/message.css';
 
 import BundledEditor from '/src/frontend/components/common/BundledEditor.jsx';
-
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import ResendMessageModal from '/src/frontend/components/common/subComponents/modals/ResendMessageModal.jsx';
 
 function IsbnMessage(props) {
   const {userInfo, match, history, setSnackbarMessage} = props;
   const {authenticationToken} = userInfo;
+  const {
+    messageCode,
+    publisherId,
+    publicationId,
+    searchBody,
+    sendMessage
+  } = history.location.state;
 
   // ID of a current template
   const {id} = match.params;
   const editorRef = useRef(null);
+  const resendEditorRef = useRef(null);
 
   const {
     data: message,
@@ -78,22 +84,22 @@ function IsbnMessage(props) {
     ];
 
     // If coming from publisher registration or from batch page - redirect to publisher page
-    if (redirectToPublisherPageArray.includes(history.location.state.messageCode)) {
+    if (redirectToPublisherPageArray.includes(messageCode)) {
       return history.push({
-        pathname: `/isbn-registry/publishers/${history.location.state.publisherId}`
+        pathname: `/isbn-registry/publishers/${publisherId}`
       });
     }
 
     // If coming from publication request page - redirect to publication request page
-    if (history.location.state.messageCode === 'identifier_created_isbn'
-      || history.location.state.messageCode === 'identifier_created_ismn') {
+    if (messageCode === 'identifier_created_isbn'
+      || messageCode === 'identifier_created_ismn') {
       return history.push({
-        pathname: `/isbn-registry/requests/publications/${history.location.state.publicationId}`
+        pathname: `/isbn-registry/requests/publications/${publicationId}`
       });
     }
 
     // Disallow backwards travel to message send form page
-    if (history.location.state?.sendMessage) {
+    if (sendMessage) {
       // Empty state
       history.replace({state: {}});
       const redirectRoute = message.publicationId
@@ -106,7 +112,7 @@ function IsbnMessage(props) {
     if (history.location?.state?.searchBody) {
       return history.push({
         pathname: '/isbn-registry/messages',
-        state: {searchBody: history.location.state.searchBody}
+        state: {searchBody: searchBody}
       });
     }
 
@@ -115,22 +121,63 @@ function IsbnMessage(props) {
     history.goBack();
   };
 
+  // Handles resending a message with a new recipient and message body
   async function resendEmailMessageIsbn(recipient) {
+    const sendMessageParams = {
+      // data from original message
+      publisherId: message.publisherId,
+      publicationId: message.publicationId,
+      batchId: message.batchId,
+      langCode: message.langCode,
+      messageTemplateId: message.messageTemplateId,
+      subject: message.subject,
+      // new data
+      recipient,
+      messageBody: resendEditorRef ? resendEditorRef.current.getContent() : undefined
+    };
+
+    // Add publicationId and batchId if they exist
+    if (message.publicationId) {
+      sendMessageParams.publicationId = message.publicationId;
+    }
+
+    if (message.batchId) {
+      sendMessageParams.batchId = message.batchId;
+    }
+
     const result = await makeApiRequest({
-      url: `/api/isbn-registry/messages/resend/${id}`,
+      url: '/api/isbn-registry/messages/send',
       method: 'POST',
-      values: {recipient},
+      values: sendMessageParams,
       authenticationToken,
       setSnackbarMessage
     });
 
     if (result) {
+      const redirectToPublisherPage = [
+        'publisher_message_modal',
+        'publisher_batch_modal',
+        'publisher_publications_modal'
+      ];
+
+      // When coming from the publisher's modals - redirect back to the publisher's page
+      if(redirectToPublisherPage.includes(messageCode)) {
+        return history.push({
+          pathname: `/isbn-registry/publishers/${publisherId}`,
+          state: {
+            messageCode: messageCode,
+            publisherId: publisherId
+          }
+        });
+      }
+
+      // Base case - redirect back to the messages list page
       history.push({
-        pathname: `/isbn-registry/messages/${result.id}`,
+        pathname: '/isbn-registry/messages/',
         state: {
-          messageCode: history.location.state.messageCode,
-          publisherId: history.location.state.publisherId,
-          publicationId: history.location.state.publicationId
+          messageCode: messageCode,
+          publisherId: publisherId,
+          publicationId: publicationId
         }
       });
     }
@@ -159,9 +206,14 @@ function IsbnMessage(props) {
           className="iconButton"
           onClick={() => handleGoBack()}
         >
-          <ArrowBackIcon />
+          <ArrowBack />
         </Fab>
-        <ResendMessageModal resendEmailMessage={resendEmailMessageIsbn} />
+        <ResendMessageModal
+          resendEmailMessage={resendEmailMessageIsbn}
+          message={message}
+          editorRef={resendEditorRef}
+          registry='isbn-registry'
+        />
       </div>
       <div>
         <div className="messageBoxContainer">
@@ -216,11 +268,12 @@ function IsbnMessage(props) {
             <Grid item xs={10}>
               {message.publicationId && message.publicationId !== 0 ? (
                 <Link
+                  className="messageLink"
                   href={`/isbn-registry/requests/publications/${message.publicationId}`}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <FormattedMessage id="common.publicationDetails" />
+                  <FormattedMessage id="common.publicationDetails" /> <LinkIcon />
                 </Link>
               ) : (
                 <FormattedMessage id="common.noValue" />
@@ -245,9 +298,9 @@ function IsbnMessage(props) {
           </Grid>
           <div className="messageTextContainer">
             <BundledEditor
-              onInit={(evt, editor) => (editorRef.current = editor)}
+              onInit={(_evt, editor) => (editorRef.current = editor)}
               initialValue={message.message}
-              disabled={true}
+              disabled
             />
           </div>
         </div>

@@ -37,6 +37,7 @@ const fi = {
   'common.publisher.isbn': 'Kustantaja',
   'common.publishers.isbn': 'Kustantajat',
   'common.publisherDetails.isbn': 'Kustantajan tiedot',
+  'common.publisherDetails.isbnRequest': 'Asiakkaan ilmoittamat kustantajan tiedot',
   'common.publisher.issn': 'Julkaisija',
   'common.publishers.issn': 'Julkaisijat',
   'common.publisherDetails.issn': 'Julkaisijan tiedot',
@@ -81,6 +82,8 @@ const fi = {
   'common.errorPage': 'Virhesivu',
   'common.skipLink': 'Hyppää pääsisältöön',
   'common.download': 'Lataa',
+  'common.noActiveIdentifiers': 'Ei aktiivisia tunnuksia',
+  'common.author': '{digit} tekijä',
 
   // Numbers
   'common.one': 'Yksi',
@@ -294,6 +297,9 @@ const fi = {
   'form.common.previousNames': 'Aikaisemmat nimet',
   'form.common.phone': 'Puhelinnumero',
   'form.common.email': 'Sähköposti',
+  'form.common.newEmail': 'Uusi sähköposti',
+  'form.common.provideNewEmail': 'Anna uusi sähköpostiosoite:',
+  'form.common.originalEmailInfo': 'Alkuperäisen viestin tiedot:',
   'form.common.contactPerson': 'Yhteyshenkilö',
   'form.common.website': 'Verkkosivu',
   'form.common.address': 'Lähiosoite',
@@ -833,10 +839,11 @@ const fi = {
   'request.publication.locality': 'Paikkakunta',
   'request.publication.contactLanguage': 'Asiointikieli',
   'request.publication.publicationLanguage': 'Julkaisun kieli',
-  'request.publication.publishingFrequency': 'Arvio kustannusmäärästä',
+  'request.publication.publishingFrequency': 'Kustannusmäärä vuodessa',
   'request.publication.previouslyPublished': 'Kustantanut aiemmin',
   'request.publication.electronic': 'Sähköiset julkaisut - ISBN',
   'request.publication.printed': 'Painetut julkaisut - ISBN',
+  'request.publication.autocomplete.notSaved': 'Muista tallentaa kustantaja tallenna-painikkeesta!',
 
   // ISSN request
   'request.issn.title': 'Etsi ISSN-lomake nimikkeellä',
@@ -871,6 +878,8 @@ const fi = {
   'publisherRegistry.publisher.run': 'Painoksen suuruus',
   'publisherRegistry.publisher.edition': 'Painos',
   'publisherRegistry.publisher.role': 'Rooli',
+  'publisherRegistry.search.hasQuitted.true': 'Lopettaneet',
+  'publisherRegistry.search.hasQuitted.false': 'Aktiiviset',
 
   // ISSN publisher
   'publisher.issn.title':'Hae julkaisijaa nimellä',
@@ -907,6 +916,7 @@ const fi = {
   'messages.sentMessages': 'Lähetetyt viestit',
   'messages.sent': 'Lähetetty',
   'messages.sendMessage': 'Lähetä viesti',
+  'messages.messageWasSent': 'Viesti jo lähetetty',
   'messages.sendMessageAgain': 'Lähetä uudelleen',
   'messages.subject': 'Viestin aihe',
   'messages.messageTemplate': 'Viestipohja',
@@ -968,7 +978,7 @@ const fi = {
   'error.groupmessage.invalidcategory': 'Virheellinen kategoria valitulle tunnustyypille',
 
   // Modals - used in multiple places in modal components
-  'modal.resendMessage.addRecipient': 'Kirjoita vastaanottajan sähköpostiosoite',
+  'modal.resendMessage.title': 'Lähetä viesti uuudelleen',
   'modal.deleteBatch.title': 'Tunnuslistan poistaminen',
   'modal.deleteBatch.approve': 'Oletko varma, että haluat yrittää poistaa tunnuslistan?',
   'modal.deleteBatch.text': 'Huom. Tunnuslista poistetaan vain, jos se täyttää seuraavat ehdot:',
@@ -1099,7 +1109,19 @@ const fi = {
   'snackbarMessage.successfullSubRangeClose': 'Kustantajatunnuksen sulkeminen onnistui',
   'snackbarMessage.unsuccessfullSubRangeClose': 'Kustantajatunnuksen sulkeminen epäonnistui',
   'snackbarMessage.successfullSubRangeDelete': 'Kustantajatunnuksen poistaminen onnistui',
-  'snackbarMessage.unsuccessfullSubRangeDelete': 'Kustantajatunnuksen poistaminen epäonnistui'
+  'snackbarMessage.unsuccessfullSubRangeDelete': 'Kustantajatunnuksen poistaminen epäonnistui',
+
+  // Melinda API result display
+  'melinda.response.header': 'Melinda-viennin tulos',
+  'melinda.response.records': 'Tietueet',
+  'melinda.response.noCreatedRecords': 'Yhtään tietuetta ei luotu',
+  'melinda.response.errors': 'Virheet',
+  'melinda.response.databaseId': 'Luodun tietueen id',
+  'melinda.response.itemStatus': 'Luontiyrityksen vastauksen tarkenne',
+  'melinda.response.databaseIds': 'Tuplatietueet',
+  'melinda.response.standardIdentifiers': 'Tunnisteet',
+  'melinda.response.errorStatus': 'Virheen koodi',
+  'melinda.response.errorPayload': 'Virheviesti'
 };
 
 export default fi;
