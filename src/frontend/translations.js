@@ -820,7 +820,7 @@ const fi = {
   'request.publisher.delete.approve': 'Hyväksytkö pyynnön poistamisen?',
 
   // Publication request
-  'request.publication.title': 'Etsi ISBN-/ISMN-lomake nimikkeellä',
+  'request.publication.title': 'Etsi ISBN-/ISMN-lomake nimekkeellä',
   'request.publication.grantId': 'Luodaan tunnukset seuraaville julkaisumuodoille:',
   'request.publication.copy': 'Tallenna kopiona',
   'request.publication.copy.approve.title': 'Lomakkeen kopioiminen',
@@ -846,7 +846,7 @@ const fi = {
   'request.publication.autocomplete.notSaved': 'Muista tallentaa kustantaja tallenna-painikkeesta!',
 
   // ISSN request
-  'request.issn.title': 'Etsi ISSN-lomake nimikkeellä',
+  'request.issn.title': 'Etsi ISSN-lomake nimekkeellä',
   'request.issn.amount': 'Julkaisujen lkm',
   'request.issn.history': 'Historia',
   'request.issn.formPublisher': 'Asiakkaan ilmoittama julkaisija',
@@ -890,7 +890,7 @@ const fi = {
   'publisher.issn.contactPerson': 'Yhteyshenkilöt',
 
   // ISSN publication
-  'publication.issn.title': 'Etsi ISSN-julkaisu nimikkeellä',
+  'publication.issn.title': 'Etsi ISSN-julkaisu nimekkeellä',
   'publication.issn.delete': 'Julkaisun poistaminen',
   'publication.issn.delete.approve': 'Hyväksytkö julkaisun poistamisen?',
   'publication.issn.additionalDetails': 'Julkaisun lisätiedot',
