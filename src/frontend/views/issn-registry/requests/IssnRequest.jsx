@@ -212,7 +212,7 @@ function IssnRequest(props) {
           >
             {({handleSubmit, valid}) => (
               <form onSubmit={handleSubmit}>
-                <div className="btnContainer">
+                <div className="updateButtonsContainer">
                   <Button onClick={handleCancel}>
                     <FormattedMessage id="form.button.label.cancel" />
                   </Button>

@@ -1,9 +1,3 @@
-.btnContainer {
-  display: flex;
-  min-width: 90%;
-  margin: 2rem 0;
-}
-
 .requestButtonsContainer  {
   display: grid;
   place-items: center;
@@ -75,18 +69,6 @@
   aspect-ratio: 3/1;
 }
 
-@media (min-width: 1350px) {
-  .btnContainer {
-    width: 120px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .btnContainer {
-    min-width: 80%;
-  }
-}
-
 @media (max-width: 1600px) {
   .requestButton {
     width: 7.5rem;
@@ -124,11 +106,5 @@
 @media (max-width: 760px) {
   .tabsContainer p {
     display: none;
-  }
-}
-
-@media (max-width: 750px) {
-  .btnContainer {
-    min-width: 50%;
   }
 }
