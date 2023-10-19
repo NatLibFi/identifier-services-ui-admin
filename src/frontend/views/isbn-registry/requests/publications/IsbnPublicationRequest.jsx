@@ -479,9 +479,6 @@ function IsbnPublicationRequest(props) {
           {/* Display if granting identifiers */}
           {isGrantingIdentifiers ? (
             <div className="grantAnIdButtonsContainer">
-              <Button variant="contained" color="error" onClick={handleCancelGrantAnId}>
-                <FormattedMessage id="form.button.label.cancel" />
-              </Button>
               <Button
                 variant="contained"
                 color="primary"
@@ -512,6 +509,9 @@ function IsbnPublicationRequest(props) {
                 ) : (
                   <FormattedMessage id="form.button.label.submit" />
                 )}
+              </Button>
+              <Button variant="contained" color="error" onClick={handleCancelGrantAnId}>
+                <FormattedMessage id="form.button.label.cancel" />
               </Button>
               <Modal
                 open={open}
