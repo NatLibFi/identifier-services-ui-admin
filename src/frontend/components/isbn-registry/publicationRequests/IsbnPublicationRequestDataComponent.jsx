@@ -430,6 +430,12 @@ function IsbnPublicationRequestDataComponent(props) {
           value={currentRequest.address}
         />
         <ListComponent
+          edit={isEdit && isEditable('zip')}
+          fieldName="zip"
+          label={<FormattedMessage id="form.common.zip" />}
+          value={currentRequest.zip}
+        />
+        <ListComponent
           edit={isEdit && isEditable('city')}
           fieldName="city"
           label={<FormattedMessage id="form.common.city" />}
@@ -440,12 +446,6 @@ function IsbnPublicationRequestDataComponent(props) {
           fieldName="locality"
           label={<FormattedMessage id="request.publication.locality" />}
           value={currentRequest.locality}
-        />
-        <ListComponent
-          edit={isEdit && isEditable('zip')}
-          fieldName="zip"
-          label={<FormattedMessage id="form.common.zip" />}
-          value={currentRequest.zip}
         />
         <ListComponent
           edit={isEdit && isEditable('phone')}
