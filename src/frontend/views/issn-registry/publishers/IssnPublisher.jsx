@@ -188,11 +188,11 @@ function IssnPublisher(props) {
           {({handleSubmit}) => (
             <form onSubmit={handleSubmit}>
               <div className="updateButtonsContainer">
-                <Button onClick={handleCancel}>
-                  <FormattedMessage id="form.button.label.cancel" />
-                </Button>
-                <Button type="submit" variant="contained" color="primary">
+                <Button type="submit" variant="contained" color="success">
                   <FormattedMessage id="form.button.label.update" />
+                </Button>
+                <Button variant="contained" color="error" onClick={handleCancel}>
+                  <FormattedMessage id="form.button.label.cancel" />
                 </Button>
               </div>
               <div className="listItemSpinner">
@@ -260,12 +260,12 @@ function IssnPublisher(props) {
               <FormattedMessage id="publisher.issn.delete.approve" />
             </DialogContentText>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDeleteModalIsOpen(false)}>
-              <FormattedMessage id="form.button.label.cancel" />
-            </Button>
-            <Button onClick={handleDeletePublisher}>
+          <DialogActions className="dialogButtons">
+            <Button variant="contained" color="success" onClick={handleDeletePublisher}>
               <FormattedMessage id="form.button.label.approve" />
+            </Button>
+            <Button variant="contained" color="error" onClick={() => setDeleteModalIsOpen(false)}>
+              <FormattedMessage id="form.button.label.cancel" />
             </Button>
           </DialogActions>
         </Dialog>

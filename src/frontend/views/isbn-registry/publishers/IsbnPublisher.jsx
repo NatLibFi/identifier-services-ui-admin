@@ -209,11 +209,11 @@ function IsbnPublisher(props) {
         {({handleSubmit}) => (
           <form onSubmit={handleSubmit}>
             <div className="updateButtonsContainer">
-              <Button onClick={handleCancel}>
-                <FormattedMessage id="form.button.label.cancel" />
-              </Button>
-              <Button type="submit" variant="contained" color="primary">
+              <Button type="submit" variant="contained" color="success">
                 <FormattedMessage id="form.button.label.update" />
+              </Button>
+              <Button variant="contained" color="error" onClick={handleCancel}>
+                <FormattedMessage id="form.button.label.cancel" />
               </Button>
             </div>
             <div className="listItemSpinner">{dataComponent}</div>

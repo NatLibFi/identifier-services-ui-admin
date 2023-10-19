@@ -144,20 +144,20 @@ function IsbnMessageTemplateForm(props) {
             />
             <div className="templateFormButtons">
               <Button
-                type="button"
-                variant="contained"
-                color="primary"
-                onClick={handleCancel}
-              >
-                <FormattedMessage id="form.button.label.cancel" />
-              </Button>
-              <Button
                 disabled={pristine || !valid}
                 type="submit"
                 variant="contained"
                 color="success"
               >
                 <FormattedMessage id="form.button.label.create" />
+              </Button>
+              <Button
+                type="button"
+                variant="contained"
+                color="primary"
+                onClick={handleCancel}
+              >
+                <FormattedMessage id="form.button.label.cancel" />
               </Button>
             </div>
           </form>

@@ -213,16 +213,16 @@ function IssnRequest(props) {
             {({handleSubmit, valid}) => (
               <form onSubmit={handleSubmit}>
                 <div className="updateButtonsContainer">
-                  <Button onClick={handleCancel}>
-                    <FormattedMessage id="form.button.label.cancel" />
-                  </Button>
                   <Button
                     type="submit"
                     variant="contained"
-                    color="primary"
+                    color="success"
                     disabled={!valid}
                   >
                     <FormattedMessage id="form.button.label.update" />
+                  </Button>
+                  <Button variant="contained" color="error" onClick={handleCancel}>
+                    <FormattedMessage id="form.button.label.cancel" />
                   </Button>
                 </div>
                 <div className="listItemSpinner">{dataComponent}</div>
@@ -310,12 +310,12 @@ function IssnRequest(props) {
                 <FormattedMessage id="request.publisher.delete.approve" />
               </DialogContentText>
             </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setDeleteModalIsOpen(false)}>
-                <FormattedMessage id="form.button.label.cancel" />
-              </Button>
-              <Button onClick={handleDeleteRequest}>
+            <DialogActions className="dialogButtons">
+              <Button variant="contained" color="success" onClick={handleDeleteRequest}>
                 <FormattedMessage id="form.button.label.approve" />
+              </Button>
+              <Button variant="contained" color="error" onClick={() => setDeleteModalIsOpen(false)}>
+                <FormattedMessage id="form.button.label.cancel" />
               </Button>
             </DialogActions>
           </Dialog>
