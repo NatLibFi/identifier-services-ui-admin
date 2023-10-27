@@ -95,8 +95,6 @@ function PublicationRequestCreationModal(props) {
 
   // Handles approving a process of adding a new ISBN/ISMN publication request
   const handleApproveAddingRequest = async () => {
-    setOpenModal(false);
-
     const formattedValues = {
       // Format the values to match the API requirements
       officialName: form.publisherName,
@@ -104,23 +102,23 @@ function PublicationRequestCreationModal(props) {
       subtitle: form.publicationSubTitle || '',
       firstName1: form.authorName.split(' ').shift(),
       lastName1: form.authorName.split(' ').pop(),
-      email: form.contactEmail || '',
+      email: form.contactEmail,
       publicationFormat: form.publicationType,
-      type: [form.printFormat],
-      address: form.publicationAddress || '',
-      fileformat: [form.fileFormat],
+      type: form.printFormat,
+      address: form.publicationAddress,
+      fileformat: form.fileFormat,
       city: form.placeOfPublication,
       year: form.publicationYear.toString(),
       month: moment().month(form.publicationMonth).format('MM'),
-      // Set other required fields to placeholder values
+      // Set other required fields to placeholder values, since some sort of value is required by the API (can not be completely empty)
       role1: ['AUTHOR'],
       zip: '00000',
       contactPerson: 'Ei ole',
-      phone: '04012345678',
+      phone: '0000000000',
       langCode: 'fi-FI',
       publicationsPublic: true,
       publicationType: 'BOOK',
-      publishingActivity: 'CONTINUOUS',
+      publishingActivity: 'OCCASIONAL',
       language: 'FIN'
     };
 
@@ -141,7 +139,9 @@ function PublicationRequestCreationModal(props) {
       setSnackbarMessage
     });
 
+    // If the request was successful, close the modal and redirect to the request page
     if (result) {
+      setOpenModal(false);
       redirect(history, `/isbn-registry/requests/publications/${result.id}`);
     }
   };
@@ -305,8 +305,9 @@ function PublicationRequestCreationModal(props) {
                   <FormattedMessage id="form.common.printFormat" />
                 </InputLabel>
                 <Select
+                  multiple
                   label={<FormattedMessage id="form.common.printFormat" />}
-                  value={form.printFormat || ''}
+                  value={form.printFormat || []}
                   onChange={(event) => updateForm({printFormat: event.target.value})}
                 >
                   {printFormats.map((format) => (
@@ -325,8 +326,9 @@ function PublicationRequestCreationModal(props) {
                   <FormattedMessage id="form.common.fileFormat" />
                 </InputLabel>
                 <Select
+                  multiple
                   label={<FormattedMessage id="form.common.fileFormat" />}
-                  value={form.fileFormat || ''}
+                  value={form.fileFormat || []}
                   onChange={(event) => updateForm({fileFormat: event.target.value})}
                 >
                   {electronicFormats.map((format) => (
