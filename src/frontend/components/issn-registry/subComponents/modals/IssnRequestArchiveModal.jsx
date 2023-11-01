@@ -98,15 +98,15 @@ function IssnRequestArchiveModal({formId, userInfo}) {
           </div>
           <div>
             <Typography>
-              <FormattedMessage id="form.common.city" />:
-            </Typography>{' '}
-            <p>{data.city}</p>
-          </div>
-          <div>
-            <Typography>
               <FormattedMessage id="form.common.zip" />:
             </Typography>{' '}
             <p>{data.zip}</p>
+          </div>
+          <div>
+            <Typography>
+              <FormattedMessage id="form.common.city" />:
+            </Typography>{' '}
+            <p>{data.city}</p>
           </div>
           <div>
             <Typography>

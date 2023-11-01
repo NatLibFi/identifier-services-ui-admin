@@ -438,16 +438,16 @@ function IsbnPublisherRequest(props) {
           <form onSubmit={handleSubmit}>
             <div className="updateContainer">
               <div className="updateButtonsContainer">
-                <Button onClick={handleCancel}>
-                  <FormattedMessage id="form.button.label.cancel" />
-                </Button>
                 <Button
                   type="submit"
                   variant="contained"
-                  color="primary"
+                  color="success"
                   disabled={!valid}
                 >
                   <FormattedMessage id="form.button.label.update" />
+                </Button>
+                <Button variant="contained" color="error" onClick={handleCancel}>
+                  <FormattedMessage id="form.button.label.cancel" />
                 </Button>
               </div>
               {/* Display an error message if the form is not valid */}
@@ -530,12 +530,12 @@ function IsbnPublisherRequest(props) {
                   <FormattedMessage id="request.publisher.delete.approve" />
                 </DialogContentText>
               </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setDeleteModalIsOpen(false)}>
-                  <FormattedMessage id="form.button.label.cancel" />
-                </Button>
-                <Button onClick={handleDeleteRequest}>
+              <DialogActions className="dialogButtons">
+                <Button variant="contained" color="success" onClick={handleDeleteRequest}>
                   <FormattedMessage id="form.button.label.approve" />
+                </Button>
+                <Button variant="contained" color="error" onClick={() => setDeleteModalIsOpen(false)}>
+                  <FormattedMessage id="form.button.label.cancel" />
                 </Button>
               </DialogActions>
             </Dialog>

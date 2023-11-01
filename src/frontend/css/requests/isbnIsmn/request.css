@@ -1,15 +1,13 @@
-.btnContainer {
-  display: flex;
-  min-width: 90%;
-  margin: 2rem 0;
-}
-
 .requestButtonsContainer  {
   display: grid;
   place-items: center;
   grid-template-columns: 0.2fr repeat(6, 1fr) 0.4fr 0.4fr;
   width: 100%;
   margin: 3rem 0;
+}
+
+.requestButtonsContainer:has(.grantAnIdButtonsContainer) {
+  display: flex;
 }
 
 .issnPublicationButtonsContainer {
@@ -27,7 +25,7 @@
 
 .grantAnIdButtonsContainer {
   display: flex;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
 .grantAnIdModal {
@@ -71,16 +69,10 @@
   aspect-ratio: 3/1;
 }
 
-@media (min-width: 1350px) {
-  .btnContainer {
-    width: 120px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .btnContainer {
-    min-width: 80%;
-  }
+div.dialogButtons {
+  display: flex;
+  justify-content: space-evenly;
+  padding-bottom: 1rem;
 }
 
 @media (max-width: 1600px) {
@@ -120,11 +112,5 @@
 @media (max-width: 760px) {
   .tabsContainer p {
     display: none;
-  }
-}
-
-@media (max-width: 750px) {
-  .btnContainer {
-    min-width: 50%;
   }
 }
