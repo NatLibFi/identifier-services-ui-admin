@@ -70,7 +70,8 @@ function PublicationRequestCreationModal(props) {
     contactEmail: '',
     publicationType: '',
     publicationAddress: '',
-    placeOfPublication: '',
+    zip: '',
+    city: '',
     publicationMonth: '',
     publicationYear: '',
     fileFormat: '',
@@ -102,19 +103,19 @@ function PublicationRequestCreationModal(props) {
       subtitle: form.publicationSubTitle || '',
       firstName1: form.authorName.split(' ').shift(),
       lastName1: form.authorName.split(' ').pop(),
-      email: form.contactEmail,
+      email: form.contactEmail || '',
       publicationFormat: form.publicationType,
       type: form.printFormat,
-      address: form.publicationAddress,
+      address: form.publicationAddress || '',
+      zip: form.zip || '',
+      city: form.city || '',
       fileformat: form.fileFormat,
-      city: form.placeOfPublication,
       year: form.publicationYear.toString(),
       month: moment().month(form.publicationMonth).format('MM'),
       // Set other required fields to placeholder values, since some sort of value is required by the API (can not be completely empty)
       role1: ['AUTHOR'],
-      zip: '00000',
-      contactPerson: 'Ei ole',
-      phone: '0000000000',
+      contactPerson: '',
+      phone: '',
       langCode: 'fi-FI',
       publicationsPublic: true,
       publicationType: 'BOOK',
@@ -166,7 +167,6 @@ function PublicationRequestCreationModal(props) {
       !form.publicationName ||
       !form.authorName ||
       !form.publicationType ||
-      !form.placeOfPublication ||
       !form.publicationMonth ||
       !form.publicationYear;
 
@@ -204,7 +204,7 @@ function PublicationRequestCreationModal(props) {
 
             <FormControl className="createListInnerContainer">
               <InputLabel>
-                <FormattedMessage id="form.common.name" />
+                <FormattedMessage id="form.common.name" />*
               </InputLabel>
               <OutlinedInput
                 value={form.publisherName || ''}
@@ -215,7 +215,7 @@ function PublicationRequestCreationModal(props) {
 
             <FormControl className="createListInnerContainer">
               <InputLabel>
-                <FormattedMessage id="form.common.title" />
+                <FormattedMessage id="form.common.title" />*
               </InputLabel>
               <OutlinedInput
                 value={form.publicationName || ''}
@@ -239,7 +239,7 @@ function PublicationRequestCreationModal(props) {
 
             <FormControl className="createListInnerContainer">
               <InputLabel>
-                <FormattedMessage id="form.common.authorName" />
+                <FormattedMessage id="form.common.authorName" />*
               </InputLabel>
               <OutlinedInput
                 value={form.authorName || ''}
@@ -272,18 +272,29 @@ function PublicationRequestCreationModal(props) {
 
             <FormControl className="createListInnerContainer">
               <InputLabel>
+                <FormattedMessage id="form.common.zip" />
+              </InputLabel>
+              <OutlinedInput
+                value={form.zip || ''}
+                onChange={(event) => updateForm({zip: event.target.value})}
+                label={<FormattedMessage id="form.common.zip" />}
+              />
+            </FormControl>
+
+            <FormControl className="createListInnerContainer">
+              <InputLabel>
                 <FormattedMessage id="form.common.city" />
               </InputLabel>
               <OutlinedInput
-                value={form.placeOfPublication || ''}
-                onChange={(event) => updateForm({placeOfPublication: event.target.value})}
+                value={form.city || ''}
+                onChange={(event) => updateForm({city: event.target.value})}
                 label={<FormattedMessage id="form.common.city" />}
               />
             </FormControl>
 
             <FormControl className="createListInnerContainer">
               <InputLabel>
-                <FormattedMessage id="form.common.selectFormat" />
+                <FormattedMessage id="form.common.selectFormat" />*
               </InputLabel>
               <Select
                 label={<FormattedMessage id="form.common.selectFormat" />}
@@ -302,7 +313,7 @@ function PublicationRequestCreationModal(props) {
               form.publicationType === 'PRINT_ELECTRONICAL') && (
               <FormControl className="createListInnerContainer">
                 <InputLabel>
-                  <FormattedMessage id="form.common.printFormat" />
+                  <FormattedMessage id="form.common.printFormat" />*
                 </InputLabel>
                 <Select
                   multiple
@@ -323,7 +334,7 @@ function PublicationRequestCreationModal(props) {
               form.publicationType === 'PRINT_ELECTRONICAL') && (
               <FormControl className="createListInnerContainer">
                 <InputLabel>
-                  <FormattedMessage id="form.common.fileFormat" />
+                  <FormattedMessage id="form.common.fileFormat" />*
                 </InputLabel>
                 <Select
                   multiple
@@ -342,7 +353,7 @@ function PublicationRequestCreationModal(props) {
 
             <FormControl className="createListInnerContainer">
               <InputLabel>
-                <FormattedMessage id="form.common.publicationMonth" />
+                <FormattedMessage id="form.common.publicationMonth" />*
               </InputLabel>
               <Select
                 label={<FormattedMessage id="form.common.publicationMonth" />}
@@ -360,7 +371,7 @@ function PublicationRequestCreationModal(props) {
 
             <FormControl className="createListInnerContainer">
               <InputLabel>
-                <FormattedMessage id="form.common.publicationYear" />
+                <FormattedMessage id="form.common.publicationYear" />*
               </InputLabel>
               <Select
                 label={<FormattedMessage id="form.common.publicationYear" />}
