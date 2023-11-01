@@ -126,6 +126,22 @@ function IssnPublication(props) {
     setLoading(false);
   }
 
+  /* Handles redirecting to the right page after publication is deleted */
+  function getRedirectRoute () {
+    // When coming from single request page via publications modal - redirect back to single request page
+    if (history.location.state?.requestId) {
+      return `/issn-registry/requests/${history.location.state.requestId}`;
+    }
+
+    // When coming from publisher page via publications modal - redirect back to publisher page
+    if(history.location.state?.publisherId) {
+      return `/issn-registry/publishers/${history.location.state.publisherId}`;
+    }
+
+    // Otherwise redirect back to publications page (default)
+    return '/issn-registry/publications';
+  }
+
   /* Handles going back to the previous page */
   const handleGoBack = () => {
     // Keep search state if previous page was search page
@@ -171,7 +187,7 @@ function IssnPublication(props) {
       url: `/api/issn-registry/publications/${id}`,
       authenticationToken,
       history,
-      redirectRoute: '/issn-registry/publications',
+      redirectRoute: getRedirectRoute(),
       setSnackbarMessage
     });
 

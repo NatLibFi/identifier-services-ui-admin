@@ -68,9 +68,13 @@ function IssnPublicationsModal(props) {
     updateSearchBody({limit: rowsPerPage, offset: 0});
   }
 
-  // Event handler for viewing a single publication
-  const handleTableRowClick = (id) => {
-    history.push(`/issn-registry/publications/${id}`);
+  // Handles click on a table row - view single publication details
+  const handleViewSinglePublication = (id) => {
+    history.push(`/issn-registry/publications/${id}`, {
+      // pass request or publisher id for successful redirect after publication is deleted
+      requestId: searchAttribute === 'formId' ? searchValue : null,
+      publisherId: searchAttribute === 'publisherId' ? searchValue : null
+    });
   };
 
   function updatePageNumber(pageIdx) {
@@ -116,7 +120,7 @@ function IssnPublicationsModal(props) {
         <TableComponent
           pagination
           data={data.results.map(filterDataFields)}
-          handleTableRowClick={handleTableRowClick}
+          handleTableRowClick={handleViewSinglePublication}
           headRows={headRows}
           page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
           setPage={updatePageNumber}
