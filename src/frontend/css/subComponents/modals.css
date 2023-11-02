@@ -85,9 +85,54 @@
     overflow: auto;
 }
 
+.publicationRequestModal {
+    container-type: inline-size;
+}
+
+.publicationRequestModal > .createListInnerContainer {
+    gap: 3rem;
+}
+
+.publicationRequestModal > *,
+.publicationRequestModal .createListInnerContainer {
+    width: 80cqi;
+}
+
+.publicationRequestModal .createListInnerContainer > p {
+    margin-top: -0.25rem;
+}
+
 .publicationRequestModal .createListInnerContainer > div > input[aria-invalid="true"] ~ fieldset,
 .publicationRequestModal .createListInnerContainer > div[aria-invalid="true"] > fieldset {
     border-color: var(--color-brand-red);
+    border-width: 0.125rem;
+}
+
+.placeholderDataFields {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+
+    & h6 {
+        font-size: 1.25rem;
+        font-family: 'Open Sans', Helvetica, sans-serif;
+        margin: 1rem 0 0.25rem;
+    }
+
+    & > p {
+        font-style: italic;
+        margin: 0 0 1rem;
+    }
+
+    & > div {
+        display: grid;
+        gap: 0.125rem;
+
+        & > span {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr;
+        }
+    }
 }
 
 .savePublisherModal {
@@ -331,6 +376,12 @@
 
     & div > .messageBoxContainer > .messageTextContainer {
         max-width: unset;
+    }
+}
+
+@media(width < 1200px) {
+    .publicationRequestModal {
+        min-width: 60%;
     }
 }
 

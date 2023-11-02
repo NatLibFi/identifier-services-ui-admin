@@ -1016,6 +1016,9 @@ const fi = {
   'modal.issn.addRequest': 'Lisää pyyntö',
   'modal.issn.addRequest.new': 'Lisää uusi ISSN-pyyntö',
   'modal.issn.linkedPublications.maxReached': 'Huom! Voitte liittää maksimissaan 5 riviä.',
+  'modal.publicationRequest.placeholderFields': 'Esitäytettyjen kenttien tiedot',
+  'modal.publicationRequest.placeholderFields.description': 'Huom. Voitte muokata alla olevia kenttiä julkaisupyynnön luomisen jälkeen.',
+  'modal.publicationRequest.placeholderFields.authorsRole': 'Tekijän rooli',
 
   // Service messages - used in action dispatchers (store/actions)
   'serviceMessage.success': 'Toiminto onnistui',

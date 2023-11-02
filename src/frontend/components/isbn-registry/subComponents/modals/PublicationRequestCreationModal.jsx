@@ -27,7 +27,7 @@
 
 import React, {useState, useReducer} from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import moment from 'moment';
 
 import {
@@ -58,6 +58,8 @@ import '/src/frontend/css/subComponents/modals.css';
 
 function PublicationRequestCreationModal(props) {
   const {authenticationToken, setSnackbarMessage, history} = props;
+
+  const intl = useIntl();
 
   // State for the modal window
   const [openModal, setOpenModal] = useState(false);
@@ -156,14 +158,7 @@ function PublicationRequestCreationModal(props) {
 
   // Get the current year and set it and the next 5 years as options
   const currentYear = moment().year();
-  const years = [
-    currentYear,
-    currentYear + 1,
-    currentYear + 2,
-    currentYear + 3,
-    currentYear + 4,
-    currentYear + 5
-  ];
+  const years = Array.from({length: 6}, (_, i) => currentYear + i);
 
   const submitButtonIsDisabled = () => {
     const buttonIsDisabled =
@@ -451,6 +446,43 @@ function PublicationRequestCreationModal(props) {
               )}
             </FormControl>
           </div>
+
+          {/* Display placeholder data that comes by default in quick form */}
+          <section className="placeholderDataFields">
+            <h6>
+              <FormattedMessage id="modal.publicationRequest.placeholderFields" />
+            </h6>
+            <p>
+              <FormattedMessage id="modal.publicationRequest.placeholderFields.description" />
+            </p>
+
+            <div>
+              <span>
+                <strong><FormattedMessage id="modal.publicationRequest.placeholderFields.authorsRole" />:</strong>
+                {intl.formatMessage({id: 'form.isbnIsmn.authors.role.option.author'}).toLowerCase()}
+              </span>
+              <span>
+                <strong><FormattedMessage id="request.publication.contactLanguage" />:</strong>
+                {intl.formatMessage({id: 'common.fi-FI'})}
+              </span>
+              <span>
+                <strong><FormattedMessage id="form.isbnIsmn.preview.isPublic" />:</strong>
+                {intl.formatMessage({id: 'common.yes'}).toLowerCase()}
+              </span>
+              <span>
+                <strong><FormattedMessage id="form.issn.publicationCard.publicationType" />:</strong>
+                {intl.formatMessage({id: 'common.BOOK'}).toLowerCase()}
+              </span>
+              <span>
+                <strong><FormattedMessage id="form.common.publishingActivities" />:</strong>
+                {intl.formatMessage({id: 'form.isbnIsmn.publishingActivities.option.occasional'}).toLowerCase()}
+              </span>
+              <span>
+                <strong><FormattedMessage id="request.publication.publicationLanguage" />:</strong>
+                {intl.formatMessage({id: 'common.fin'})}
+              </span>
+            </div>
+          </section>
 
           <div className="createListInnerContainer">
             <Button
