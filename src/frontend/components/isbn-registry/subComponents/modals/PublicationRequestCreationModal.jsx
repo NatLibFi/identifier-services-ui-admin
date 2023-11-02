@@ -39,7 +39,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Typography
+  Typography,
+  FormHelperText
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -60,6 +61,9 @@ function PublicationRequestCreationModal(props) {
 
   // State for the modal window
   const [openModal, setOpenModal] = useState(false);
+
+  // Form fields that have been touched
+  const [touchedFields, setTouchedFields] = useState([]);
 
   // Initial state of the form fields
   const initialState = {
@@ -183,6 +187,11 @@ function PublicationRequestCreationModal(props) {
     return buttonIsDisabled;
   };
 
+  // Check if a field is invalid
+  const fieldIsInvalid = (field) => {
+    return touchedFields.includes(field) && !form[field];
+  };
+
   return (
     <>
       {/* Button that opens a modal for adding a new ISSN-publication */}
@@ -202,26 +211,40 @@ function PublicationRequestCreationModal(props) {
               <FormattedMessage id="modal.publicationrequest.create" />
             </Typography>
 
-            <FormControl className="createListInnerContainer">
+            <FormControl className="createListInnerContainer" required>
               <InputLabel>
-                <FormattedMessage id="form.common.name" />*
+                <FormattedMessage id="form.common.name" />
               </InputLabel>
               <OutlinedInput
                 value={form.publisherName || ''}
                 onChange={(event) => updateForm({publisherName: event.target.value})}
+                onBlur={() => setTouchedFields([...touchedFields, 'publisherName'])}
                 label={<FormattedMessage id="form.common.name" />}
+                inputProps={{'aria-invalid': fieldIsInvalid('publisherName')}}
               />
+              {fieldIsInvalid('publisherName') && (
+                <FormHelperText error>
+                  <FormattedMessage id="error.field.required" />
+                </FormHelperText>
+              )}
             </FormControl>
 
-            <FormControl className="createListInnerContainer">
+            <FormControl className="createListInnerContainer" required>
               <InputLabel>
-                <FormattedMessage id="form.common.title" />*
+                <FormattedMessage id="form.common.title" />
               </InputLabel>
               <OutlinedInput
                 value={form.publicationName || ''}
                 onChange={(event) => updateForm({publicationName: event.target.value})}
+                onBlur={() => setTouchedFields([...touchedFields, 'publicationName'])}
                 label={<FormattedMessage id="form.common.title" />}
+                inputProps={{'aria-invalid': fieldIsInvalid('publicationName')}}
               />
+              {fieldIsInvalid('publicationName') && (
+                <FormHelperText error>
+                  <FormattedMessage id="error.field.required" />
+                </FormHelperText>
+              )}
             </FormControl>
 
             <FormControl className="createListInnerContainer">
@@ -237,15 +260,22 @@ function PublicationRequestCreationModal(props) {
               />
             </FormControl>
 
-            <FormControl className="createListInnerContainer">
+            <FormControl className="createListInnerContainer" required>
               <InputLabel>
-                <FormattedMessage id="form.common.authorName" />*
+                <FormattedMessage id="form.common.authorName" />
               </InputLabel>
               <OutlinedInput
                 value={form.authorName || ''}
                 onChange={(event) => updateForm({authorName: event.target.value})}
+                onBlur={() => setTouchedFields([...touchedFields, 'authorName'])}
                 label={<FormattedMessage id="form.common.authorName" />}
+                inputProps={{'aria-invalid': fieldIsInvalid('authorName')}}
               />
+              {fieldIsInvalid('authorName') && (
+                <FormHelperText error>
+                  <FormattedMessage id="error.field.required" />
+                </FormHelperText>
+              )}
             </FormControl>
 
             <FormControl className="createListInnerContainer">
@@ -292,14 +322,16 @@ function PublicationRequestCreationModal(props) {
               />
             </FormControl>
 
-            <FormControl className="createListInnerContainer">
+            <FormControl className="createListInnerContainer" required>
               <InputLabel>
-                <FormattedMessage id="form.common.selectFormat" />*
+                <FormattedMessage id="form.common.selectFormat" />
               </InputLabel>
               <Select
                 label={<FormattedMessage id="form.common.selectFormat" />}
                 value={form.publicationType || ''}
                 onChange={(event) => updateForm({publicationType: event.target.value})}
+                onBlur={() => setTouchedFields([...touchedFields, 'publicationType'])}
+                aria-invalid={fieldIsInvalid('publicationType')}
               >
                 {publicationFormatOptions.map((format) => (
                   <MenuItem key={format.value} value={format.value}>
@@ -307,19 +339,26 @@ function PublicationRequestCreationModal(props) {
                   </MenuItem>
                 ))}
               </Select>
+              {fieldIsInvalid('publicationType') && (
+                <FormHelperText error>
+                  <FormattedMessage id="error.field.required" />
+                </FormHelperText>
+              )}
             </FormControl>
 
             {(form.publicationType === 'PRINT' ||
               form.publicationType === 'PRINT_ELECTRONICAL') && (
-              <FormControl className="createListInnerContainer">
+              <FormControl className="createListInnerContainer" required>
                 <InputLabel>
-                  <FormattedMessage id="form.common.printFormat" />*
+                  <FormattedMessage id="form.common.printFormat" />
                 </InputLabel>
                 <Select
                   multiple
                   label={<FormattedMessage id="form.common.printFormat" />}
                   value={form.printFormat || []}
                   onChange={(event) => updateForm({printFormat: event.target.value})}
+                  onBlur={() => setTouchedFields([...touchedFields, 'printFormat'])}
+                  aria-invalid={fieldIsInvalid('printFormat')}
                 >
                   {printFormats.map((format) => (
                     <MenuItem key={format.value} value={format.value}>
@@ -327,20 +366,27 @@ function PublicationRequestCreationModal(props) {
                     </MenuItem>
                   ))}
                 </Select>
+                {fieldIsInvalid('printFormat') && (
+                  <FormHelperText error>
+                    <FormattedMessage id="error.field.required" />
+                  </FormHelperText>
+                )}
               </FormControl>
             )}
 
             {(form.publicationType === 'ELECTRONICAL' ||
               form.publicationType === 'PRINT_ELECTRONICAL') && (
-              <FormControl className="createListInnerContainer">
+              <FormControl className="createListInnerContainer" required>
                 <InputLabel>
-                  <FormattedMessage id="form.common.fileFormat" />*
+                  <FormattedMessage id="form.common.fileFormat" />
                 </InputLabel>
                 <Select
                   multiple
                   label={<FormattedMessage id="form.common.fileFormat" />}
                   value={form.fileFormat || []}
                   onChange={(event) => updateForm({fileFormat: event.target.value})}
+                  onBlur={() => setTouchedFields([...touchedFields, 'fileFormat'])}
+                  aria-invalid={fieldIsInvalid('fileFormat')}
                 >
                   {electronicFormats.map((format) => (
                     <MenuItem key={format.value} value={format.value}>
@@ -348,17 +394,24 @@ function PublicationRequestCreationModal(props) {
                     </MenuItem>
                   ))}
                 </Select>
+                {fieldIsInvalid('fileFormat') && (
+                  <FormHelperText error>
+                    <FormattedMessage id="error.field.required" />
+                  </FormHelperText>
+                )}
               </FormControl>
             )}
 
-            <FormControl className="createListInnerContainer">
+            <FormControl className="createListInnerContainer" required>
               <InputLabel>
-                <FormattedMessage id="form.common.publicationMonth" />*
+                <FormattedMessage id="form.common.publicationMonth" />
               </InputLabel>
               <Select
                 label={<FormattedMessage id="form.common.publicationMonth" />}
                 value={form.publicationMonth || ''}
                 onChange={(event) => updateForm({publicationMonth: event.target.value})}
+                onBlur={() => setTouchedFields([...touchedFields, 'publicationMonth'])}
+                aria-invalid={fieldIsInvalid('publicationMonth')}
               >
                 {months.map((month) => (
                   <MenuItem key={month} value={month}>
@@ -367,16 +420,23 @@ function PublicationRequestCreationModal(props) {
                   </MenuItem>
                 ))}
               </Select>
+              {fieldIsInvalid('publicationMonth') && (
+                <FormHelperText error>
+                  <FormattedMessage id="error.field.required" />
+                </FormHelperText>
+              )}
             </FormControl>
 
-            <FormControl className="createListInnerContainer">
+            <FormControl className="createListInnerContainer" required>
               <InputLabel>
-                <FormattedMessage id="form.common.publicationYear" />*
+                <FormattedMessage id="form.common.publicationYear" />
               </InputLabel>
               <Select
                 label={<FormattedMessage id="form.common.publicationYear" />}
                 value={form.publicationYear || ''}
                 onChange={(event) => updateForm({publicationYear: event.target.value})}
+                onBlur={() => setTouchedFields([...touchedFields, 'publicationYear'])}
+                aria-invalid={fieldIsInvalid('publicationYear')}
               >
                 {years.map((year) => (
                   <MenuItem key={year} value={year}>
@@ -384,6 +444,11 @@ function PublicationRequestCreationModal(props) {
                   </MenuItem>
                 ))}
               </Select>
+              {fieldIsInvalid('publicationYear') && (
+                <FormHelperText error>
+                  <FormattedMessage id="error.field.required" />
+                </FormHelperText>
+              )}
             </FormControl>
           </div>
 
