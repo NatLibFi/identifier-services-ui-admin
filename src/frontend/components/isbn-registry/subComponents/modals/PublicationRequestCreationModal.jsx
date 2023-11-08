@@ -27,7 +27,7 @@
 
 import React, {useState, useReducer} from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import moment from 'moment';
 
 import {
@@ -39,7 +39,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Typography
+  Typography,
+  FormHelperText
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -58,19 +59,25 @@ import '/src/frontend/css/subComponents/modals.css';
 function PublicationRequestCreationModal(props) {
   const {authenticationToken, setSnackbarMessage, history} = props;
 
+  const intl = useIntl();
+
   // State for the modal window
   const [openModal, setOpenModal] = useState(false);
+
+  // Form fields that have been touched
+  const [touchedFields, setTouchedFields] = useState([]);
 
   // Initial state of the form fields
   const initialState = {
     publisherName: '',
     publicationName: '',
-    publicationSubTitle: '',
+    publicationSubtitle: '',
     authorName: '',
     contactEmail: '',
     publicationType: '',
     publicationAddress: '',
-    placeOfPublication: '',
+    zip: '',
+    city: '',
     publicationMonth: '',
     publicationYear: '',
     fileFormat: '',
@@ -95,32 +102,30 @@ function PublicationRequestCreationModal(props) {
 
   // Handles approving a process of adding a new ISBN/ISMN publication request
   const handleApproveAddingRequest = async () => {
-    setOpenModal(false);
-
     const formattedValues = {
       // Format the values to match the API requirements
       officialName: form.publisherName,
       title: form.publicationName,
-      subtitle: form.publicationSubTitle || '',
+      subtitle: form.publicationSubtitle || '',
       firstName1: form.authorName.split(' ').shift(),
       lastName1: form.authorName.split(' ').pop(),
       email: form.contactEmail || '',
       publicationFormat: form.publicationType,
-      type: [form.printFormat],
+      type: form.printFormat,
       address: form.publicationAddress || '',
-      fileformat: [form.fileFormat],
-      city: form.placeOfPublication,
+      zip: form.zip || '',
+      city: form.city || '',
+      fileformat: form.fileFormat,
       year: form.publicationYear.toString(),
       month: moment().month(form.publicationMonth).format('MM'),
-      // Set other required fields to placeholder values
+      // Set other required fields to placeholder values, since some sort of value is required by the API (can not be completely empty)
       role1: ['AUTHOR'],
-      zip: '00000',
-      contactPerson: 'Ei ole',
-      phone: '04012345678',
+      contactPerson: '',
+      phone: '',
       langCode: 'fi-FI',
       publicationsPublic: true,
       publicationType: 'BOOK',
-      publishingActivity: 'CONTINUOUS',
+      publishingActivity: 'OCCASIONAL',
       language: 'FIN'
     };
 
@@ -141,7 +146,9 @@ function PublicationRequestCreationModal(props) {
       setSnackbarMessage
     });
 
+    // If the request was successful, close the modal and redirect to the request page
     if (result) {
+      setOpenModal(false);
       redirect(history, `/isbn-registry/requests/publications/${result.id}`);
     }
   };
@@ -151,14 +158,7 @@ function PublicationRequestCreationModal(props) {
 
   // Get the current year and set it and the next 5 years as options
   const currentYear = moment().year();
-  const years = [
-    currentYear,
-    currentYear + 1,
-    currentYear + 2,
-    currentYear + 3,
-    currentYear + 4,
-    currentYear + 5
-  ];
+  const years = Array.from({length: 6}, (_, i) => currentYear + i);
 
   const submitButtonIsDisabled = () => {
     const buttonIsDisabled =
@@ -166,7 +166,6 @@ function PublicationRequestCreationModal(props) {
       !form.publicationName ||
       !form.authorName ||
       !form.publicationType ||
-      !form.placeOfPublication ||
       !form.publicationMonth ||
       !form.publicationYear;
 
@@ -182,6 +181,33 @@ function PublicationRequestCreationModal(props) {
 
     return buttonIsDisabled;
   };
+
+  // Check if a field is invalid
+  const fieldIsInvalid = (field) => {
+    return touchedFields.includes(field) && !form[field];
+  };
+
+  function getCommonFormField(intlInputId, formAttributeName, required=false) {
+    return (
+      <FormControl className="createListInnerContainer" required={required}>
+        <InputLabel>
+          <FormattedMessage id={intlInputId} />
+        </InputLabel>
+        <OutlinedInput
+          value={form[formAttributeName] || ''}
+          onChange={(event) => updateForm({[formAttributeName]: event.target.value})}
+          onBlur={() => setTouchedFields([...touchedFields, formAttributeName])}
+          label={<FormattedMessage id={intlInputId} />}
+          inputProps={{'aria-invalid': required && fieldIsInvalid(formAttributeName)}}
+        />
+        {fieldIsInvalid(formAttributeName) && required && (
+          <FormHelperText error>
+            <FormattedMessage id="error.field.required" />
+          </FormHelperText>
+        )}
+      </FormControl>
+    );
+  }
 
   return (
     <>
@@ -202,86 +228,16 @@ function PublicationRequestCreationModal(props) {
               <FormattedMessage id="modal.publicationrequest.create" />
             </Typography>
 
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.name" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.publisherName || ''}
-                onChange={(event) => updateForm({publisherName: event.target.value})}
-                label={<FormattedMessage id="form.common.name" />}
-              />
-            </FormControl>
+            {getCommonFormField('form.common.name', 'publisherName', true)}
+            {getCommonFormField('form.common.title', 'publicationName', true)}
+            {getCommonFormField('form.common.subtitle', 'publicationSubtitle', false)}
+            {getCommonFormField('form.common.authorName', 'authorName', true)}
+            {getCommonFormField('form.common.email', 'contactEmail', false)}
+            {getCommonFormField('form.common.address', 'publicationAddress', false)}
+            {getCommonFormField('form.common.zip', 'zip', false)}
+            {getCommonFormField('form.common.city', 'city', false)}
 
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.title" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.publicationName || ''}
-                onChange={(event) => updateForm({publicationName: event.target.value})}
-                label={<FormattedMessage id="form.common.title" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.subtitle" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.publicationSubTitle || ''}
-                onChange={(event) =>
-                  updateForm({publicationSubTitle: event.target.value})
-                }
-                label={<FormattedMessage id="form.common.subtitle" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.authorName" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.authorName || ''}
-                onChange={(event) => updateForm({authorName: event.target.value})}
-                label={<FormattedMessage id="form.common.authorName" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.email" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.contactEmail || ''}
-                onChange={(event) => updateForm({contactEmail: event.target.value})}
-                label={<FormattedMessage id="form.common.email" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.address" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.publicationAddress || ''}
-                onChange={(event) => updateForm({publicationAddress: event.target.value})}
-                label={<FormattedMessage id="form.common.address" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.city" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.placeOfPublication || ''}
-                onChange={(event) => updateForm({placeOfPublication: event.target.value})}
-                label={<FormattedMessage id="form.common.city" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
+            <FormControl className="createListInnerContainer" required>
               <InputLabel>
                 <FormattedMessage id="form.common.selectFormat" />
               </InputLabel>
@@ -289,6 +245,8 @@ function PublicationRequestCreationModal(props) {
                 label={<FormattedMessage id="form.common.selectFormat" />}
                 value={form.publicationType || ''}
                 onChange={(event) => updateForm({publicationType: event.target.value})}
+                onBlur={() => setTouchedFields([...touchedFields, 'publicationType'])}
+                aria-invalid={fieldIsInvalid('publicationType')}
               >
                 {publicationFormatOptions.map((format) => (
                   <MenuItem key={format.value} value={format.value}>
@@ -296,18 +254,26 @@ function PublicationRequestCreationModal(props) {
                   </MenuItem>
                 ))}
               </Select>
+              {fieldIsInvalid('publicationType') && (
+                <FormHelperText error>
+                  <FormattedMessage id="error.field.required" />
+                </FormHelperText>
+              )}
             </FormControl>
 
             {(form.publicationType === 'PRINT' ||
               form.publicationType === 'PRINT_ELECTRONICAL') && (
-              <FormControl className="createListInnerContainer">
+              <FormControl className="createListInnerContainer" required>
                 <InputLabel>
                   <FormattedMessage id="form.common.printFormat" />
                 </InputLabel>
                 <Select
+                  multiple
                   label={<FormattedMessage id="form.common.printFormat" />}
-                  value={form.printFormat || ''}
+                  value={form.printFormat || []}
                   onChange={(event) => updateForm({printFormat: event.target.value})}
+                  onBlur={() => setTouchedFields([...touchedFields, 'printFormat'])}
+                  aria-invalid={fieldIsInvalid('printFormat')}
                 >
                   {printFormats.map((format) => (
                     <MenuItem key={format.value} value={format.value}>
@@ -315,19 +281,27 @@ function PublicationRequestCreationModal(props) {
                     </MenuItem>
                   ))}
                 </Select>
+                {fieldIsInvalid('printFormat') && (
+                  <FormHelperText error>
+                    <FormattedMessage id="error.field.required" />
+                  </FormHelperText>
+                )}
               </FormControl>
             )}
 
             {(form.publicationType === 'ELECTRONICAL' ||
               form.publicationType === 'PRINT_ELECTRONICAL') && (
-              <FormControl className="createListInnerContainer">
+              <FormControl className="createListInnerContainer" required>
                 <InputLabel>
                   <FormattedMessage id="form.common.fileFormat" />
                 </InputLabel>
                 <Select
+                  multiple
                   label={<FormattedMessage id="form.common.fileFormat" />}
-                  value={form.fileFormat || ''}
+                  value={form.fileFormat || []}
                   onChange={(event) => updateForm({fileFormat: event.target.value})}
+                  onBlur={() => setTouchedFields([...touchedFields, 'fileFormat'])}
+                  aria-invalid={fieldIsInvalid('fileFormat')}
                 >
                   {electronicFormats.map((format) => (
                     <MenuItem key={format.value} value={format.value}>
@@ -335,10 +309,15 @@ function PublicationRequestCreationModal(props) {
                     </MenuItem>
                   ))}
                 </Select>
+                {fieldIsInvalid('fileFormat') && (
+                  <FormHelperText error>
+                    <FormattedMessage id="error.field.required" />
+                  </FormHelperText>
+                )}
               </FormControl>
             )}
 
-            <FormControl className="createListInnerContainer">
+            <FormControl className="createListInnerContainer" required>
               <InputLabel>
                 <FormattedMessage id="form.common.publicationMonth" />
               </InputLabel>
@@ -346,6 +325,8 @@ function PublicationRequestCreationModal(props) {
                 label={<FormattedMessage id="form.common.publicationMonth" />}
                 value={form.publicationMonth || ''}
                 onChange={(event) => updateForm({publicationMonth: event.target.value})}
+                onBlur={() => setTouchedFields([...touchedFields, 'publicationMonth'])}
+                aria-invalid={fieldIsInvalid('publicationMonth')}
               >
                 {months.map((month) => (
                   <MenuItem key={month} value={month}>
@@ -354,9 +335,14 @@ function PublicationRequestCreationModal(props) {
                   </MenuItem>
                 ))}
               </Select>
+              {fieldIsInvalid('publicationMonth') && (
+                <FormHelperText error>
+                  <FormattedMessage id="error.field.required" />
+                </FormHelperText>
+              )}
             </FormControl>
 
-            <FormControl className="createListInnerContainer">
+            <FormControl className="createListInnerContainer" required>
               <InputLabel>
                 <FormattedMessage id="form.common.publicationYear" />
               </InputLabel>
@@ -364,6 +350,8 @@ function PublicationRequestCreationModal(props) {
                 label={<FormattedMessage id="form.common.publicationYear" />}
                 value={form.publicationYear || ''}
                 onChange={(event) => updateForm({publicationYear: event.target.value})}
+                onBlur={() => setTouchedFields([...touchedFields, 'publicationYear'])}
+                aria-invalid={fieldIsInvalid('publicationYear')}
               >
                 {years.map((year) => (
                   <MenuItem key={year} value={year}>
@@ -371,8 +359,50 @@ function PublicationRequestCreationModal(props) {
                   </MenuItem>
                 ))}
               </Select>
+              {fieldIsInvalid('publicationYear') && (
+                <FormHelperText error>
+                  <FormattedMessage id="error.field.required" />
+                </FormHelperText>
+              )}
             </FormControl>
           </div>
+
+          {/* Display placeholder data that comes by default in quick form */}
+          <section className="placeholderDataFields">
+            <h6>
+              <FormattedMessage id="modal.publicationRequest.placeholderFields" />
+            </h6>
+            <p>
+              <FormattedMessage id="modal.publicationRequest.placeholderFields.description" />
+            </p>
+
+            <div>
+              <span>
+                <strong><FormattedMessage id="modal.publicationRequest.placeholderFields.authorsRole" />:</strong>
+                {intl.formatMessage({id: 'form.isbnIsmn.authors.role.option.author'}).toLowerCase()}
+              </span>
+              <span>
+                <strong><FormattedMessage id="request.publication.contactLanguage" />:</strong>
+                {intl.formatMessage({id: 'common.fi-FI'})}
+              </span>
+              <span>
+                <strong><FormattedMessage id="form.isbnIsmn.preview.isPublic" />:</strong>
+                {intl.formatMessage({id: 'common.yes'}).toLowerCase()}
+              </span>
+              <span>
+                <strong><FormattedMessage id="form.issn.publicationCard.publicationType" />:</strong>
+                {intl.formatMessage({id: 'common.BOOK'}).toLowerCase()}
+              </span>
+              <span>
+                <strong><FormattedMessage id="form.common.publishingActivities" />:</strong>
+                {intl.formatMessage({id: 'form.isbnIsmn.publishingActivities.option.occasional'}).toLowerCase()}
+              </span>
+              <span>
+                <strong><FormattedMessage id="request.publication.publicationLanguage" />:</strong>
+                {intl.formatMessage({id: 'common.fin'})}
+              </span>
+            </div>
+          </section>
 
           <div className="createListInnerContainer">
             <Button

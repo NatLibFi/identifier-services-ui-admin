@@ -412,16 +412,16 @@ function IsbnPublicationRequest(props) {
           <form onSubmit={handleSubmit}>
             <div className="updateContainer">
               <div className="updateButtonsContainer">
-                <Button onClick={handleCancel}>
-                  <FormattedMessage id="form.button.label.cancel" />
-                </Button>
                 <Button
                   type="submit"
                   variant="contained"
-                  color="primary"
+                  color="success"
                   disabled={!valid}
                 >
                   <FormattedMessage id="form.button.label.update" />
+                </Button>
+                <Button variant="contained" color="error" onClick={handleCancel}>
+                  <FormattedMessage id="form.button.label.cancel" />
                 </Button>
               </div>
               {/* Display an error message if the form is not valid */}
@@ -479,9 +479,6 @@ function IsbnPublicationRequest(props) {
           {/* Display if granting identifiers */}
           {isGrantingIdentifiers ? (
             <div className="grantAnIdButtonsContainer">
-              <Button variant="contained" color="error" onClick={handleCancelGrantAnId}>
-                <FormattedMessage id="form.button.label.cancel" />
-              </Button>
               <Button
                 variant="contained"
                 color="primary"
@@ -513,6 +510,9 @@ function IsbnPublicationRequest(props) {
                   <FormattedMessage id="form.button.label.submit" />
                 )}
               </Button>
+              <Button variant="contained" color="error" onClick={handleCancelGrantAnId}>
+                <FormattedMessage id="form.button.label.cancel" />
+              </Button>
               <Modal
                 open={open}
                 aria-labelledby="modal-modal-title"
@@ -542,15 +542,15 @@ function IsbnPublicationRequest(props) {
                     </Typography>
                   ))}
                   <div>
-                    <Button variant="contained" color="error" onClick={handleCloseModal}>
-                      <FormattedMessage id="form.button.label.reject" />
-                    </Button>
                     <Button
                       variant="contained"
                       color="success"
                       onClick={handleSubmitAnId}
                     >
                       <FormattedMessage id="form.button.label.approve" />
+                    </Button>
+                    <Button variant="contained" color="error" onClick={handleCloseModal}>
+                      <FormattedMessage id="form.button.label.reject" />
                     </Button>
                   </div>
                 </Box>
@@ -615,12 +615,12 @@ function IsbnPublicationRequest(props) {
                     <FormattedMessage id="request.publication.copy.approve.description" />
                   </DialogContentText>
                 </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setCopyModalIsOpen(false)}>
-                    <FormattedMessage id="form.button.label.cancel" />
-                  </Button>
-                  <Button onClick={handleCopyRequest}>
+                <DialogActions className="dialogButtons">
+                  <Button variant="contained" color="success" onClick={handleCopyRequest}>
                     <FormattedMessage id="form.button.label.approve" />
+                  </Button>
+                  <Button variant="contained" color="error" onClick={() => setCopyModalIsOpen(false)}>
+                    <FormattedMessage id="form.button.label.cancel" />
                   </Button>
                 </DialogActions>
               </Dialog>
@@ -683,12 +683,12 @@ function IsbnPublicationRequest(props) {
                     <FormattedMessage id="request.publisher.delete.approve" />
                   </DialogContentText>
                 </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setDeleteModalIsOpen(false)}>
-                    <FormattedMessage id="form.button.label.cancel" />
-                  </Button>
-                  <Button onClick={handleDeleteRequest}>
+                <DialogActions className="dialogButtons">
+                  <Button variant="contained" color="success" onClick={handleDeleteRequest}>
                     <FormattedMessage id="form.button.label.approve" />
+                  </Button>
+                  <Button variant="contained" color="error" onClick={() => setDeleteModalIsOpen(false)}>
+                    <FormattedMessage id="form.button.label.cancel" />
                   </Button>
                 </DialogActions>
               </Dialog>

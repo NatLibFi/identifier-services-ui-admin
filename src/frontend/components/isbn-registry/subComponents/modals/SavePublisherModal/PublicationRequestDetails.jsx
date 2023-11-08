@@ -126,22 +126,28 @@ function PublisherDetails ({publicationRequest}) {
           </div>
           <div>
             <Typography>
-              <FormattedMessage id="form.common.city" />:
-            </Typography>
-            <Typography>{publicationRequest?.city}</Typography>
-          </div>
-          <div>
-            <Typography>
-              <FormattedMessage id="request.publication.locality" />:
-            </Typography>
-            <Typography>{publicationRequest?.locality ?? '-'}</Typography>
-          </div>
-          <div>
-            <Typography>
               <FormattedMessage id="form.common.zip" />:
             </Typography>
             <Typography>{publicationRequest?.zip}</Typography>
           </div>
+          <div>
+            <Typography>
+              <FormattedMessage id="form.common.city" />:
+            </Typography>
+            <Typography>{publicationRequest?.city}</Typography>
+          </div>
+
+          { // Display locality only for dissertations
+            publicationRequest?.publicationType === PUBLICATION_TYPES.DISSERTATION && (
+              <div>
+                <Typography>
+                  <FormattedMessage id="request.publication.locality" />:
+                </Typography>
+                <Typography>{publicationRequest?.locality ?? '-'}</Typography>
+              </div>
+            )
+          }
+
           <div>
             <Typography>
               <FormattedMessage id="form.common.phone" />:

@@ -218,12 +218,12 @@ function IsbnPublisherRange(props) {
                   <FormattedMessage id="ranges.subrange.cancel.text" />
                 </DialogContentText>
               </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setCancelModalIsOpen(false)}>
-                  <FormattedMessage id="common.no" />
-                </Button>
-                <Button onClick={handleDeleteRange}>
+              <DialogActions className="dialogButtons">
+                <Button variant="contained" color="success" onClick={handleDeleteRange}>
                   <FormattedMessage id="common.yes" />
+                </Button>
+                <Button variant="contained" color="error" onClick={() => setCancelModalIsOpen(false)}>
+                  <FormattedMessage id="common.no" />
                 </Button>
               </DialogActions>
             </Dialog>

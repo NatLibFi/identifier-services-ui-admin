@@ -138,16 +138,16 @@ function IsbnPublisherDataComponent({isEdit, publisher, clearFields, history, in
           value={publisher.addressLine1 ?? ''}
         />
         <ListComponent
-          edit={isEdit && isEditable('city')}
-          fieldName="city"
-          label={<FormattedMessage id="form.common.city" />}
-          value={publisher.city ?? ''}
-        />
-        <ListComponent
           edit={isEdit && isEditable('zip')}
           fieldName="zip"
           label={<FormattedMessage id="form.common.zip" />}
           value={publisher.zip ?? ''}
+        />
+        <ListComponent
+          edit={isEdit && isEditable('city')}
+          fieldName="city"
+          label={<FormattedMessage id="form.common.city" />}
+          value={publisher.city ?? ''}
         />
       </div>
       <div className="listComponentContainer">

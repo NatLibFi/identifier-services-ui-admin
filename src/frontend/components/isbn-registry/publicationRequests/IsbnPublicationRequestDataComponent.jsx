@@ -430,23 +430,29 @@ function IsbnPublicationRequestDataComponent(props) {
           value={currentRequest.address}
         />
         <ListComponent
-          edit={isEdit && isEditable('city')}
-          fieldName="city"
-          label={<FormattedMessage id="form.common.city" />}
-          value={currentRequest.city}
-        />
-        <ListComponent
-          edit={isEdit && isEditable('locality')}
-          fieldName="locality"
-          label={<FormattedMessage id="request.publication.locality" />}
-          value={currentRequest.locality}
-        />
-        <ListComponent
           edit={isEdit && isEditable('zip')}
           fieldName="zip"
           label={<FormattedMessage id="form.common.zip" />}
           value={currentRequest.zip}
         />
+        <ListComponent
+          edit={isEdit && isEditable('city')}
+          fieldName="city"
+          label={<FormattedMessage id="form.common.city" />}
+          value={currentRequest.city}
+        />
+
+        { // Display locality only for dissertations
+          currentRequest.publicationType === PUBLICATION_TYPES.DISSERTATION && (
+            <ListComponent
+              edit={isEdit && isEditable('locality')}
+              fieldName="locality"
+              label={<FormattedMessage id="request.publication.locality" />}
+              value={currentRequest.locality}
+            />
+          )
+        }
+
         <ListComponent
           edit={isEdit && isEditable('phone')}
           fieldName="phone"
@@ -710,33 +716,38 @@ function IsbnPublicationRequestDataComponent(props) {
         )}
       </div>
 
-      {/* Muut tiedot - Other details*/}
-      <div className="listComponentContainer listComponentOtherReference">
+      {/* Julkaisun lisätiedot - Publication additional details*/}
+      <div className="listComponentContainer listComponentPublicationDetails">
         <Typography variant="h6" className="listComponentContainerHeader">
-          <FormattedMessage id="form.common.otherInfo" />
+          <FormattedMessage id="common.publicationDetails" />
         </Typography>
         <ListComponent
-          edit={false}
-          label={<FormattedMessage id="form.common.createdBy" />}
-          value={currentRequest.createdBy}
+          edit={isEdit && isEditable('publicationsPublic')}
+          fieldName="publicationsPublic"
+          label={<FormattedMessage id="request.publication.isPublic" />}
+          value={intl.formatMessage({id: `common.${currentRequest.publicationsPublic}`})}
         />
         <ListComponent
-          edit={false}
-          fieldName="timestamp"
-          label={<FormattedMessage id="form.common.created" />}
-          value={currentRequest.created}
+          edit={isEdit && isEditable('publicationsIntra')}
+          fieldName="publicationsIntra"
+          label={<FormattedMessage id="request.publication.publicationsIntra" />}
+          value={intl.formatMessage({id: `common.${currentRequest.publicationsIntra}`})}
         />
         <ListComponent
-          edit={false}
-          label={<FormattedMessage id="form.common.modifiedBy" />}
-          value={currentRequest.modifiedBy}
+          edit={isEdit && isEditable('publicationType')}
+          fieldName="publicationType"
+          label={<FormattedMessage id="form.common.format" />}
+          value={intl.formatMessage({id: `common.${currentRequest.publicationType}`})}
+          publication="isbn-ismn"
         />
-        <ListComponent
-          edit={false}
-          fieldName="timestamp"
-          label={<FormattedMessage id="form.common.modified" />}
-          value={currentRequest.modified}
-        />
+        {currentRequest.publicationType === 'MAP' && (
+          <ListComponent
+            edit={isEdit && isEditable('mapScale')}
+            fieldName="mapScale"
+            label={<FormattedMessage id="form.common.scale" />}
+            value={currentRequest.mapScale}
+          />
+        )}
       </div>
 
       {/* Sarjan tiedot - Series details*/}
@@ -783,38 +794,33 @@ function IsbnPublicationRequestDataComponent(props) {
         />
       </div>
 
-      {/* Julkaisun lisätiedot - Publication additional details*/}
-      <div className="listComponentContainer listComponentPublicationDetails">
+      {/* Muut tiedot - Other details*/}
+      <div className="listComponentContainer listComponentOtherReference">
         <Typography variant="h6" className="listComponentContainerHeader">
-          <FormattedMessage id="common.publicationDetails" />
+          <FormattedMessage id="form.common.otherInfo" />
         </Typography>
         <ListComponent
-          edit={isEdit && isEditable('publicationsPublic')}
-          fieldName="publicationsPublic"
-          label={<FormattedMessage id="request.publication.isPublic" />}
-          value={intl.formatMessage({id: `common.${currentRequest.publicationsPublic}`})}
+          edit={false}
+          label={<FormattedMessage id="form.common.createdBy" />}
+          value={currentRequest.createdBy}
         />
         <ListComponent
-          edit={isEdit && isEditable('publicationsIntra')}
-          fieldName="publicationsIntra"
-          label={<FormattedMessage id="request.publication.publicationsIntra" />}
-          value={intl.formatMessage({id: `common.${currentRequest.publicationsIntra}`})}
+          edit={false}
+          fieldName="timestamp"
+          label={<FormattedMessage id="form.common.created" />}
+          value={currentRequest.created}
         />
         <ListComponent
-          edit={isEdit && isEditable('publicationType')}
-          fieldName="publicationType"
-          label={<FormattedMessage id="form.common.format" />}
-          value={intl.formatMessage({id: `common.${currentRequest.publicationType}`})}
-          publication="isbn-ismn"
+          edit={false}
+          label={<FormattedMessage id="form.common.modifiedBy" />}
+          value={currentRequest.modifiedBy}
         />
-        {currentRequest.publicationType === 'MAP' && (
-          <ListComponent
-            edit={isEdit && isEditable('mapScale')}
-            fieldName="mapScale"
-            label={<FormattedMessage id="form.common.scale" />}
-            value={currentRequest.mapScale}
-          />
-        )}
+        <ListComponent
+          edit={false}
+          fieldName="timestamp"
+          label={<FormattedMessage id="form.common.modified" />}
+          value={currentRequest.modified}
+        />
       </div>
     </div>
   );

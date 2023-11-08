@@ -24,13 +24,13 @@
 /* Preserve the desired order of data blocks on the isbn request preview page */
 .listComponentAuthors,
 .listComponentSeriesDetails,
-.listComponentPublicationDetails {
+.listComponentOtherReference {
   grid-column: 2 / 3;
 }
 
 .listComponentAdditionalDetails,
 .listComponentFormManagement,
-.listComponentOtherReference {
+.listComponentPublicationDetails {
   grid-column: 1 / 2;
 }
 
@@ -111,6 +111,9 @@
 }
 
 .updateButtonsContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
   margin: 1rem 0;
 }
 
