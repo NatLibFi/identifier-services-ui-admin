@@ -441,12 +441,18 @@ function IsbnPublicationRequestDataComponent(props) {
           label={<FormattedMessage id="form.common.city" />}
           value={currentRequest.city}
         />
-        <ListComponent
-          edit={isEdit && isEditable('locality')}
-          fieldName="locality"
-          label={<FormattedMessage id="request.publication.locality" />}
-          value={currentRequest.locality}
-        />
+
+        { // Display locality only for dissertations
+          currentRequest.publicationType === PUBLICATION_TYPES.DISSERTATION && (
+            <ListComponent
+              edit={isEdit && isEditable('locality')}
+              fieldName="locality"
+              label={<FormattedMessage id="request.publication.locality" />}
+              value={currentRequest.locality}
+            />
+          )
+        }
+
         <ListComponent
           edit={isEdit && isEditable('phone')}
           fieldName="phone"
