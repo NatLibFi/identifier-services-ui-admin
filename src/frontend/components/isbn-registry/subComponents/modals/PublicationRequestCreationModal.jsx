@@ -71,7 +71,7 @@ function PublicationRequestCreationModal(props) {
   const initialState = {
     publisherName: '',
     publicationName: '',
-    publicationSubTitle: '',
+    publicationSubtitle: '',
     authorName: '',
     contactEmail: '',
     publicationType: '',
@@ -106,7 +106,7 @@ function PublicationRequestCreationModal(props) {
       // Format the values to match the API requirements
       officialName: form.publisherName,
       title: form.publicationName,
-      subtitle: form.publicationSubTitle || '',
+      subtitle: form.publicationSubtitle || '',
       firstName1: form.authorName.split(' ').shift(),
       lastName1: form.authorName.split(' ').pop(),
       email: form.contactEmail || '',
@@ -187,6 +187,28 @@ function PublicationRequestCreationModal(props) {
     return touchedFields.includes(field) && !form[field];
   };
 
+  function getCommonFormField(intlInputId, formAttributeName, required=false) {
+    return (
+      <FormControl className="createListInnerContainer" required={required}>
+        <InputLabel>
+          <FormattedMessage id={intlInputId} />
+        </InputLabel>
+        <OutlinedInput
+          value={form[formAttributeName] || ''}
+          onChange={(event) => updateForm({[formAttributeName]: event.target.value})}
+          onBlur={() => setTouchedFields([...touchedFields, formAttributeName])}
+          label={<FormattedMessage id={intlInputId} />}
+          inputProps={{'aria-invalid': required && fieldIsInvalid(formAttributeName)}}
+        />
+        {fieldIsInvalid(formAttributeName) && required && (
+          <FormHelperText error>
+            <FormattedMessage id="error.field.required" />
+          </FormHelperText>
+        )}
+      </FormControl>
+    );
+  }
+
   return (
     <>
       {/* Button that opens a modal for adding a new ISSN-publication */}
@@ -206,116 +228,14 @@ function PublicationRequestCreationModal(props) {
               <FormattedMessage id="modal.publicationrequest.create" />
             </Typography>
 
-            <FormControl className="createListInnerContainer" required>
-              <InputLabel>
-                <FormattedMessage id="form.common.name" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.publisherName || ''}
-                onChange={(event) => updateForm({publisherName: event.target.value})}
-                onBlur={() => setTouchedFields([...touchedFields, 'publisherName'])}
-                label={<FormattedMessage id="form.common.name" />}
-                inputProps={{'aria-invalid': fieldIsInvalid('publisherName')}}
-              />
-              {fieldIsInvalid('publisherName') && (
-                <FormHelperText error>
-                  <FormattedMessage id="error.field.required" />
-                </FormHelperText>
-              )}
-            </FormControl>
-
-            <FormControl className="createListInnerContainer" required>
-              <InputLabel>
-                <FormattedMessage id="form.common.title" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.publicationName || ''}
-                onChange={(event) => updateForm({publicationName: event.target.value})}
-                onBlur={() => setTouchedFields([...touchedFields, 'publicationName'])}
-                label={<FormattedMessage id="form.common.title" />}
-                inputProps={{'aria-invalid': fieldIsInvalid('publicationName')}}
-              />
-              {fieldIsInvalid('publicationName') && (
-                <FormHelperText error>
-                  <FormattedMessage id="error.field.required" />
-                </FormHelperText>
-              )}
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.subtitle" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.publicationSubTitle || ''}
-                onChange={(event) =>
-                  updateForm({publicationSubTitle: event.target.value})
-                }
-                label={<FormattedMessage id="form.common.subtitle" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer" required>
-              <InputLabel>
-                <FormattedMessage id="form.common.authorName" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.authorName || ''}
-                onChange={(event) => updateForm({authorName: event.target.value})}
-                onBlur={() => setTouchedFields([...touchedFields, 'authorName'])}
-                label={<FormattedMessage id="form.common.authorName" />}
-                inputProps={{'aria-invalid': fieldIsInvalid('authorName')}}
-              />
-              {fieldIsInvalid('authorName') && (
-                <FormHelperText error>
-                  <FormattedMessage id="error.field.required" />
-                </FormHelperText>
-              )}
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.email" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.contactEmail || ''}
-                onChange={(event) => updateForm({contactEmail: event.target.value})}
-                label={<FormattedMessage id="form.common.email" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.address" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.publicationAddress || ''}
-                onChange={(event) => updateForm({publicationAddress: event.target.value})}
-                label={<FormattedMessage id="form.common.address" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.zip" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.zip || ''}
-                onChange={(event) => updateForm({zip: event.target.value})}
-                label={<FormattedMessage id="form.common.zip" />}
-              />
-            </FormControl>
-
-            <FormControl className="createListInnerContainer">
-              <InputLabel>
-                <FormattedMessage id="form.common.city" />
-              </InputLabel>
-              <OutlinedInput
-                value={form.city || ''}
-                onChange={(event) => updateForm({city: event.target.value})}
-                label={<FormattedMessage id="form.common.city" />}
-              />
-            </FormControl>
+            {getCommonFormField('form.common.name', 'publisherName', true)}
+            {getCommonFormField('form.common.title', 'publicationName', true)}
+            {getCommonFormField('form.common.subtitle', 'publicationSubtitle', false)}
+            {getCommonFormField('form.common.authorName', 'authorName', true)}
+            {getCommonFormField('form.common.email', 'contactEmail', false)}
+            {getCommonFormField('form.common.address', 'publicationAddress', false)}
+            {getCommonFormField('form.common.zip', 'zip', false)}
+            {getCommonFormField('form.common.city', 'city', false)}
 
             <FormControl className="createListInnerContainer" required>
               <InputLabel>
