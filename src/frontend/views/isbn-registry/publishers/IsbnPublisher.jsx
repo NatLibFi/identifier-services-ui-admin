@@ -33,6 +33,8 @@ import {FormattedMessage, useIntl} from 'react-intl';
 
 import {Button, Typography, Fab} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import DownloadIcon from '@mui/icons-material/Download';
+
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // Hooks
@@ -40,7 +42,7 @@ import useDocumentTitle from '/src/frontend/hooks/useDocumentTitle';
 import useItem from '/src/frontend/hooks/useItem';
 
 // Actions
-import {updateEntry} from '/src/frontend/actions';
+import {updateEntry, downloadFile} from '/src/frontend/actions';
 
 import '/src/frontend/css/common.css';
 import {classificationCodes, MESSAGE_CODES} from '/src/frontend/components/common/form/constants';
@@ -128,6 +130,19 @@ function IsbnPublisher(props) {
         publisherId: publisher.id
       }
     });
+  };
+
+  const handleDownloadPublisherInformationPackage = async () => {
+    setLoading(true);
+    await downloadFile({
+      url: '/api/isbn-registry/publishers/get-information-package',
+      method: 'POST',
+      requestBody: {id, format: 'xlsx'},
+      authenticationToken,
+      downloadName: `publisher-${id}-information.xlsx`
+    });
+
+    setLoading(false);
   };
 
   async function handlePublisherUpdate(values) {
@@ -339,10 +354,18 @@ function IsbnPublisher(props) {
             <Fab
               color="secondary"
               size="small"
-              title={intl.formatMessage({id: 'publisherRegistry.publisher.editUser'})}
+              title={intl.formatMessage({id: 'publisherRegistry.publisher.editPublisher'})}
               onClick={handleEditClick}
             >
               <EditIcon />
+            </Fab>
+            <Fab
+              color="secondary"
+              size="small"
+              title={intl.formatMessage({id: 'publisherRegistry.publisher.downloadInformationPackage'})}
+              onClick={handleDownloadPublisherInformationPackage}
+            >
+              <DownloadIcon />
             </Fab>
           </div>
         )}
