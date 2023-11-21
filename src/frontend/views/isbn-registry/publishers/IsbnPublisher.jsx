@@ -137,7 +137,7 @@ function IsbnPublisher(props) {
     await downloadFile({
       url: '/api/isbn-registry/publishers/get-information-package',
       method: 'POST',
-      requestBody: {id, format: 'xlsx'},
+      requestBody: {publisherId: id, format: 'xlsx'},
       authenticationToken,
       downloadName: `publisher-${id}-information.xlsx`
     });
