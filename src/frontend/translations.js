@@ -47,7 +47,7 @@ const fi = {
   'common.publication': 'Julkaisu',
   'common.publications': 'Julkaisut',
   'common.publicationDetails': 'Julkaisun tiedot',
-  'common.batch':  'Tunnuslista',
+  'common.batch': 'Tunnuslista',
   'common.batches': 'Tunnuslistat',
   'common.batchDetails': 'Tunnuslistan tiedot',
   'common.yes': 'Kyllä',
@@ -863,7 +863,8 @@ const fi = {
   'publisherRegistry.filterByRangeCategory': 'Suodata tunnuksen pituuden mukaan',
   'publisherRegistry.headRows.activeIdentifiers': 'Aktiiviset tunnukset',
   'publisherRegistry.publisher.sendMessage': 'Lähetä liittymisilmoitus {type} ({category}-merkkinen)',
-  'publisherRegistry.publisher.editUser': 'Muokkaa käyttäjän tietoja',
+  'publisherRegistry.publisher.editPublisher': 'Muokkaa kustantajan tietoja',
+  'publisherRegistry.publisher.downloadInformationPackage': 'Lataa kustantajan tiedot tietopyyntöä varten',
   'publisherRegistry.publisher.otherNameForms': 'Muut nimimuodot',
   'publisherRegistry.publisher.noOtherNames': 'Ei muita nimimuotoja',
   'publisherRegistry.publisher.previousNameForms': 'Aikaisemmat nimimuodot',
@@ -882,7 +883,7 @@ const fi = {
   'publisherRegistry.search.hasQuitted.false': 'Aktiiviset',
 
   // ISSN publisher
-  'publisher.issn.title':'Hae julkaisijaa nimellä',
+  'publisher.issn.title': 'Hae julkaisijaa nimellä',
   'publisher.issn.delete': 'Julkaisijan poistaminen',
   'publisher.issn.delete.approve': 'Hyväksytkö julkaisijan poistamisen?',
   'publisher.issn.formId': 'Pyynnön ID',
