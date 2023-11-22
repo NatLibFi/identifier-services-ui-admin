@@ -124,7 +124,23 @@
   color: var(--color-brand-red) !important;
 }
 
-.publisherButtonsContainer,
+.publisherButtonsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 97%;
+  margin: 3rem 0;
+}
+
+.publisherButtonsInnerContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  place-items: center;
+  width: 85%;
+  gap: 1rem;
+}
+
 .issnPublisherButtonsContainer {
   display: flex;
   justify-content: space-between;
@@ -134,7 +150,7 @@
   min-width: 97%;
 }
 
-.publisherButtonsContainer button:not(:last-child):not(:first-child),
+.publisherButtonsInnerContainer button,
 .issnPublisherButtonsContainer
   button:not(:nth-child(5)):not(:last-child):not(:first-child) {
   height: 5rem;
@@ -210,7 +226,6 @@ div.categoryFilterContainer {
   }
 }
 
-
 @media (max-width: 1600px) {
   .issnPublisherButtonsContainer button:not(:nth-child(5)):not(:last-child):not(:first-child) {
     height: 4rem;
@@ -218,21 +233,6 @@ div.categoryFilterContainer {
 }
 
 @media (max-width: 1500px) {
-  .publisherButtonsContainer {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(3, 1fr);
-    place-items: center;
-  }
-
-  .publisherButtonsContainer button:first-child {
-    grid-area: 3 / 1 / 4 / 2;
-  }
-
-  .publisherButtonsContainer button:last-child {
-    grid-area: 3 / 3 / 4 / 4;
-  }
-
   .issnPublisherButtonsContainer button:not(:nth-child(5)):not(:last-child):not(:first-child) {
     height: 3rem;
   }
@@ -243,25 +243,27 @@ div.categoryFilterContainer {
     grid-template-columns: 1fr;
     justify-items: center;
   }
+
+  .publisherButtonsContainer {
+    display: grid;
+    grid-template:
+      "a a a"
+      "b c d";
+    justify-items: center;
+    gap: 1rem;
+  }
+
+  .publisherButtonsInnerContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-area: a;
+    width: 100%;
+  }
 }
 
 @media (max-width: 800px) {
   div.categoryFilterContainer {
     width: 100%;
-  }
-}
-
-@media (max-width: 650px) {
-  .publisherButtonsContainer {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .publisherButtonsContainer button:last-child {
-    grid-area: 5 / 2 / 6 / 3;
-  }
-
-  .publisherButtonsContainer button:first-child {
-    grid-area: 5 / 1 / 6 / 2;
   }
 }
 
