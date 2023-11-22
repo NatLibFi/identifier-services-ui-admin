@@ -287,70 +287,72 @@ function IsbnPublisher(props) {
             >
               <ArrowBackIcon />
             </Fab>
-            {/* Modals for adding id's and batches */}
-            <PublisherIdCreationModal
-              publisherId={id}
-              authenticationToken={authenticationToken}
-              setSnackbarMessage={setSnackbarMessage}
-            />
-            <PublisherListCreationModal
-              publisherId={id}
-              publisher={publisher}
-              authenticationToken={authenticationToken}
-              setSnackbarMessage={setSnackbarMessage}
-              history={history}
-            />
-            {/* Send ISBN Subrange information for category 5 ISBN subranges */}
-            {activeIsbnIdentifierCategory === 5 && (
-              <Button
-                className="buttons"
-                variant="outlined"
-                color="primary"
-                onClick={() => handleSendSubrangeMessage('isbn')}
-              >
-                <FormattedMessage
-                  id="publisherRegistry.publisher.sendMessage"
-                  values={{type: 'ISBN', category: '5'}}
-                />
-              </Button>
-            )}
-            {/* Send ISMN Subrange information for category 7 ISMN subranges */}
-            {activeIsmnIdentifierCategory === 7 && (
-              <Button
-                className="buttons"
-                variant="outlined"
-                color="primary"
-                onClick={() => handleSendSubrangeMessage('ismn')}
-              >
-                <FormattedMessage
-                  id="publisherRegistry.publisher.sendMessage"
-                  values={{type: 'ISMN', category: '7'}}
-                />
-              </Button>
-            )}
-            {/* Modal for viewing publishers messages */}
-            <IsbnPublishersMessagesModal
-              publisher={publisher}
-              authenticationToken={authenticationToken}
-              history={history}
-            />
-            {/* Modal for viewing publishers publications (accepted) */}
-            <IsbnPublishersPublicationsModal
-              publisher={publisher}
-              authenticationToken={authenticationToken}
-              history={history}
-            />
-            {/* Modal for viewing publishers batches */}
-            <PublishersBatchIdsModal
-              publisher={publisher}
-              authenticationToken={authenticationToken}
-              history={history}
-            />
-            {/* Modal for viewing archive entry of publisher */}
-            <IsbnPublisherArchiveEntryModal
-              publisherId={publisher.id}
-              authenticationToken={authenticationToken}
-            />
+            <div className="publisherButtonsInnerContainer">
+              {/* Modals for adding id's and batches */}
+              <PublisherIdCreationModal
+                publisherId={id}
+                authenticationToken={authenticationToken}
+                setSnackbarMessage={setSnackbarMessage}
+              />
+              <PublisherListCreationModal
+                publisherId={id}
+                publisher={publisher}
+                authenticationToken={authenticationToken}
+                setSnackbarMessage={setSnackbarMessage}
+                history={history}
+              />
+              {/* Send ISBN Subrange information for category 5 ISBN subranges */}
+              {activeIsbnIdentifierCategory === 5 && (
+                <Button
+                  className="buttons"
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handleSendSubrangeMessage('isbn')}
+                >
+                  <FormattedMessage
+                    id="publisherRegistry.publisher.sendMessage"
+                    values={{type: 'ISBN', category: '5'}}
+                  />
+                </Button>
+              )}
+              {/* Send ISMN Subrange information for category 7 ISMN subranges */}
+              {activeIsmnIdentifierCategory === 7 && (
+                <Button
+                  className="buttons"
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handleSendSubrangeMessage('ismn')}
+                >
+                  <FormattedMessage
+                    id="publisherRegistry.publisher.sendMessage"
+                    values={{type: 'ISMN', category: '7'}}
+                  />
+                </Button>
+              )}
+              {/* Modal for viewing publishers messages */}
+              <IsbnPublishersMessagesModal
+                publisher={publisher}
+                authenticationToken={authenticationToken}
+                history={history}
+              />
+              {/* Modal for viewing publishers publications (accepted) */}
+              <IsbnPublishersPublicationsModal
+                publisher={publisher}
+                authenticationToken={authenticationToken}
+                history={history}
+              />
+              {/* Modal for viewing publishers batches */}
+              <PublishersBatchIdsModal
+                publisher={publisher}
+                authenticationToken={authenticationToken}
+                history={history}
+              />
+              {/* Modal for viewing archive entry of publisher */}
+              <IsbnPublisherArchiveEntryModal
+                publisherId={publisher.id}
+                authenticationToken={authenticationToken}
+              />
+            </div>
             <Fab
               color="secondary"
               size="small"
