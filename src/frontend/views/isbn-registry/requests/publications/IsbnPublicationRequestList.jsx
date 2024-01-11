@@ -32,6 +32,7 @@ import {FormattedMessage} from 'react-intl';
 import useSearch from '/src/frontend/hooks/useSearch';
 
 import {Typography} from '@mui/material';
+import moment from 'moment';
 
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/requests/isbnIsmn/request.css';
@@ -111,11 +112,26 @@ function IsbnPublicationRequestList(props) {
     return;
   }
 
+  // Formatting the data to be displayed in the table
+  function formatSearchResult(item) {
+    const {id, title, officialName, langCode, publicationType, created, comments} = item;
+    return {
+      id,
+      title,
+      officialName,
+      langCode,
+      publicationType,
+      created: moment(created).isValid() ? moment(created).format('LLL') : created,
+      comments
+    };
+  }
+
   const headRows = [
     {id: 'title', intlId: 'form.common.title'},
     {id: 'officialName', intlId: 'common.publisher.isbn'},
     {id: 'langCode', intlId: 'form.common.language'},
     {id: 'publicationType', intlId: 'form.common.format'},
+    {id: 'created', intlId: 'form.common.created'},
     {id: 'comments', intlId: 'form.common.additionalDetails'}
   ];
 
@@ -145,7 +161,7 @@ function IsbnPublicationRequestList(props) {
     return (
       <TableComponent
         pagination
-        data={data.results}
+        data={data.results.map(formatSearchResult)}
         handleTableRowClick={handleTableRowClick}
         headRows={headRows}
         page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
