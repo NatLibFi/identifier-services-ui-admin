@@ -50,7 +50,7 @@ import {MESSAGE_CODES} from '/src/frontend/components/common/form/constants';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
 function PublisherListCreationModal(props) {
-  const {publisherId, publisher, authenticationToken, setSnackbarMessage, history} = props;
+  const {publisher, authenticationToken, setSnackbarMessage, history} = props;
   const intl = useIntl();
 
   const [identifierType, setIdentifierType] = useState(''); // State for selecting the type of an id to be granted
@@ -84,7 +84,7 @@ function PublisherListCreationModal(props) {
       identifierType === 'isbn'
         ? MESSAGE_CODES.SEND_LIST_ISBN
         : MESSAGE_CODES.SEND_LIST_ISMN;
-    const values = {publisherId, count: parseInt(amount, 10)};
+    const values = {publisherId: publisher.id, count: parseInt(amount, 10)};
 
     const result = await makeApiRequest({
       url: `/api/isbn-registry/identifierbatches/${identifierType}`,
@@ -97,7 +97,7 @@ function PublisherListCreationModal(props) {
     if (result) {
       const redirectState = {
         messageCode: redirectMessageCode,
-        publisherId,
+        publisherId: publisher.id,
         identifierBatchId: result.id
       };
       redirect(history, redirectRoute, redirectState);
@@ -189,7 +189,6 @@ function PublisherListCreationModal(props) {
 }
 
 PublisherListCreationModal.propTypes = {
-  publisherId: PropTypes.string.isRequired,
   publisher: PropTypes.object.isRequired,
   authenticationToken: PropTypes.string.isRequired,
   setSnackbarMessage: PropTypes.func.isRequired,

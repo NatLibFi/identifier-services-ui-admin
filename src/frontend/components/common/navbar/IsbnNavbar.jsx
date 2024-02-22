@@ -27,15 +27,13 @@
 
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
-import {PropTypes} from 'prop-types';
 
 import {AppBar, Grid} from '@mui/material';
 
 import '/src/frontend/css/navigationBar/adminNav.css';
 import MenuTabs from '/src/frontend/components/common/navbar/MenuTabs.jsx';
 
-// TODO refactor: ISBN and ISSN navbars to one navbar that accepts routes + type as param
-function IsbnNavbar({userInfo}) {
+function IsbnNavbar() {
   const navbarItems = [
     {
       id: 'ISBN-home',
@@ -109,7 +107,6 @@ function IsbnNavbar({userInfo}) {
               <MenuTabs
                 key={navbarItem.id}
                 navbarItem={navbarItem}
-                isAuthenticated={userInfo.isAuthenticated}
               />
             ))}
           </div>
@@ -118,9 +115,5 @@ function IsbnNavbar({userInfo}) {
     </Grid>
   );
 }
-
-IsbnNavbar.propTypes = {
-  userInfo: PropTypes.object.isRequired
-};
 
 export default IsbnNavbar;

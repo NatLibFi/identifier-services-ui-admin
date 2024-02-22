@@ -80,7 +80,6 @@ const fi = {
   'common.typeOfService': 'Palvelun tyyppi',
   'common.other': 'muu',
   'common.errorPage': 'Virhesivu',
-  'common.skipLink': 'Hyppää pääsisältöön',
   'common.download': 'Lataa',
   'common.noActiveIdentifiers': 'Ei aktiivisia tunnuksia',
   'common.author': '{digit} tekijä',
@@ -278,18 +277,6 @@ const fi = {
   'error.formEdit': 'Lomakkeessa on virheellisiä tietoja. Tarkistakaa seuraavat kentät:',
   'error.ranges.validity': 'Lohkon loppu ei voi olla pienempi kuin lohkon alku',
   'error.issn.archive': 'Ei pystytä hakemaan arkistotietoja. Yritä myöhemmin uudelleen.',
-
-  // Error page texts
-  'errorPage.header': 'Olemme pahoillamme, mutta jokin meni väärin',
-  'errorPage.message.serviceDown': 'Näyttää siltä, että palvelin ei vastaa kutsuihin. Yrittäkää myöhemmin uudelleen. Tarvittaessa ottakaa yhteyttä asiakaspalveluun: isbn-keskus@helsinki.fi',
-  'errorPage.message.serviceUnderMaintenance': 'Palvelin on huoltotilassa ja se on hetken poissa käytöstä. Yrittäkää myöhemmin uudelleen. Kiireellisissä asioissa ottakaa yhteyttä asiakaspalveluun: isbn-keskus@helsinki.fi',
-  'errorPage.message.defaultError': 'Tuntematon virhe. Yrittäkää uudelleen tai ottakaa yhteyttä asiakaspalveluun: isbn-keskus@helsinki.fi',
-  'errorPage.message.generatingMessageFailed': 'Viestipohjan hakeminen epäonnistui. Yrittäkää uudelleen tai ottakaa yhteyttä asiakaspalveluun: isbn-keskus@helsinki.fi',
-  'errorPage.grantingIdsMessageError': 'Jos päädyitte tälle sivulle tunnuksen myöntämisen yhteydessä, ottakaa yhteyttä järjestelmäylläpitöön valittömästi ja ilmoittakaa virheestä (loadTemplate failed after generating new identifierBatch).',
-  'errorPage.publicationRequestError': 'Sivun lataaminen epäonnistui. Tarkista osoite ja yritä uudelleen. Jos ongelma toistuu, ota yhteyttä ISBN-keskukseen: isbn-keskus@helsinki.fi',
-  'errorPage.accessdenied.heading': 'Pääsy kielletty',
-  'errorPage.accessdenied.message': 'Sinulla ei ole oikeuksia tälle sivulle.',
-  'errorPage.admin.genericError': 'Järjestelmävirhe. Ole hyvä ja ota yhteyttä järjestelmäylläpitoon ongelman ratkaisemiseksi',
 
   // Common form translations - used in multiple forms
   'form.common.name': 'Kustantajan nimi',

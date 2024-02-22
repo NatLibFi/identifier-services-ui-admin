@@ -25,9 +25,11 @@
  *
  */
 
-import React, {useEffect, useState, useReducer} from 'react';
-import PropTypes from 'prop-types';
+import React, {useEffect, useMemo, useState, useReducer} from 'react';
 import {FormattedMessage} from 'react-intl';
+
+import {useHistory} from 'react-router-dom';
+import {useAuth} from 'react-oidc-context';
 
 import useSearch from '/src/frontend/hooks/useSearch';
 
@@ -55,8 +57,9 @@ import SearchComponent from '/src/frontend/components/common/SearchComponent.jsx
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
-function IsbnPublisherList(props) {
-  const {authenticationToken, history} = props;
+function IsbnPublisherList() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
   // Component state
   const initialSearchBody = history.location?.state?.searchBody ?? {
@@ -113,6 +116,9 @@ function IsbnPublisherList(props) {
     requireAuth: true,
     authenticationToken
   });
+
+  const formattedData = useMemo(() => data.results.map(formatSearchResult), [data]);
+  const isReady = !error && !loading;
 
   function updateRowsPerPage(rowsPerPage) {
     updateSearchBody({limit: rowsPerPage, offset: 0});
@@ -248,51 +254,61 @@ function IsbnPublisherList(props) {
     {id: 'activeIdentifiers', intlId: 'publisherRegistry.headRows.activeIdentifiers'}
   ];
 
-  const dataComponent = setDataComponent();
-
-  function setDataComponent() {
-    if (error) {
-      return (
+  return (
+    <div className="listSearch">
+      <InputLabel htmlFor="search-input">
         <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
+          <FormattedMessage id="publisherRegistry.title" />
         </Typography>
-      );
-    }
+      </InputLabel>
+      <div className="listSearchBoxFilters">
+        <div className="searchInput">
+          <SearchComponent
+            initialValue={initialSearchBody.searchText}
+            searchFunction={updateSearchText}
+          />
+        </div>
+        {/* hasQuitted filter */}
+        <div className="hasQuittedSwitch">
+          <Typography
+            data-checked={hasQuittedFilter}
+          >
+            <FormattedMessage id="publisherRegistry.search.hasQuitted.true" />
+          </Typography>
+          <Switch
+            label="switch between hasQuitted filter"
+            checked={!hasQuittedFilter}
+            onChange={handleHasQuittedFilterChange}
+            inputProps={{'aria-label': 'controlled switch'}}
+          />
+          <Typography
+            data-checked={!hasQuittedFilter}
+          >
+            <FormattedMessage id="publisherRegistry.search.hasQuitted.false" />
+          </Typography>
+        </div>
 
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (data.totalDoc === 0) {
-      return (
-        <p>
-          <FormattedMessage id="common.noData" />
-        </p>
-      );
-    }
-
-    return(
-      <TableComponent
-        pagination
-        data={data.results.map(formatSearchResult)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={headRows}
-        page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
-        setPage={updatePageNumber}
-        totalDoc={data.totalDoc}
-        rowsPerPage={searchBody.limit}
-        setRowsPerPage={updateRowsPerPage}
-        // Those are not displayed on small screens (mobile devices etc)
-        // screen < 900px
-        unprioritizedRows={['email', 'contactPerson']}
-        // screen < 550px
-        unprioritizedMobileRows={['type']}
-      />
-    );
-  }
-
-  function getCategoryFilterOptions() {
-    return (
+        {/* identifierType filter */}
+        <div className="identifierTypeSwitch">
+          <Typography
+            data-checked={identifierTypeFilter === 'ISBN'}
+          >
+            <FormattedMessage id="common.isbn" />
+          </Typography>
+          <Switch
+            label="switch between identifierType filter"
+            checked={identifierTypeFilter === 'ISMN'}
+            onChange={handleIdentifierTypeFilterChange}
+            inputProps={{'aria-label': 'controlled switch'}}
+          />
+          <Typography
+            data-checked={identifierTypeFilter === 'ISMN'}
+          >
+            <FormattedMessage id="common.ismn" />
+          </Typography>
+        </div>
+      </div>
+      {/* Category filter */}
       <FormControl className="categoryFilterContainer">
         <InputLabel id="filter-by-category">
           <FormattedMessage id="publisherRegistry.filterByRangeCategory" />
@@ -322,81 +338,37 @@ function IsbnPublisherList(props) {
           <MenuItem value="7-ISMN">7</MenuItem>
         </Select>
       </FormControl>
-    );
-  }
-
-  function getHasQuittedFilter() {
-    return (
-      <div className="hasQuittedSwitch">
-        <Typography
-          data-checked={hasQuittedFilter}
-        >
-          <FormattedMessage id="publisherRegistry.search.hasQuitted.true" />
-        </Typography>
-        <Switch
-          label="switch between hasQuitted filter"
-          checked={!hasQuittedFilter}
-          onChange={handleHasQuittedFilterChange}
-          inputProps={{'aria-label': 'controlled switch'}}
-        />
-        <Typography
-          data-checked={!hasQuittedFilter}
-        >
-          <FormattedMessage id="publisherRegistry.search.hasQuitted.false" />
-        </Typography>
-      </div>
-    );
-  }
-
-  function getIdentifierTypeFilter() {
-    return (
-      <div className="identifierTypeSwitch">
-        <Typography
-          data-checked={identifierTypeFilter === 'ISBN'}
-        >
-          <FormattedMessage id="common.isbn" />
-        </Typography>
-        <Switch
-          label="switch between identifierType filter"
-          checked={identifierTypeFilter === 'ISMN'}
-          onChange={handleIdentifierTypeFilterChange}
-          inputProps={{'aria-label': 'controlled switch'}}
-        />
-        <Typography
-          data-checked={identifierTypeFilter === 'ISMN'}
-        >
-          <FormattedMessage id="common.ismn" />
-        </Typography>
-      </div>
-    );
-  }
-
-  return (
-    <div className="listSearch">
-      <InputLabel htmlFor="search-input">
+      {/* Data component */}
+      {error && (
         <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="publisherRegistry.title" />
+          <FormattedMessage id="errorPage.message.defaultError" />
         </Typography>
-      </InputLabel>
-      <div className="listSearchBoxFilters">
-        <div className="searchInput">
-          <SearchComponent
-            initialValue={initialSearchBody.searchText}
-            searchFunction={updateSearchText}
-          />
-        </div>
-        {getHasQuittedFilter()}
-        {getIdentifierTypeFilter()}
-      </div>
-      {getCategoryFilterOptions()}
-      {dataComponent}
+      )}
+
+      {loading && <Spinner />}
+
+      {isReady && data.totalDoc === 0 && <p><FormattedMessage id="common.noData" /></p>}
+
+      {isReady && data.totalDoc > 0 && (
+        <TableComponent
+          pagination
+          data={formattedData}
+          handleTableRowClick={handleTableRowClick}
+          headRows={headRows}
+          page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
+          setPage={updatePageNumber}
+          totalDoc={data.totalDoc}
+          rowsPerPage={searchBody.limit}
+          setRowsPerPage={updateRowsPerPage}
+          // Those are not displayed on small screens (mobile devices etc)
+          // screen < 900px
+          unprioritizedRows={['email', 'contactPerson']}
+          // screen < 550px
+          unprioritizedMobileRows={['type']}
+        />
+      )}
     </div>
   );
 }
-
-IsbnPublisherList.propTypes = {
-  authenticationToken: PropTypes.string,
-  history: PropTypes.object.isRequired
-};
 
 export default IsbnPublisherList;
