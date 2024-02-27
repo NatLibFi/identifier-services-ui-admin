@@ -157,7 +157,7 @@ function IsbnPublisherRequest() {
   }
 
   return (
-    <div className={'listItem'}>
+    <div className="listItem">
       <Typography variant="h2" className="titleTopSticky normalTitle">
         {`${publisherRequest.officialName} - `}
         <FormattedMessage id="request.publisher.details" />

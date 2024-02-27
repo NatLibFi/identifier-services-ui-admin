@@ -51,7 +51,7 @@ import {getIdentifiersAvailable} from '/src/frontend/rangeFormattingUtils';
 function PublisherIdCreationModal(props) {
   const {publisherId, authenticationToken, setSnackbarMessage} = props;
 
-  let history = useHistory();
+  const history = useHistory();
   const intl = useIntl();
 
   // State for the modal window (open/close)
