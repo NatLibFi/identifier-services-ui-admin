@@ -277,6 +277,9 @@ const fi = {
   'error.formEdit': 'Lomakkeessa on virheellisiä tietoja. Tarkistakaa seuraavat kentät:',
   'error.ranges.validity': 'Lohkon loppu ei voi olla pienempi kuin lohkon alku',
   'error.issn.archive': 'Ei pystytä hakemaan arkistotietoja. Yritä myöhemmin uudelleen.',
+  'error.email': 'Sähköpostiosoite on virheellinen',
+  'error.zip': 'Postinumero on virheellinen',
+  'error.additionalInfo': 'Lisätietoja-kentän maksimipituus on ylitetty',
 
   // Common form translations - used in multiple forms
   'form.common.name': 'Kustantajan nimi',

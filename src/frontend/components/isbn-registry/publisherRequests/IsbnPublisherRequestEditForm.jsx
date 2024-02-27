@@ -31,42 +31,46 @@ import PropTypes from 'prop-types';
 import {Form} from 'react-final-form';
 import {FormattedMessage} from 'react-intl';
 
-import {Button, Typography} from '@mui/material';
+import {Button} from '@mui/material';
 
-import {validate} from '/src/frontend/components/isbn-registry/publisher/validate';
+import FormEditErrorCard from '/src/frontend/components/isbn-registry/subComponents/cards/FormEditErrorCard.jsx';
+import {validate} from '/src/frontend/components/isbn-registry/publisherRequests/validate';
 
-function IsbnPublisherEditForm({publisher, onSubmit, handleCancel, children}) {
+function IsbnPublisherEditForm({publisherRequest, onSubmit, handleCancel, children}) {
   return (
-    <div className="listItem">
-      <Typography variant="h2" className="titleTopSticky normalTitle">
-        {`${publisher.officialName} - `}
-        <FormattedMessage id="common.publisherDetails.isbn" />
-      </Typography>
-      <Form
-        onSubmit={onSubmit}
-        validate={validate}
-        initialValues={publisher}
-      >
-        {({handleSubmit}) => (
-          <form onSubmit={handleSubmit}>
+    <Form
+      onSubmit={onSubmit}
+      validate={validate}
+      initialValues={publisherRequest}
+    >
+      {({handleSubmit, valid, errors}) => (
+        <form onSubmit={handleSubmit}>
+          <div className="updateContainer">
             <div className="updateButtonsContainer">
-              <Button type="submit" variant="contained" color="success">
+              <Button
+                type="submit"
+                variant="contained"
+                color="success"
+                disabled={!valid}
+              >
                 <FormattedMessage id="form.button.label.update" />
               </Button>
               <Button variant="contained" color="error" onClick={handleCancel}>
                 <FormattedMessage id="form.button.label.cancel" />
               </Button>
             </div>
-            <div className="listItemSpinner">{children}</div>
-          </form>
-        )}
-      </Form>
-    </div>
+            {/* Display an error message if the form is not valid */}
+            <FormEditErrorCard valid={valid} errors={errors} />
+          </div>
+          <div className="listItemSpinner">{children}</div>
+        </form>
+      )}
+    </Form>
   );
 }
 
 IsbnPublisherEditForm.propTypes = {
-  publisher: PropTypes.object.isRequired,
+  publisherRequest: PropTypes.object.isRequired,
   onSubmit: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired,
   children: PropTypes.node

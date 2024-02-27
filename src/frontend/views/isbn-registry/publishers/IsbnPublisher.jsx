@@ -65,7 +65,7 @@ function IsbnPublisher() {
 
   const {id} = params;
 
-  // Note: publisher information state for display and edit modes are kept separately
+  // Note: state for display and edit modes are kept separately
   // as formatting is currently required for edit mode
   const [publisher, setPublisher] = useState({});
   const [editFormattedPublisher, setEditFormattedPublisher] = useState({});
@@ -76,8 +76,6 @@ function IsbnPublisher() {
 
   const handleEditClick = useCallback(() => setIsEdit(true), [isEdit]);
   const handleCancel = useCallback(() => setIsEdit(false), [isEdit]);
-
-  const dataComponent = useMemo(() => (<IsbnPublisherDataComponent isEdit={isEdit} publisher={publisher} />), [isEdit, publisher]);
 
   const {
     data: initialData,
@@ -162,19 +160,19 @@ function IsbnPublisher() {
       </Typography>
 
       { /* Display data only */}
-      {hasPublisherData && !isEdit && <IsbnPublisherDisplay
-        publisher={publisher}
-        handleEditClick={handleEditClick}
-        dataComponent={dataComponent}
-      />}
+      {hasPublisherData && !isEdit && <IsbnPublisherDisplay publisher={publisher} handleEditClick={handleEditClick}>
+        <IsbnPublisherDataComponent isEdit={isEdit} publisher={publisher} />
+      </IsbnPublisherDisplay>
+      }
 
       { /* Edit data through form */}
       {hasPublisherData && isEdit && <IsbnPublisherEditForm
         publisher={editFormattedPublisher}
         onSubmit={handlePublisherUpdate}
         handleCancel={handleCancel}
-        dataComponent={dataComponent}
-      />}
+      >
+        <IsbnPublisherDataComponent isEdit={isEdit} publisher={publisher} />
+      </IsbnPublisherEditForm>}
 
     </div>
   );

@@ -54,8 +54,8 @@ import '/src/frontend/css/common.css';
 import '/src/frontend/css/publishers/adminSearch.css';
 
 import SearchComponent from '/src/frontend/components/common/SearchComponent.jsx';
+import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
 function IsbnPublisherList() {
   const history = useHistory();
@@ -117,8 +117,8 @@ function IsbnPublisherList() {
     authenticationToken
   });
 
-  const formattedData = useMemo(() => data.results.map(formatSearchResult), [data]);
-  const isReady = !error && !loading;
+  const formattedData = useMemo(() => data?.results.map(formatSearchResult), [data]);
+  const hasData = formattedData && formattedData.length > 0;
 
   function updateRowsPerPage(rowsPerPage) {
     updateSearchBody({limit: rowsPerPage, offset: 0});
@@ -339,17 +339,7 @@ function IsbnPublisherList() {
         </Select>
       </FormControl>
       {/* Data component */}
-      {error && (
-        <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
-        </Typography>
-      )}
-
-      {loading && <Spinner />}
-
-      {isReady && data.totalDoc === 0 && <p><FormattedMessage id="common.noData" /></p>}
-
-      {isReady && data.totalDoc > 0 && (
+      <TableResultWrapper error={error} loading={loading} hasData={hasData}>
         <TableComponent
           pagination
           data={formattedData}
@@ -366,7 +356,7 @@ function IsbnPublisherList() {
           // screen < 550px
           unprioritizedMobileRows={['type']}
         />
-      )}
+      </TableResultWrapper>
     </div>
   );
 }

@@ -56,7 +56,7 @@ import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import {MESSAGE_CODES} from '/src/frontend/components/common/form/constants';
 
 
-function IsbnPublisherDisplay({publisher, handleEditClick, dataComponent}) {
+function IsbnPublisherDisplay({publisher, handleEditClick, children}) {
   const intl = useIntl();
   const history = useHistory();
   const {user: {access_token: authenticationToken}} = useAuth();
@@ -205,7 +205,7 @@ function IsbnPublisherDisplay({publisher, handleEditClick, dataComponent}) {
           <DownloadIcon />
         </Fab>
       </div>
-      <div>{dataComponent}</div>
+      <div>{children}</div>
     </>
   );
 }
@@ -213,7 +213,7 @@ function IsbnPublisherDisplay({publisher, handleEditClick, dataComponent}) {
 IsbnPublisherDisplay.propTypes = {
   publisher: PropTypes.object.isRequired,
   handleEditClick: PropTypes.func.isRequired,
-  dataComponent: PropTypes.node.isRequired
+  children: PropTypes.node
 };
 
 export default IsbnPublisherDisplay;
