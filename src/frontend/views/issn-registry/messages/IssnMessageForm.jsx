@@ -26,11 +26,15 @@
  */
 
 import React, {useRef} from 'react';
-import PropTypes from 'prop-types';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
+
 import {FormattedMessage} from 'react-intl';
 import {Field, Form} from 'react-final-form';
 import {Button, Typography, Box, Link} from '@mui/material';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
 import {redirect} from '/src/frontend/actions/util';
@@ -42,9 +46,16 @@ import RenderTextField from '/src/frontend/components/common/form/render/RenderT
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import {validateSendMessage} from '/src/frontend/components/common/validation';
 
-function IssnMessageForm(props) {
-  const {userInfo, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+// Required to avoid focus issues on edit (component={renderTextField}})
+// NB! component={(props) => <RenderTextField {...props}/>} approach does not work here for some reason
+const renderTextField = (props) => <RenderTextField {...props} />;
+
+function IssnMessageForm() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   // Redirect if history action is not PUSH to avoid previous states leaking to message sending process
   if (!history || history.action !== 'PUSH') {
@@ -117,10 +128,6 @@ function IssnMessageForm(props) {
   if (loading) {
     return <Spinner />;
   }
-
-  // Required to avoid focus issues on edit (component={renderTextField}})
-  // NB! component={(props) => <RenderTextField {...props}/>} approach does not work here for some reason
-  const renderTextField = (props) => <RenderTextField {...props} />;
 
   return (
     <Box className="sendMessageContainer">
@@ -223,11 +230,5 @@ function IssnMessageForm(props) {
     </Box>
   );
 }
-
-IssnMessageForm.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired
-};
 
 export default IssnMessageForm;
