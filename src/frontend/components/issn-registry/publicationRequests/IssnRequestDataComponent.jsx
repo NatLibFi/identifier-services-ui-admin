@@ -27,12 +27,16 @@
 
 import React, {useReducer} from 'react';
 import PropTypes from 'prop-types';
+
+import {useAuth} from 'react-oidc-context';
+
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {Typography, Autocomplete, Box, TextField, Link} from '@mui/material';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 import {makeApiRequest} from '/src/frontend/actions';
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useList from '/src/frontend/hooks/useList';
 
 import '/src/frontend/css/common.css';
@@ -41,15 +45,19 @@ import '/src/frontend/css/requests/isbnIsmn/dataComponent.css';
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 
 function IssnRequestDataComponent(props) {
-  const {issnRequest, setIssnRequest, isEdit, authenticationToken, setSnackbarMessage} =
-    props;
+  const {issnRequest, setIssnRequest, isEdit} = props;
+
   const intl = useIntl();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   // Autocomplete
   const initialSearchBody = {searchText: issnRequest.publisherName ?? ''};
   const [searchBody, updateSearchBody] = useReducer((prev, next) => {
     // Trigger autocomplete only after three or more characters
-    if(next.searchText.length > 3) {
+    if (next.searchText.length > 3) {
       return {...prev, ...next};
     }
 
@@ -307,9 +315,7 @@ function IssnRequestDataComponent(props) {
 IssnRequestDataComponent.propTypes = {
   issnRequest: PropTypes.object.isRequired,
   setIssnRequest: PropTypes.func.isRequired,
-  isEdit: PropTypes.bool.isRequired,
-  authenticationToken: PropTypes.string.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired
+  isEdit: PropTypes.bool.isRequired
 };
 
 export default IssnRequestDataComponent;

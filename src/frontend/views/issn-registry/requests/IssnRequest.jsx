@@ -25,53 +25,37 @@
  *
  */
 
-import React, {useState, useEffect} from 'react';
-import PropTypes from 'prop-types';
-import {Form} from 'react-final-form';
-import {withRouter} from 'react-router-dom';
-import {useIntl, FormattedMessage} from 'react-intl';
+import React, {useState, useEffect, useMemo} from 'react';
 
-import {
-  Fab,
-  Button,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  DialogContent,
-  DialogContentText
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {useParams, withRouter} from 'react-router-dom';
+import {useAuth} from 'react-oidc-context';
+import {FormattedMessage} from 'react-intl';
+
+import {Typography} from '@mui/material';
 
 import useItem from '/src/frontend/hooks/useItem';
-import {deleteEntry, updateEntry} from '/src/frontend/actions';
 
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/requests/isbnIsmn/request.css';
 
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
-import IssnMessagesModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnMessagesModal.jsx';
-import IssnPublicationsModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnPublicationsModal.jsx';
-import IssnPublisherCreationModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnPublisherCreationModal.jsx';
-import IssnPublicationCreationModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnPublicationCreationModal.jsx';
-import IssnRequestArchiveModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnRequestArchiveModal.jsx';
 
 import IssnRequestDataComponent from '/src/frontend/components/issn-registry/publicationRequests/IssnRequestDataComponent.jsx';
-import {validate} from '/src/frontend/components/issn-registry/publicationRequests/validate';
+import IssnRequestButtonRow from '/src/frontend/components/issn-registry/publicationRequests/IssnRequestButtonRow.jsx';
+import IssnRequestEditForm from '/src/frontend/components/issn-registry/publicationRequests/IssnRequestEditForm.jsx';
 
-function IssnRequest(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
 
-  const intl = useIntl();
-  const {id} = match.params;
+function IssnRequest() {
+  const params = useParams();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const {id} = params;
 
   const [issnRequest, setIssnRequest] = useState({});
+
   const [loading, setLoading] = useState(true);
   const [isEdit, setIsEdit] = useState(false);
-  const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+  const hasPublicationRequestData = useMemo(() => Object.keys(issnRequest).length > 0, [issnRequest]);
 
   // Fetching data of the current request
   const {
@@ -98,93 +82,6 @@ function IssnRequest(props) {
     }
   }, [initialData]);
 
-  /* Handles starting of the editing process */
-  const handleEditClick = () => {
-    setIsEdit(true);
-  };
-
-  /* Handles canceling of the editing process */
-  const handleCancel = () => {
-    setIsEdit(false);
-  };
-
-  /* Handles going back to the previous page */
-  const handleGoBack = () => {
-    // Keep search state if previous page was search page
-    if (history.location.state?.searchBody) {
-      return history.push({
-        pathname: '/issn-registry/requests',
-        state: {
-          searchBody: history.location.state.searchBody
-        }
-      });
-    }
-
-    // Discard state since it was used already if necessary
-    history.replace({state: {}});
-    history.goBack();
-  };
-
-  /* Handles updating of the current request */
-  async function handlePublicationRequestUpdate(values) {
-    // publisher id should not be sent to the API
-    const {publisherId, publisherName, ...updateValues} = values; // eslint-disable-line no-unused-vars
-
-    const updateResult = await updateEntry({
-      url: `/api/issn-registry/requests/${id}`,
-      values: updateValues,
-      authenticationToken,
-      setSnackbarMessage
-    });
-
-    if (updateResult) {
-      setIssnRequest(updateResult);
-    }
-
-    setIsEdit(false);
-  }
-
-  /* Handles deleting of the current request */
-  async function handleDeleteRequest() {
-    await deleteEntry({
-      url: `/api/issn-registry/requests/${id}`,
-      authenticationToken,
-      history,
-      redirectRoute: '/issn-registry/requests',
-      setSnackbarMessage
-    });
-
-    setDeleteModalIsOpen(false);
-  }
-
-  /* Send message button is disabled when the status of the request is 'NOT_HANDLED' or 'REJECTED' */
-  const sendMessageButtonIsDisabled = () => {
-    return issnRequest.status === 'NOT_HANDLED' || issnRequest.status === 'REJECTED';
-  };
-
-  /* Handles sending of a message to the publisher */
-  const handleSendMessage = () => {
-    history.push({
-      pathname: '/issn-registry/messages/form/send',
-      state: {
-        messageCode: 'form_handled',
-        langCode: issnRequest.langCode,
-        formId: issnRequest.id,
-        publisherId: issnRequest.publisherId
-      }
-    });
-  };
-
-  // Required to avoid textField focus issues on edit
-  const dataComponent = (
-    <IssnRequestDataComponent
-      issnRequest={issnRequest}
-      setIssnRequest={setIssnRequest}
-      isEdit={isEdit}
-      {...props}
-    />
-  );
-
   if (error) {
     return (
       <Typography variant="h2" className="normalTitle">
@@ -197,43 +94,6 @@ function IssnRequest(props) {
     return <Spinner />;
   }
 
-  if (isEdit) {
-    return (
-      <>
-        <Typography variant="h5" className="titleTopSticky">
-          {issnRequest.publisher ?? ''} - ISSN-
-          <FormattedMessage id="common.requestDetails" />
-        </Typography>
-        <div className="listItem">
-          <Form
-            onSubmit={handlePublicationRequestUpdate}
-            initialValues={issnRequest}
-            validate={validate}
-          >
-            {({handleSubmit, valid}) => (
-              <form onSubmit={handleSubmit}>
-                <div className="updateButtonsContainer">
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="success"
-                    disabled={!valid}
-                  >
-                    <FormattedMessage id="form.button.label.update" />
-                  </Button>
-                  <Button variant="contained" color="error" onClick={handleCancel}>
-                    <FormattedMessage id="form.button.label.cancel" />
-                  </Button>
-                </div>
-                <div className="listItemSpinner">{dataComponent}</div>
-              </form>
-            )}
-          </Form>
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
       <Typography variant="h5" className="titleTopSticky">
@@ -241,105 +101,40 @@ function IssnRequest(props) {
         <FormattedMessage id="common.requestDetails" />
       </Typography>
       <div className="listItem">
-        <div className="requestButtonsContainer">
-          <Fab
-            color="secondary"
-            size="small"
-            title={intl.formatMessage({id: 'form.button.label.back'})}
-            onClick={() => handleGoBack()}
-          >
-            <ArrowBackIcon />
-          </Fab>
-          {/* Modal for creating new publishers */}
-          <IssnPublisherCreationModal
-            disabled={issnRequest.publisherCreated || Boolean(issnRequest.publisherId)}
-            formId={issnRequest.id}
-            publisherName={issnRequest.publisher}
-            {...props}
-          />
-          {/* Modal for creating new publications */}
-          <IssnPublicationCreationModal formId={issnRequest.id} {...props} />
-          {/* Send message */}
-          <Button
-            className="requestButton"
-            variant="outlined"
-            color="primary"
-            disabled={sendMessageButtonIsDisabled()}
-            onClick={() => handleSendMessage()}
-          >
-            {<FormattedMessage id="messages.sendMessage" />}
-          </Button>
-          {/* Modal for viewing publishers publications */}
-          <IssnPublicationsModal
-            searchAttribute={'formId'}
-            searchValue={issnRequest.id}
-            {...props}
-          />
-          {/* Modal for viewing publishers messages */}
-          <IssnMessagesModal
-            searchAttribute={'formId'}
-            searchValue={issnRequest.id}
-            {...props}
-          />
+        <div className="listItemSpinner">
+          { /* Display data only */}
+          {hasPublicationRequestData && !isEdit &&
+            <div>
+              <IssnRequestButtonRow
+                issnRequest={issnRequest}
+                setIsEdit={setIsEdit}
+              />
+              <IssnRequestDataComponent
+                issnRequest={issnRequest}
+                setIssnRequest={setIssnRequest}
+                isEdit={isEdit}
+              />
+            </div>
+          }
 
-          {/* Modal for viewing Archive Record */}
-          <IssnRequestArchiveModal formId={issnRequest.id} {...props} />
-
-          {/* Pressing the delete button below causes opening of a confirmation Dialog */}
-          <Fab
-            // Delete button is disabled if any publication linked to the request has an identifier
-            disabled={issnRequest.publicationCountIssn > 0}
-            color="warning"
-            size="small"
-            title={intl.formatMessage({id: 'form.button.label.delete'})}
-            onClick={() => setDeleteModalIsOpen(true)}
-          >
-            <DeleteIcon />
-          </Fab>
-          <Dialog
-            open={deleteModalIsOpen}
-            onClose={() => setDeleteModalIsOpen(false)}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title">
-              <FormattedMessage id="request.publisher.delete" />
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                <FormattedMessage id="request.publisher.delete.approve" />
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions className="dialogButtons">
-              <Button variant="contained" color="success" onClick={handleDeleteRequest}>
-                <FormattedMessage id="form.button.label.approve" />
-              </Button>
-              <Button variant="contained" color="error" onClick={() => setDeleteModalIsOpen(false)}>
-                <FormattedMessage id="form.button.label.cancel" />
-              </Button>
-            </DialogActions>
-          </Dialog>
-          {/* Edit mode - On/Off */}
-          <Fab
-            color="secondary"
-            size="small"
-            title={intl.formatMessage({id: 'form.button.label.edit'})}
-            onClick={handleEditClick}
-          >
-            <EditIcon />
-          </Fab>
+          { /* Edit data through form */}
+          {hasPublicationRequestData && isEdit &&
+            <IssnRequestEditForm
+              issnRequest={issnRequest}
+              setIssnRequest={setIssnRequest}
+              isEdit={isEdit}
+              setIsEdit={setIsEdit}
+            >
+              <IssnRequestDataComponent
+                issnRequest={issnRequest}
+                setIssnRequest={setIssnRequest}
+                isEdit={isEdit}
+              />
+            </IssnRequestEditForm>}
         </div>
-        <div className="listItemSpinner">{dataComponent}</div>
       </div>
     </>
   );
 }
-
-IssnRequest.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default withRouter(IssnRequest);
