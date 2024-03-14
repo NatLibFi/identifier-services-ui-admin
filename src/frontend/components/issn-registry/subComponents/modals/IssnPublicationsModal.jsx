@@ -45,6 +45,7 @@ import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
 function IssnPublicationsModal(props) {
   const {searchAttribute, searchValue, publisherName} = props;
+
   const history = useHistory();
   const {user: {access_token: authenticationToken}} = useAuth();
 
