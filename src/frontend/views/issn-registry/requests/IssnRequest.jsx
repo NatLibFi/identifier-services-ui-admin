@@ -130,7 +130,8 @@ function IssnRequest() {
                 setIssnRequest={setIssnRequest}
                 isEdit={isEdit}
               />
-            </IssnRequestEditForm>}
+            </IssnRequestEditForm>
+          }
         </div>
       </div>
     </>

@@ -55,33 +55,6 @@ function MarcPreviewModal({url, method, buttonLabelId, authenticationToken}) {
     setPage(newPage);
   };
 
-  const component = getComponent();
-
-  function getComponent() {
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (error) {
-      return <Typography>Could not fetch data due to API error</Typography>;
-    }
-
-    return(
-      <>
-        <pre>{data[page]}</pre>
-        <TablePagination
-          rowsPerPageOptions={[1]}
-          component="div"
-          count={data.length || 0}
-          rowsPerPage={1}
-          page={page}
-          onPageChange={handleChangePage}
-          labelDisplayedRows={({from, count}) => `${from} / ${count}`}
-        />
-      </>
-    );
-  }
-
   return (
     <>
       <Button
@@ -93,7 +66,29 @@ function MarcPreviewModal({url, method, buttonLabelId, authenticationToken}) {
         <FormattedMessage id={buttonLabelId} />
       </Button>
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <Box className="marcModal">{component}</Box>
+        <Box className="marcModal">
+          {/* Loading spinner */}
+          {loading && <Spinner />}
+
+          {/* Errors */}
+          {error && <Typography>Could not fetch data due to API error</Typography>}
+
+          {/* Content */}
+          {!loading && !error &&
+            <>
+              <pre>{data[page]}</pre>
+              <TablePagination
+                rowsPerPageOptions={[1]}
+                component="div"
+                count={data.length || 0}
+                rowsPerPage={1}
+                page={page}
+                onPageChange={handleChangePage}
+                labelDisplayedRows={({from, count}) => `${from} / ${count}`}
+              />
+            </>
+          }
+        </Box>
       </Modal>
     </>
   );

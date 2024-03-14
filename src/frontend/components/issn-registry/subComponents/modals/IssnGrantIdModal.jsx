@@ -34,7 +34,7 @@ import '/src/frontend/css/common.css';
 import '/src/frontend/css/subComponents/modals.css';
 
 function IssnGrantIdModal(props) {
-  const {grantIssnPublicationId, id, token, history, publisherId} = props;
+  const {handleGrantIssn, hasPublisher} = props;
   // State for the modal window (adding new ISSN id)
   const [openGrantIssnIdModal, setOpenGrantIssnIdModal] = useState(false);
 
@@ -45,14 +45,14 @@ function IssnGrantIdModal(props) {
   // Handles approving a process of adding a new ISSN id
   const handleApproveGrantingIssnId = async () => {
     setOpenGrantIssnIdModal(false);
-    grantIssnPublicationId(id, token, history);
+    handleGrantIssn();
   };
 
   return (
     <>
       {/* Button that opens a modal for adding a new ISSN id */}
       <Button
-        disabled={!publisherId}
+        disabled={!hasPublisher}
         className="requestButton"
         variant="contained"
         color="primary"
@@ -93,11 +93,8 @@ function IssnGrantIdModal(props) {
 }
 
 IssnGrantIdModal.propTypes = {
-  grantIssnPublicationId: PropTypes.func.isRequired,
-  id: PropTypes.string.isRequired,
-  token: PropTypes.string.isRequired,
-  history: PropTypes.object.isRequired,
-  publisherId: PropTypes.string
+  handleGrantIssn: PropTypes.func.isRequired,
+  hasPublisher: PropTypes.bool.isRequired
 };
 
 export default IssnGrantIdModal;
