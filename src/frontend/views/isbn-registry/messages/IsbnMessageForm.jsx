@@ -26,11 +26,15 @@
  */
 
 import React, {useRef} from 'react';
-import PropTypes from 'prop-types';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
+
 import {FormattedMessage} from 'react-intl';
 import {Field, Form} from 'react-final-form';
 import {Button, Typography, Box, Link} from '@mui/material';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
 
@@ -41,9 +45,12 @@ import RenderTextField from '/src/frontend/components/common/form/render/RenderT
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import {validateSendMessage} from '/src/frontend/components/common/validation';
 
-function IsbnMessageForm(props) {
-  const {userInfo, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+function IsbnMessageForm() {
+  const {user: {access_token: authenticationToken}} = useAuth();
+  const history = useHistory();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   // Early return if no location to read state from is defined
   if (!history || !history.location || history.action !== 'PUSH') {
@@ -278,13 +285,6 @@ function IsbnMessageForm(props) {
       </Form>
     </Box>
   );
-
 }
-
-IsbnMessageForm.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired
-};
 
 export default IsbnMessageForm;

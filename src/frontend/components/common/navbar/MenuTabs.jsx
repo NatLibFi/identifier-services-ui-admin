@@ -36,7 +36,7 @@ import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import '/src/frontend/css/navigationBar/menuTabs.css';
 
 function MenuTabs(props) {
-  const {navbarItem, isAuthenticated} = props;
+  const {navbarItem} = props;
   const [anchorEl, setAnchorEl] = useState(null);
 
   function handleClick(event) {
@@ -52,13 +52,13 @@ function MenuTabs(props) {
       <div onClick={handleClick}>
         {navbarItem.path !== undefined ? (
           <NavLink exact to={`/${navbarItem.path}`}>
-            <div className={isAuthenticated ? 'menuItemLoggedIn' : 'menuItem'}>
+            <div className={'menuItemLoggedIn'}>
               {navbarItem.label}
             </div>
           </NavLink>
         ) : (
           <Link component="button">
-            <div className={isAuthenticated ? 'menuItemLoggedIn' : 'menuItem'}>
+            <div className={'menuItemLoggedIn'}>
               {navbarItem.label}
               <ArrowDropDown />
             </div>
@@ -96,8 +96,7 @@ function MenuTabs(props) {
 }
 
 MenuTabs.propTypes = {
-  navbarItem: PropTypes.object,
-  isAuthenticated: PropTypes.bool.isRequired
+  navbarItem: PropTypes.object
 };
 
 export default MenuTabs;

@@ -26,8 +26,13 @@
  */
 
 import React, {useRef} from 'react';
-import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory, useParams, withRouter} from 'react-router-dom';
+
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
+import useItem from '/src/frontend/hooks/useItem';
+
 import {FormattedMessage} from 'react-intl';
 import moment from 'moment';
 
@@ -35,7 +40,6 @@ import {Grid, Link, Fab, Typography} from '@mui/material';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import LinkIcon from '@mui/icons-material/Link';
 
-import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
 
 import '/src/frontend/css/messages/message.css';
@@ -44,9 +48,13 @@ import BundledEditor from '/src/frontend/components/common/BundledEditor.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import ResendMessageModal from '/src/frontend/components/common/subComponents/modals/ResendMessageModal.jsx';
 
-function IsbnMessage(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+function IsbnMessage() {
+  const {user: {access_token: authenticationToken}} = useAuth();
+  const history = useHistory();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
   const {
     messageCode,
     publisherId,
@@ -56,7 +64,8 @@ function IsbnMessage(props) {
   } = history.location.state;
 
   // ID of a current template
-  const {id} = match.params;
+  const params = useParams();
+  const {id} = params;
   const editorRef = useRef(null);
   const resendEditorRef = useRef(null);
 
@@ -161,7 +170,7 @@ function IsbnMessage(props) {
       ];
 
       // When coming from the publisher's modals - redirect back to the publisher's page
-      if(redirectToPublisherPage.includes(messageCode)) {
+      if (redirectToPublisherPage.includes(messageCode)) {
         return history.push({
           pathname: `/isbn-registry/publishers/${publisherId}`,
           state: {
@@ -307,14 +316,6 @@ function IsbnMessage(props) {
       </div>
     </div>
   );
-
 }
-
-IsbnMessage.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default withRouter(IsbnMessage);

@@ -25,24 +25,31 @@
  *
  */
 
-import React, {useState} from 'react';
-import PropTypes from 'prop-types';
+import React, {useMemo, useState} from 'react';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
 import {FormattedMessage} from 'react-intl';
 
 import {Grid, Typography} from '@mui/material';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useList from '/src/frontend/hooks/useList';
 
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/identifierRanges/range.css';
 
 import ModalLayout from '/src/frontend/components/common/ModalLayout.jsx';
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
+import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
+
 import RangeCreationForm from '/src/frontend/components/isbn-registry/identifierRanges/isbn/IsbnRangeCreationForm.jsx';
 
-function IsbnRangeList(props) {
-  const {authenticationToken, setSnackbarMessage, history} = props;
+function IsbnRangeList() {
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+  const {user: {access_token: authenticationToken}} = useAuth();
+  const history = useHistory();
 
   const [modal, setModal] = useState(false); // eslint-disable-line no-unused-vars
 
@@ -56,12 +63,31 @@ function IsbnRangeList(props) {
     modalIsUsed: false
   });
 
+  const formattedData = useMemo(() => {
+    return data
+      .sort((a, b) => a.rangeBegin - b.rangeBegin)
+      .sort((a, b) => a.category - b.category)
+      .sort((a, b) => a.langGroup - b.langGroup)
+      .sort((a, b) => a.prefix - b.prefix)
+      .map(formatDataEntry);
+
+    function formatDataEntry(entry) {
+      return {
+        ...entry,
+        free: entry.free + entry.canceled,
+        taken: entry.taken - entry.canceled
+      };
+    }
+  }, [data]);
+
+  const hasData = formattedData && formattedData.length > 0;
+
   const handleTableRowClick = (id) => {
     history.push(`/isbn-registry/ranges/isbn/${id}`);
   };
 
   // Titles of the columns in the table
-  function getHeadRows() {
+  const headRows = useMemo(() => {
     const headers = [
       'prefix',
       'langGroup',
@@ -78,54 +104,7 @@ function IsbnRangeList(props) {
       acc.push({id: `${k}`, intlId: `table.headRows.${k}`});
       return acc;
     }, []);
-  }
-
-  function formatDataEntry(entry) {
-    return {
-      ...entry,
-      free: entry.free + entry.canceled,
-      taken: entry.taken - entry.canceled
-    };
-  }
-
-  const dataComponent = setDataComponent();
-
-  function setDataComponent() {
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (error) {
-      return <Typography>Could not fetch data due to API error</Typography>;
-    }
-
-    return(
-      <TableComponent
-        pagination
-        data={data
-          .sort((a, b) => a.rangeBegin - b.rangeBegin)
-          .sort((a, b) => a.category - b.category)
-          .sort((a, b) => a.langGroup - b.langGroup)
-          .sort((a, b) => a.prefix - b.prefix)
-          .map(formatDataEntry)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={getHeadRows()}
-        totalDoc={data.length}
-        // Those are not displayed on small screens (mobile devices etc)
-        // screen < 900px
-        unprioritizedRows={[
-          'rangeBegin',
-          'rangeEnd',
-          'free',
-          'taken',
-          'next',
-          'isClosed'
-        ]}
-        // screen < 550px
-        unprioritizedMobileRows={['isActive']}
-      />
-    );
-  }
+  }, []);
 
   return (
     <Grid item xs={12} className="listSearch">
@@ -151,15 +130,29 @@ function IsbnRangeList(props) {
           />
         </ModalLayout>
       </div>
-      {dataComponent}
+      <TableResultWrapper error={error} loading={loading} hasData={hasData}>
+        <TableComponent
+          pagination
+          data={formattedData}
+          handleTableRowClick={handleTableRowClick}
+          headRows={headRows}
+          totalDoc={formattedData.length}
+          // Those are not displayed on small screens (mobile devices etc)
+          // screen < 900px
+          unprioritizedRows={[
+            'rangeBegin',
+            'rangeEnd',
+            'free',
+            'taken',
+            'next',
+            'isClosed'
+          ]}
+          // screen < 550px
+          unprioritizedMobileRows={['isActive']}
+        />
+      </TableResultWrapper>
     </Grid>
   );
 }
-
-IsbnRangeList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IsbnRangeList;

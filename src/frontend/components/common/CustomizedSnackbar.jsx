@@ -26,22 +26,32 @@
  */
 
 import React, {useState, useEffect} from 'react';
-import {PropTypes} from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import {Snackbar, IconButton, Alert} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-function CustomizedSnackbar({message, setMessage}) {
-  const [open, setOpen] = useState(Boolean(message));
+import useAppState from '/src/frontend/hooks/useAppState';
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
+
+
+function CustomizedSnackbar() {
+  const {snackbarMessage} = useAppState();
+  const appStateDispatch = useAppStateDispatch();
+
+  const [open, setOpen] = useState(Boolean(snackbarMessage));
 
   useEffect(() => {
     setOpen(true);
-  }, [message]);
+  }, [snackbarMessage]);
 
   function handleClose() {
     setOpen(false);
-    setMessage(null);
+    appStateDispatch({snackbarMessage: null});
+  }
+
+  if (!snackbarMessage) {
+    return;
   }
 
   return (
@@ -56,7 +66,7 @@ function CustomizedSnackbar({message, setMessage}) {
     >
       <Alert
         aria-describedby="client-snackbar"
-        severity={message.severity ?? 'warning'}
+        severity={snackbarMessage?.severity ?? 'warning'}
         variant="filled"
         action={[
           <IconButton
@@ -69,16 +79,11 @@ function CustomizedSnackbar({message, setMessage}) {
           </IconButton>
         ]}
       >
-        {message.intlId && <FormattedMessage id={message.intlId} />}
-        {message.message && message.message}
+        {snackbarMessage.intlId && <FormattedMessage id={snackbarMessage.intlId} />}
+        {snackbarMessage.message && snackbarMessage.message}
       </Alert>
     </Snackbar>
   );
 }
-
-CustomizedSnackbar.propTypes = {
-  message: PropTypes.object,
-  setMessage: PropTypes.func.isRequired
-};
 
 export default CustomizedSnackbar;

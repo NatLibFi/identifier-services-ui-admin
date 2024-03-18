@@ -26,14 +26,16 @@
  */
 
 import React, {useRef} from 'react';
-import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory, useParams, withRouter} from 'react-router-dom';
 import {FormattedMessage} from 'react-intl';
 import moment from 'moment';
 
 import {Grid, Link, Fab, Typography} from '@mui/material';
 import {ArrowBack, Link as LinkIcon} from '@mui/icons-material';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
 import {redirect} from '/src/frontend/actions/util';
@@ -44,11 +46,15 @@ import BundledEditor from '/src/frontend/components/common/BundledEditor.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import ResendMessageModal from '/src/frontend/components/common/subComponents/modals/ResendMessageModal.jsx';
 
-function IssnMessage(props) {
-  const {userInfo: {authenticationToken}, match, history, setSnackbarMessage} = props;
+function IssnMessage() {
+  const history = useHistory();
+  const params = useParams();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
-  // ID of a current template
-  const {id} = match.params;
+  const {id} = params;
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
   const editorRef = useRef(null);
   const resendEditorRef = useRef(null);
 
@@ -233,12 +239,5 @@ function IssnMessage(props) {
     </div>
   );
 }
-
-IssnMessage.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default withRouter(IssnMessage);

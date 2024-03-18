@@ -26,8 +26,10 @@
  */
 
 import React, {useState} from 'react';
-import PropTypes from 'prop-types';
-import {FormattedMessage, useIntl} from 'react-intl';
+
+import {useAuth} from 'react-oidc-context';
+
+import {FormattedMessage} from 'react-intl';
 import {Form} from 'react-final-form';
 import moment from 'moment';
 
@@ -42,10 +44,12 @@ import RenderElement from '/src/frontend/components/common/form/RenderElement.js
 import {validate} from '/src/frontend/components/issn-registry/statisticsGeneratingForm/validation';
 import {STATISTIC_FORM_FIELDS} from '/src/frontend/components/issn-registry/statisticsGeneratingForm/content';
 
-function IssnStatisticsForm(props) {
-  const {authenticationToken} = props;
+// Required to avoid focus issues on edit
+const dataComponent = <RenderElement array={STATISTIC_FORM_FIELDS} />;
 
-  const intl = useIntl();
+function IssnStatisticsForm() {
+  const {user: {access_token: authenticationToken}} = useAuth();
+
   const [loading, setLoading] = useState(false);
 
   // Handler for generating statistics
@@ -67,12 +71,10 @@ function IssnStatisticsForm(props) {
     setLoading(false);
   };
 
-  // Required to avoid focus issues on edit
-  const dataComponent = <RenderElement array={STATISTIC_FORM_FIELDS} intl={intl} />;
-
   return (
     <Box>
       <Form
+        initialValues={{statisticsBeginDate: '1970-01-01', statisticsEndDate: moment().format('YYYY-MM-DD'), statisticsFileFormat: 'xlsx'}}
         onSubmit={handleGeneratingStatistics}
         validate={validate}
       >
@@ -117,9 +119,5 @@ function IssnStatisticsForm(props) {
     </Box>
   );
 }
-
-IssnStatisticsForm.propTypes = {
-  authenticationToken: PropTypes.string
-};
 
 export default IssnStatisticsForm;

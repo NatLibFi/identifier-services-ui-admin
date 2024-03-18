@@ -26,14 +26,13 @@
  */
 
 import React from 'react';
-import {PropTypes} from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 import {AppBar, Grid} from '@mui/material';
 
 import '/src/frontend/css/navigationBar/adminNav.css';
 import MenuTabs from '/src/frontend/components/common/navbar/MenuTabs.jsx';
 
-function IssnNavbar({userInfo}) {
+function IssnNavbar() {
   const navbarItems = [
     {
       id: 'ISSN-home',
@@ -90,7 +89,6 @@ function IssnNavbar({userInfo}) {
               <MenuTabs
                 key={navbarItem.id}
                 navbarItem={navbarItem}
-                isAuthenticated={userInfo.isAuthenticated}
               />
             ))}
           </div>
@@ -99,9 +97,5 @@ function IssnNavbar({userInfo}) {
     </Grid>
   );
 }
-
-IssnNavbar.propTypes = {
-  userInfo: PropTypes.object.isRequired
-};
 
 export default IssnNavbar;

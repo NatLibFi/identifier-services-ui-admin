@@ -26,13 +26,16 @@
  */
 
 import React, {useRef} from 'react';
-import PropTypes from 'prop-types';
+
 import {Form, Field} from 'react-final-form';
-import {withRouter} from 'react-router-dom';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory, useParams, withRouter} from 'react-router-dom';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import useItem from '/src/frontend/hooks/useItem';
 import useList from '/src/frontend/hooks/useList';
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import {makeApiRequest} from '/src/frontend/actions';
 
 import {Button, Typography} from '@mui/material';
@@ -47,14 +50,17 @@ import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import RenderTextField from '/src/frontend/components/common/form/render/RenderTextField.jsx';
 import RenderSelect from '/src/frontend/components/common/form/render/RenderSelect.jsx';
 
-function IsbnMessageTemplate(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+function IsbnMessageTemplate() {
+  const history = useHistory();
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+  const {user: {access_token: authenticationToken}} = useAuth();
 
   const intl = useIntl();
+  const params = useParams();
 
   // ID of a current template
-  const {id} = match.params;
+  const {id} = params;
   const editorRef = useRef(null);
 
   // Message template list loading
@@ -217,12 +223,5 @@ function IsbnMessageTemplate(props) {
   );
 
 }
-
-IsbnMessageTemplate.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default withRouter(IsbnMessageTemplate);
