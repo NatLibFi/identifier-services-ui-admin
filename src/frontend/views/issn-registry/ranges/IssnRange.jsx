@@ -26,13 +26,17 @@
  */
 
 import React, {useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
+
+import {useParams, withRouter} from 'react-router-dom';
 import {FormattedMessage, useIntl} from 'react-intl';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
 
 import {Grid, Typography, Button, Fab} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
 
@@ -42,13 +46,16 @@ import '/src/frontend/css/identifierRanges/range.css';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 
-function IssnRange(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
-
-  // Current range's id
-  const {id} = match.params;
+function IssnRange() {
   const intl = useIntl();
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
+  const params = useParams();
+  const {id} = params;
 
   const [range, setRange] = useState({});
   const [loading, setLoading] = useState(true);
@@ -317,12 +324,5 @@ function IssnRange(props) {
     </Grid>
   );
 }
-
-IssnRange.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default withRouter(IssnRange);

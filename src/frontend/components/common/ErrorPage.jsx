@@ -27,52 +27,32 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
 
 import {Typography, Paper} from '@mui/material';
 import ErrorIcon from '@mui/icons-material/Error';
 
-import useDocumentTitle from '/src/frontend/hooks/useDocumentTitle';
 import '/src/frontend/css/errorPage.css';
 
-function ErrorPage({errorType, errorMessage, location}) {
+function ErrorPage({errorMessage}) {
   // Set the title of the current page
-  useDocumentTitle('common.errorPage');
-
-  const generatedErrorMessage = () => {
-    if (errorType === 'SERVICE_DOWN') {
-      return (<FormattedMessage id="errorPage.message.serviceDown" />);
-    }
-
-    if (errorType === 'SERVICE_UNDER_MAINTENANCE') {
-      return (<FormattedMessage id="errorPage.message.serviceUnderMaintenance" />);
-    }
-
-    return (<FormattedMessage id="errorPage.message.defaultError" />);
-  };
-
-  const errorMessageToDisplay = () => {
-    const message = location?.state?.errorMessage || errorMessage;
-    return message ? <FormattedMessage id={message} /> : generatedErrorMessage();
-  };
+  document.title = 'Virhesivu';
+  const errorToDisplay = errorMessage || '';
 
   return (
     <Paper elevation={2} className="errorContainer">
       <Typography variant="h4" className="errorHeader">
         <ErrorIcon fontSize="inherit" />
-        <FormattedMessage id="errorPage.header" />
+        <p>Järjestelmä on kohdannut virheen</p>
       </Typography>
       <Typography variant="body1" className="errorText">
-        {errorMessageToDisplay()}
+        {errorToDisplay}
       </Typography>
     </Paper>
   );
 }
 
 ErrorPage.propTypes = {
-  errorType: PropTypes.string,
-  errorMessage: PropTypes.any,
-  location: PropTypes.object
+  errorMessage: PropTypes.string
 };
 
 export default ErrorPage;

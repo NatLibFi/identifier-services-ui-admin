@@ -27,7 +27,10 @@
 
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+
 import {FormattedMessage} from 'react-intl';
+import {useAuth} from 'react-oidc-context';
+
 
 import {
   Typography,
@@ -36,7 +39,9 @@ import {
   Switch
 } from '@mui/material';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useItem from '/src/frontend/hooks/useItem';
+
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
 import PublicationRequestDetails from '/src/frontend/components/isbn-registry/subComponents/modals/SavePublisherModal/PublicationRequestDetails.jsx';
@@ -45,17 +50,19 @@ import PublisherDetails from '/src/frontend/components/isbn-registry/subComponen
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/subComponents/modals.css';
 
-function ModalComponent(props) {
+function SavePublisherModal(props) {
   const {
     publisherId,
     publicationRequest,
     setPublicationRequest,
-    authenticationToken,
     savePublisherModalOpen,
     setSavePublisherModalOpen,
-    setSnackbarMessage,
     handleCloseSavePublisherModal
   } = props;
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   // State for the Switch element (publisher/request details)
   const [showPublicationRequestDetails, setShowPublicationRequestDetails] = useState(false);
@@ -78,53 +85,26 @@ function ModalComponent(props) {
     setShowPublicationRequestDetails(!showPublicationRequestDetails);
   };
 
-  // Component to be displayed
-  const component = getComponent();
-
-  // Get the component to be displayed for different cases
-  function getComponent() {
-    if (error) {
-      return (
-        <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
-        </Typography>
-      );
-    }
-
-    if (loading) {
-      return <Spinner />;
-    }
-
-    // Display a message if object is empty, or data is not a type of object
-    if (typeof data !== 'object' || Object.keys(data).length === 0) {
-      return (
-        <div>
-          <Typography>
-            <FormattedMessage id="modal.savePublisher.noData" />
-          </Typography>
-        </div>
-      );
-    }
-
-    // Display publication request details if the switch is on
-    if (showPublicationRequestDetails) {
-      return (
-        <PublicationRequestDetails publicationRequest={publicationRequest} />
-      );
-    }
-
-    // Display publisher details if the switch is off (default)
+  if (error) {
     return (
-      <PublisherDetails
-        publisher={data}
-        publisherId={publisherId}
-        publicationRequest={publicationRequest}
-        setPublicationRequest={setPublicationRequest}
-        setSnackbarMessage={setSnackbarMessage}
-        authenticationToken={authenticationToken}
-        setSavePublisherModalOpen={setSavePublisherModalOpen}
-        handleCloseSavePublisherModal={handleCloseSavePublisherModal}
-      />
+      <Typography variant="h2" className="normalTitle">
+        <FormattedMessage id="errorPage.message.defaultError" />
+      </Typography>
+    );
+  }
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  // Display a message if object is empty, or data is not a type of object
+  if (typeof data !== 'object' || Object.keys(data).length === 0) {
+    return (
+      <div>
+        <Typography>
+          <FormattedMessage id="modal.savePublisher.noData" />
+        </Typography>
+      </div>
     );
   }
 
@@ -154,21 +134,35 @@ function ModalComponent(props) {
             <FormattedMessage id="common.requestDetails" />
           </Typography>
         </div>
-        {component}
+
+        {/* Show publication */}
+        {showPublicationRequestDetails && <PublicationRequestDetails publicationRequest={publicationRequest} />}
+
+        {/* Show publisher */}
+        {!showPublicationRequestDetails &&
+          <PublisherDetails
+            publisher={data}
+            publisherId={publisherId}
+            publicationRequest={publicationRequest}
+            setPublicationRequest={setPublicationRequest}
+            setSnackbarMessage={setSnackbarMessage}
+            authenticationToken={authenticationToken}
+            setSavePublisherModalOpen={setSavePublisherModalOpen}
+            handleCloseSavePublisherModal={handleCloseSavePublisherModal}
+          />
+        }
       </Box>
     </Modal>
   );
 }
 
-ModalComponent.propTypes = {
+SavePublisherModal.propTypes = {
   setPublicationRequest: PropTypes.func.isRequired,
   savePublisherModalOpen: PropTypes.bool.isRequired,
   setSavePublisherModalOpen: PropTypes.func.isRequired,
   handleCloseSavePublisherModal: PropTypes.func.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
   publisherId: PropTypes.number,
-  publicationRequest: PropTypes.object.isRequired,
-  authenticationToken: PropTypes.string.isRequired
+  publicationRequest: PropTypes.object.isRequired
 };
 
-export default ModalComponent;
+export default SavePublisherModal;

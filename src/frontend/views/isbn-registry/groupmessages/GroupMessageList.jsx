@@ -25,8 +25,10 @@
  *
  */
 
-import React, {useState} from 'react';
-import PropTypes from 'prop-types';
+import React, {useMemo, useState} from 'react';
+
+import {useAuth} from 'react-oidc-context';
+
 import {FormattedMessage, useIntl} from 'react-intl';
 import {Form} from 'react-final-form';
 
@@ -40,8 +42,8 @@ import RenderElement from '/src/frontend/components/common/form/RenderElement.js
 import {validate} from '/src/frontend/components/isbn-registry/groupMessages/validation';
 import {GROUPMESSAGE_FORM_FIELDS} from '/src/frontend/components/isbn-registry/groupMessages/content';
 
-function IsbnGroupMessageList(props) {
-  const {authenticationToken} = props;
+function IsbnGroupMessageList() {
+  const {user: {access_token: authenticationToken}} = useAuth();
 
   const intl = useIntl();
   const [loading, setLoading] = useState(false);
@@ -67,7 +69,7 @@ function IsbnGroupMessageList(props) {
   };
 
   // Required to avoid focus issues on edit
-  const dataComponent = <RenderElement array={GROUPMESSAGE_FORM_FIELDS} intl={intl} />;
+  const dataComponent = useMemo(() => <RenderElement array={GROUPMESSAGE_FORM_FIELDS} intl={intl} />, []);
 
   return (
     <Box>
@@ -78,11 +80,11 @@ function IsbnGroupMessageList(props) {
         {({handleSubmit, valid}) => (
           <form className='groupMessageForm' onSubmit={handleSubmit} >
             <Typography variant="h4">
-              <FormattedMessage id="common.groupmessages"/>
+              <FormattedMessage id="common.groupmessages" />
             </Typography>
 
             <Typography variant="h5">
-              <FormattedMessage id="form.groupmessages.downloademail"/>
+              <FormattedMessage id="form.groupmessages.downloademail" />
             </Typography>
 
             <div className='groupMessageFieldsContainer'>
@@ -95,16 +97,16 @@ function IsbnGroupMessageList(props) {
               variant="contained"
               color="success"
             >
-              <FormattedMessage id="common.download"/>
+              <FormattedMessage id="common.download" />
             </Button>
 
             {loading &&
-                <div className='groupMessageSpinner'>
-                  <Typography>
-                    <FormattedMessage id='statistics.generating'/>
-                  </Typography>
-                  <CircularProgress/>
-                </div>
+              <div className='groupMessageSpinner'>
+                <Typography>
+                  <FormattedMessage id='statistics.generating' />
+                </Typography>
+                <CircularProgress />
+              </div>
             }
           </form>
         )}
@@ -112,9 +114,5 @@ function IsbnGroupMessageList(props) {
     </Box>
   );
 }
-
-IsbnGroupMessageList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired
-};
 
 export default IsbnGroupMessageList;

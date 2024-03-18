@@ -26,33 +26,28 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
-import {Typography} from '@mui/material';
 
-function PrivateRoute(props) {
-  const {RenderComponent, userInfo} = props;
+import {Grid} from '@mui/material';
 
-  if (userInfo?.isAuthenticated) {
-    return <RenderComponent {...props} />;
-  }
+import useAppState from '/src/frontend/hooks/useAppState';
+
+import IsbnNavbar from '/src/frontend/components/common/navbar/IsbnNavbar.jsx'; // teal ISBN nav bar
+import IssnNavbar from '/src/frontend/components/common/navbar/IssnNavbar.jsx'; // green ISSN nav bar
+
+import '/src/frontend/css/navigationBar/defaultNav.css';
+
+function MainNav() {
+  const {typeOfService} = useAppState();
 
   return (
-    <div className="deniedContainer">
-      <Typography variant="h3">
-        <FormattedMessage id="deniedComponent.accessdenied.heading" />
-      </Typography>
-      <Typography variant="caption">
-        <FormattedMessage id="deniedComponent.accessdenied.message" />
-      </Typography>
-    </div>
+    <Grid container item xs={12}>
+      {typeOfService === 'issn' ? (
+        <IssnNavbar />
+      ) : (
+        <IsbnNavbar />
+      )}
+    </Grid>
   );
 }
 
-PrivateRoute.propTypes = {
-  RenderComponent: PropTypes.elementType.isRequired,
-  userInfo: PropTypes.object,
-  history: PropTypes.object.isRequired
-};
-
-export default PrivateRoute;
+export default MainNav;

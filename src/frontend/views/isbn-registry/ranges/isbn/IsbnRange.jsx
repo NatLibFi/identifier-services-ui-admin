@@ -25,11 +25,15 @@
  *
  */
 
-import React, {useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
+import React, {useEffect, useMemo, useState} from 'react';
 
+import {useAuth} from 'react-oidc-context';
+import {useHistory, withRouter} from 'react-router-dom';
 import {FormattedMessage, useIntl} from 'react-intl';
+import {useParams} from 'react-router-dom';
+
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
+
 import {Grid, Typography, Button, Fab} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -44,12 +48,16 @@ import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 
 import {getIdentifiersAvailable, getIdentifiersUsed} from '/src/frontend/rangeFormattingUtils';
 
-function IsbnRange(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
-
-  const {id} = match.params;
+function IsbnRange() {
+  const history = useHistory();
+  const params = useParams();
   const intl = useIntl();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
+  const {user: {access_token: authenticationToken}} = useAuth();
+  const {id} = params;
 
   const [range, setRange] = useState({});
   const [loading, setLoading] = useState(true);
@@ -69,7 +77,9 @@ function IsbnRange(props) {
     requireAuth: true
   });
 
-  // Set data to publisher during initial load
+  const identifiersAvailable = useMemo(() => getIdentifiersAvailable(range), [range]);
+  const identifiersUsed = useMemo(() => getIdentifiersUsed(range), [range]);
+
   useEffect(() => {
     setRange(initialData);
 
@@ -147,188 +157,168 @@ function IsbnRange(props) {
     }
   }
 
-  const buttons = (
-    <div className="rangeButtonsContainer">
-      <Fab
-        color="secondary"
-        size="small"
-        title={intl.formatMessage({id: 'form.button.label.back'})}
-        onClick={() => handleGoBack()}
-      >
-        <ArrowBackIcon />
-      </Fab>
-      {!(range.taken !== 0 || range.canceled !== 0) && (
-        <Button
-          className="buttons"
-          variant="outlined"
-          color="primary"
-          onClick={() => handleDeleteRange()}
-        >
-          <FormattedMessage id="form.button.label.delete" />
-        </Button>
-      )}
-      {!range.isClosed && (
-        <Button
-          className="buttons"
-          variant="outlined"
-          color="primary"
-          onClick={() => handleCloseRange()}
-        >
-          <FormattedMessage id="form.button.label.close" />
-        </Button>
-      )}
-      {range.isClosed &&
-        getIdentifiersAvailable(range) &&
-        getIdentifiersAvailable(range) !== '0' && (
-        <Button
-          className="buttons"
-          variant="outlined"
-          color="primary"
-          onClick={() => handleOpenRange()}
-        >
-          <FormattedMessage id="form.button.label.open" />
-        </Button>
-      )}
-      {!range.isActive && !range.isClosed && (
-        <Button
-          className="buttons"
-          variant="outlined"
-          color="primary"
-          onClick={() => handleActivateRange()}
-        >
-          <FormattedMessage id="form.button.label.activate" />
-        </Button>
-      )}
-      {range.isActive && (
-        <Button
-          className="buttons"
-          variant="outlined"
-          color="primary"
-          onClick={() => handleDeactivateRange()}
-        >
-          <FormattedMessage id="form.button.label.deactivate" />
-        </Button>
-      )}
-    </div>
-  );
-
-  const dataComponent = setDataComponent();
-
-  function setDataComponent() {
-    if (error) {
-      return (
-        <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
-        </Typography>
-      );
-    }
-
-    if (loading) {
-      return <Spinner />;
-    }
-
-    return(
-      <Grid item xs={12} className="rangeContainer">
-        <Typography variant="h5" className="rangesTitleColor">
-          <FormattedMessage id="ranges.range" /> - {id}
-        </Typography>
-        {buttons}
-        <Grid container spacing={3} className="rangeAndSubRangeContainer">
-          <div className="mainContainer">
-            <div className="listComponentContainer">
-              <Typography variant="h6" className="listComponentContainerHeader">
-                <FormattedMessage id="ranges.range.title" values={{part: '1/3'}} />
-              </Typography>
-              <ListComponent
-                fieldName="category"
-                label={<FormattedMessage id="ranges.category" />}
-                value={range.category ?? ''}
-              />
-              <ListComponent
-                fieldName="active"
-                label={<FormattedMessage id="ranges.range.isActive" />}
-                value={intl.formatMessage({id: `common.${range.isActive}`}) ?? ''}
-              />
-              <ListComponent
-                fieldName="closed"
-                label={<FormattedMessage id="ranges.range.isClosed" />}
-                value={intl.formatMessage({id: `common.${range.isClosed}`}) ?? ''}
-              />
-              <ListComponent
-                fieldName="prefix"
-                label={<FormattedMessage id="ranges.prefix" />}
-                value={range.prefix ?? ''}
-              />
-              <ListComponent
-                fieldName="langGroup"
-                label={<FormattedMessage id="ranges.langGroup" />}
-                value={range.langGroup ?? ''}
-              />
-              <ListComponent
-                fieldName="rangeBegin"
-                label={<FormattedMessage id="ranges.rangeBegin" />}
-                value={range.rangeBegin ?? ''}
-              />
-              <ListComponent
-                fieldName="rangeEnd"
-                label={<FormattedMessage id="ranges.rangeEnd" />}
-                value={range.rangeEnd ?? ''}
-              />
-            </div>
-            <div className="listComponentContainer">
-              <Typography variant="h6" className="listComponentContainerHeader">
-                <FormattedMessage id="ranges.range.title" values={{part: '2/3'}} />
-              </Typography>
-              <ListComponent
-                fieldName="free"
-                label={<FormattedMessage id="ranges.range.free" />}
-                value={getIdentifiersAvailable(range)}
-              />
-              <ListComponent
-                fieldName="taken"
-                label={<FormattedMessage id="ranges.range.taken" />}
-                value={getIdentifiersUsed(range)}
-              />
-            </div>
-            <div className="listComponentContainer">
-              <Typography variant="h6" className="listComponentContainerHeader">
-                <FormattedMessage id="ranges.range.title" values={{part: '3/3'}} />
-              </Typography>
-              <ListComponent
-                fieldName="timestamp"
-                label={<FormattedMessage id="form.common.created" />}
-                value={range.created ?? ''}
-              />
-              <ListComponent
-                fieldName="createdBy"
-                label={<FormattedMessage id="form.common.createdBy" />}
-                value={range.createdBy ?? ''}
-              />
-              <ListComponent
-                fieldName="timestamp"
-                label={<FormattedMessage id="form.common.modified" />}
-                value={range.modified ?? ''}
-              />
-              <ListComponent
-                fieldName="modifiedBy"
-                label={<FormattedMessage id="form.common.modifiedBy" />}
-                value={range.modifiedBy ?? ''}
-              />
-            </div>
-          </div>
-        </Grid>
-      </Grid>
+  if (error) {
+    return (
+      <Typography variant="h2" className="normalTitle">
+        <FormattedMessage id="errorPage.message.defaultError" />
+      </Typography>
     );
   }
 
-  return dataComponent;
-}
+  if (loading) {
+    return <Spinner />;
+  }
 
-IsbnRange.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
+  return (
+    <Grid item xs={12} className="rangeContainer">
+      <Typography variant="h5" className="rangesTitleColor">
+        <FormattedMessage id="ranges.range" /> - {id}
+      </Typography>
+      {/** Buttons */}
+      <div className="rangeButtonsContainer">
+        <Fab
+          color="secondary"
+          size="small"
+          title={intl.formatMessage({id: 'form.button.label.back'})}
+          onClick={() => handleGoBack()}
+        >
+          <ArrowBackIcon />
+        </Fab>
+        {!(range.taken !== 0 || range.canceled !== 0) && (
+          <Button
+            className="buttons"
+            variant="outlined"
+            color="primary"
+            onClick={() => handleDeleteRange()}
+          >
+            <FormattedMessage id="form.button.label.delete" />
+          </Button>
+        )}
+        {!range.isClosed && (
+          <Button
+            className="buttons"
+            variant="outlined"
+            color="primary"
+            onClick={() => handleCloseRange()}
+          >
+            <FormattedMessage id="form.button.label.close" />
+          </Button>
+        )}
+        {range.isClosed &&
+          identifiersAvailable &&
+          identifiersAvailable !== '0' && (
+          <Button className="buttons" variant="outlined" color="primary" onClick={() => handleOpenRange()}>
+            <FormattedMessage id="form.button.label.open" />
+          </Button>
+        )}
+        {!range.isActive && !range.isClosed && (
+          <Button
+            className="buttons"
+            variant="outlined"
+            color="primary"
+            onClick={() => handleActivateRange()}
+          >
+            <FormattedMessage id="form.button.label.activate" />
+          </Button>
+        )}
+        {range.isActive && (
+          <Button
+            className="buttons"
+            variant="outlined"
+            color="primary"
+            onClick={() => handleDeactivateRange()}
+          >
+            <FormattedMessage id="form.button.label.deactivate" />
+          </Button>
+        )}
+      </div>
+
+      <Grid container spacing={3} className="rangeAndSubRangeContainer">
+        <div className="mainContainer">
+          <div className="listComponentContainer">
+            <Typography variant="h6" className="listComponentContainerHeader">
+              <FormattedMessage id="ranges.range.title" values={{part: '1/3'}} />
+            </Typography>
+            <ListComponent
+              fieldName="category"
+              label={<FormattedMessage id="ranges.category" />}
+              value={range.category ?? ''}
+            />
+            <ListComponent
+              fieldName="active"
+              label={<FormattedMessage id="ranges.range.isActive" />}
+              value={intl.formatMessage({id: `common.${range.isActive}`}) ?? ''}
+            />
+            <ListComponent
+              fieldName="closed"
+              label={<FormattedMessage id="ranges.range.isClosed" />}
+              value={intl.formatMessage({id: `common.${range.isClosed}`}) ?? ''}
+            />
+            <ListComponent
+              fieldName="prefix"
+              label={<FormattedMessage id="ranges.prefix" />}
+              value={range.prefix ?? ''}
+            />
+            <ListComponent
+              fieldName="langGroup"
+              label={<FormattedMessage id="ranges.langGroup" />}
+              value={range.langGroup ?? ''}
+            />
+            <ListComponent
+              fieldName="rangeBegin"
+              label={<FormattedMessage id="ranges.rangeBegin" />}
+              value={range.rangeBegin ?? ''}
+            />
+            <ListComponent
+              fieldName="rangeEnd"
+              label={<FormattedMessage id="ranges.rangeEnd" />}
+              value={range.rangeEnd ?? ''}
+            />
+          </div>
+          <div className="listComponentContainer">
+            <Typography variant="h6" className="listComponentContainerHeader">
+              <FormattedMessage id="ranges.range.title" values={{part: '2/3'}} />
+            </Typography>
+            <ListComponent
+              fieldName="free"
+              label={<FormattedMessage id="ranges.range.free" />}
+              value={identifiersAvailable}
+            />
+            <ListComponent
+              fieldName="taken"
+              label={<FormattedMessage id="ranges.range.taken" />}
+              value={identifiersUsed}
+            />
+          </div>
+          <div className="listComponentContainer">
+            <Typography variant="h6" className="listComponentContainerHeader">
+              <FormattedMessage id="ranges.range.title" values={{part: '3/3'}} />
+            </Typography>
+            <ListComponent
+              fieldName="timestamp"
+              label={<FormattedMessage id="form.common.created" />}
+              value={range.created ?? ''}
+            />
+            <ListComponent
+              fieldName="createdBy"
+              label={<FormattedMessage id="form.common.createdBy" />}
+              value={range.createdBy ?? ''}
+            />
+            <ListComponent
+              fieldName="timestamp"
+              label={<FormattedMessage id="form.common.modified" />}
+              value={range.modified ?? ''}
+            />
+            <ListComponent
+              fieldName="modifiedBy"
+              label={<FormattedMessage id="form.common.modifiedBy" />}
+              value={range.modifiedBy ?? ''}
+            />
+          </div>
+        </div>
+      </Grid>
+    </Grid>
+  );
+}
 
 export default withRouter(IsbnRange);
