@@ -26,10 +26,13 @@
  */
 
 import React, {useState, useEffect} from 'react';
-import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
+
+import {useAuth} from 'react-oidc-context';
+
+import {useHistory, useParams, withRouter} from 'react-router-dom';
 import {FormattedMessage, useIntl} from 'react-intl';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useItem from '/src/frontend/hooks/useItem';
 import {makeApiRequest} from '/src/frontend/actions';
 
@@ -55,11 +58,15 @@ import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 
 import {getIdentifiersAvailable, getIdentifiersUsed} from '/src/frontend/rangeFormattingUtils';
 
-function IsbnPublisherRange(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+function IsbnPublisherRange() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
-  const {id} = match.params;
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
+  const params = useParams();
+  const {id} = params;
   const intl = useIntl();
 
   const [subRange, setSubRange] = useState({});
@@ -370,12 +377,5 @@ function IsbnPublisherRange(props) {
     </Grid>
   );
 }
-
-IsbnPublisherRange.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default withRouter(IsbnPublisherRange);
