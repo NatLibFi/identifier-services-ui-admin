@@ -45,6 +45,7 @@ import NewspaperIcon from '@mui/icons-material/Newspaper';
 
 import useAppState from '/src/frontend/hooks/useAppState';
 import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
+import useRuntimeEnv from '/src/frontend/hooks/useRuntimeConfig';
 
 import '/src/frontend/css/navigationBar/topNav.css';
 
@@ -53,6 +54,7 @@ import LogoutButton from '/src/frontend/components/common/subComponents/LogoutBu
 function TopNav() {
   const history = useHistory();
   const {user} = useAuth();
+  const isTestInstance = useRuntimeEnv();
 
   const {typeOfService} = useAppState();
   const appStateDispatch = useAppStateDispatch();
@@ -67,6 +69,13 @@ function TopNav() {
 
   return (
     <AppBar position="static" className="appBar">
+      {/* Test header */}
+      {isTestInstance && (
+        <div className="testHeader">
+          THIS IS A TEST ENVIRONMENT / TÄMÄ ON TESTIYMPÄRISTÖ
+        </div>
+      )}
+
       <div className="navbarContainer">
         <div className="navbarInnerContainer">
           <Link to="/" className="mainLogo">
