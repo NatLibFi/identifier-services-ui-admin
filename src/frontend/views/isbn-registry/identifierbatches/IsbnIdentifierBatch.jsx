@@ -26,12 +26,15 @@
  */
 
 import React, {useState} from 'react';
-import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
+
+import {useAuth} from 'react-oidc-context';
+
+import {useHistory, useParams, withRouter} from 'react-router-dom';
 
 import {FormattedMessage, useIntl} from 'react-intl';
 import {Grid, Typography} from '@mui/material';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useItem from '/src/frontend/hooks/useItem';
 import {downloadFile, removeBatch} from '/src/frontend/actions';
 import {redirect} from '/src/frontend/actions/util';
@@ -42,12 +45,17 @@ import '/src/frontend/css/identifierRanges/batch.css';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import AdminDataComponent from '/src/frontend/components/isbn-registry/identifierRanges/isbn/Batch.jsx';
 
-function IsbnIdentifierBatch(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+function IsbnIdentifierBatch() {
   const [showSpinner, setShowSpinner] = useState(true);
 
-  const {id} = match.params;
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
+  const params = useParams();
+  const {id} = params;
   const intl = useIntl();
 
   // Fetching data of the current template
@@ -132,12 +140,5 @@ function IsbnIdentifierBatch(props) {
   );
 
 }
-
-IsbnIdentifierBatch.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default withRouter(IsbnIdentifierBatch);
