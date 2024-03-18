@@ -26,9 +26,12 @@
  */
 
 import React, {useRef} from 'react';
-import PropTypes from 'prop-types';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
+
 import {Form, Field} from 'react-final-form';
-import {withRouter} from 'react-router-dom';
+import {useParams, withRouter} from 'react-router-dom';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {Button, Typography} from '@mui/material';
@@ -36,6 +39,7 @@ import UpdateIcon from '@mui/icons-material/Update';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useItem from '/src/frontend/hooks/useItem';
 import useList from '/src/frontend/hooks/useList';
 import {makeApiRequest} from '/src/frontend/actions';
@@ -47,14 +51,17 @@ import RenderSelect from '/src/frontend/components/common/form/render/RenderSele
 import BundledEditor from '/src/frontend/components/common/BundledEditor.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
-function IssnMessageTemplate(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
-
+function IssnMessageTemplate() {
   const intl = useIntl();
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
-  // ID of a current template
-  const {id} = match.params;
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
+  const params = useParams();
+  const {id} = params;
+
   const editorRef = useRef(null);
 
   // Message template list loading
@@ -208,12 +215,5 @@ function IssnMessageTemplate(props) {
     </div>
   );
 }
-
-IssnMessageTemplate.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default withRouter(IssnMessageTemplate);

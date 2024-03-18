@@ -27,9 +27,14 @@
 
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
+
 import {FormattedMessage} from 'react-intl';
 import {Button, Modal, Box, Typography} from '@mui/material';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import {makeApiRequest} from '/src/frontend/actions';
 import {redirect} from '/src/frontend/actions/util';
 
@@ -37,8 +42,12 @@ import '/src/frontend/css/common.css';
 import '/src/frontend/css/subComponents/modals.css';
 
 function IssnPublisherCreationModal(props) {
-  const {formId, publisherName, userInfo, history, setSnackbarMessage, disabled} = props;
-  const {authenticationToken} = userInfo;
+  const {formId, publisher, disabled} = props;
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   // State for the modal window (creating new ISSN-publisher)
   const [openCreatePublisherModal, setOpenCreatePublisherModal] = useState(false);
@@ -85,7 +94,7 @@ function IssnPublisherCreationModal(props) {
           <Typography variant="h6">
             <FormattedMessage id="modal.issn.createPublisher.new" />
           </Typography>
-          <strong>{publisherName}</strong>
+          <strong>{publisher}</strong>
           <div className="createListInnerContainer">
             <Button
               variant="contained"
@@ -111,10 +120,7 @@ function IssnPublisherCreationModal(props) {
 IssnPublisherCreationModal.propTypes = {
   disabled: PropTypes.bool.isRequired,
   formId: PropTypes.number.isRequired,
-  history: PropTypes.object.isRequired,
-  userInfo: PropTypes.object.isRequired,
-  publisherName: PropTypes.string.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired
+  publisher: PropTypes.string.isRequired
 };
 
 export default IssnPublisherCreationModal;

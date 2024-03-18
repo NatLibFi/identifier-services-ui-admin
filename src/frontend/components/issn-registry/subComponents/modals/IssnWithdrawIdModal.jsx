@@ -33,7 +33,7 @@ import {Button, Modal, Box, Typography} from '@mui/material';
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/subComponents/modals.css';
 
-function IssnWithdrawIdModal({withdrawIssnPublicationId, id, token, history}) {
+function IssnWithdrawIdModal({handleWithdrawIssn, id}) {
   // State for the modal window (withdraw existing ISSN id)
   const [openWithdrawIssnIdModal, setOpenWithdrawIssnIdModal] = useState(false);
 
@@ -44,7 +44,7 @@ function IssnWithdrawIdModal({withdrawIssnPublicationId, id, token, history}) {
   // Handles approving a process of withdrawing an existing ISSN id
   const handleApproveWithdrawIssnId = async () => {
     setOpenWithdrawIssnIdModal(false);
-    withdrawIssnPublicationId(id, token, history);
+    handleWithdrawIssn();
   };
 
   return (
@@ -92,10 +92,8 @@ function IssnWithdrawIdModal({withdrawIssnPublicationId, id, token, history}) {
 }
 
 IssnWithdrawIdModal.propTypes = {
-  withdrawIssnPublicationId: PropTyps.func.isRequired,
-  token: PropTyps.string.isRequired,
-  history: PropTyps.object.isRequired,
-  id: PropTyps.string.isRequired
+  handleWithdrawIssn: PropTyps.func.isRequired,
+  id: PropTyps.number.isRequired
 };
 
 export default IssnWithdrawIdModal;

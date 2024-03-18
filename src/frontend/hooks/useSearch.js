@@ -49,7 +49,7 @@ export function useSearch({
   const [fetched, setFetched] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [data, setData] = useState({totalDoc: 0, results: []});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {

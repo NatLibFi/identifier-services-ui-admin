@@ -51,7 +51,7 @@ import {getIdentifiersAvailable} from '/src/frontend/rangeFormattingUtils';
 function PublisherIdCreationModal(props) {
   const {publisherId, authenticationToken, setSnackbarMessage} = props;
 
-  let history = useHistory();
+  const history = useHistory();
   const intl = useIntl();
 
   // State for the modal window (open/close)
@@ -189,8 +189,7 @@ function PublisherIdCreationModal(props) {
       value: range.id.toString(), // API requires range id as a string
       label:
         publisherIdentifierType === 'isbn'
-          ? `${range.prefix}-${range.langGroup}: ${range.rangeBegin}-${
-            range.rangeEnd
+          ? `${range.prefix}-${range.langGroup}: ${range.rangeBegin}-${range.rangeEnd
           } (${intl.formatMessage({id: 'ranges.range.free'})} ${getIdentifiersAvailable(
             range
           )})`
@@ -334,7 +333,7 @@ function PublisherIdCreationModal(props) {
 }
 
 PublisherIdCreationModal.propTypes = {
-  publisherId: PropTypes.string.isRequired,
+  publisherId: PropTypes.number.isRequired,
   authenticationToken: PropTypes.string.isRequired,
   setSnackbarMessage: PropTypes.func.isRequired
 };

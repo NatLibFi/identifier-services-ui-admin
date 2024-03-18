@@ -25,40 +25,27 @@
  *
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Route} from 'react-router-dom';
+import {classificationCodes} from '/src/frontend/components/common/form/constants';
 
-import PrivateRoute from './PrivateRoute.jsx';
+export function formatPublisherForEdit(values, intl) {
+  if (values && Object.keys(values).length > 0) {
+    const formattedValues = {
+      ...values,
+      classification: values.classification
+        ? values.classification
+          .map((item) => formatClassificationForEditing(item))
+          .map((item) => ({
+            label: item?.label && intl.formatMessage({id: item.label}),
+            value: item?.value
+          }))
+        : [],
+      previousNames: values.previousNames.map((item) => ({value: item, label: item}))
+    };
 
-function CustomRoute({routeDefinition, isPrivate, props}) {
-  if (isPrivate) {
-    return (
-      <Route
-        key={routeDefinition.path}
-        exact
-        path={routeDefinition.path}
-        render={() => (
-          <PrivateRoute RenderComponent={routeDefinition.component} {...props} />
-        )}
-      />
-    );
+    return formattedValues;
   }
 
-  return (
-    <Route
-      key={routeDefinition.path}
-      exact
-      path={routeDefinition.path}
-      render={() => <routeDefinition.component {...props} />}
-    />
-  );
+  function formatClassificationForEditing(v) {
+    return classificationCodes.find((item) => item.value === v);
+  }
 }
-
-CustomRoute.propTypes = {
-  routeDefinition: PropTypes.object.isRequired,
-  isPrivate: PropTypes.bool.isRequired,
-  props: PropTypes.object
-};
-
-export default CustomRoute;

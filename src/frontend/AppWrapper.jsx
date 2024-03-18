@@ -25,65 +25,54 @@
  *
  */
 
-import React, {useEffect, useState} from 'react';
+import React, {createContext} from 'react';
 
 import {AuthProvider} from 'react-oidc-context';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {IntlProvider} from 'react-intl';
 
+import {AppStateProvider} from '/src/frontend/providers/AppStateProvider';
+
 import App from '/src/frontend/App.jsx';
+import ErrorPage from '/src/frontend/components/common/ErrorPage.jsx';
+
+import Spinner from '/src/frontend/components/common/Spinner.jsx';
+
 import translations from '/src/frontend/translations';
 
-import {getConfig} from '/src/frontend/actions';
+import useConfig from './hooks/useConfig';
+
+const RuntimeEnvContext = createContext(undefined);
 
 function AppWrapper() {
-  const [configuration, setConfiguration] = useState({});
-  const language = 'fi';
+  const {data: runtimeConfig, loading, error} = useConfig();
+  const isTestInstance = runtimeConfig.environment !== 'production';
 
-  // Load application config from server
-  useEffect(() => {
-    async function fetchConfig() {
-      const fetchedConfig = await getConfig();
-      setConfiguration(fetchedConfig);
-    }
-
-    fetchConfig();
-  }, []);
-
-  function validateOidcConfig(configuration) {
-    if(typeof configuration !== 'object') {
-      return false;
-    }
-
-    const requiredKeys = ['authority', 'client_id'];
-    return requiredKeys.every(key => Object.keys(configuration).includes(key));
+  if (loading) {
+    return <Spinner />;
   }
 
-  if(!validateOidcConfig(configuration.oidcConfig)) {
-    return (<p>Virhe! Ota yhteys järjestelmäylläpitoon.</p>);
+  if (error) {
+    return <ErrorPage errorMessage={'Palvelin ei vastaa kutsuihin. Ole hyvä ja ota yhteys järjestelmäylläpitoon.'} />;
   }
 
-  const oidcConfig =  {
-    ...configuration.oidcConfig,
-    redirect_uri: window.location.href,
-    onSigninCallback: (user) => { // eslint-disable-line no-unused-vars
-      window.history.replaceState(
-        {},
-        document.title,
-        window.location.pathname
-      );
-    }
-  };
+  if (runtimeConfig.maintenance) {
+    return <ErrorPage errorMessage={'Palvelin on huoltotilassa. Ole hyvä ja ota tarvittaessa yhteys järjestelmäylläpitoon.'} />;
+  }
 
   return (
-    <AuthProvider {...oidcConfig}>
+    <AuthProvider {...runtimeConfig.oidcConfig}>
       <Router>
-        <IntlProvider locale={language} messages={translations}>
-          <App configuration={configuration}/>
+        <IntlProvider locale={'fi'} messages={translations}>
+          <RuntimeEnvContext.Provider value={isTestInstance}>
+            <AppStateProvider>
+              <App />
+            </AppStateProvider>
+          </RuntimeEnvContext.Provider>
         </IntlProvider>
       </Router>
     </AuthProvider>
   );
 }
 
-export default AppWrapper;
+export {AppWrapper, RuntimeEnvContext};
