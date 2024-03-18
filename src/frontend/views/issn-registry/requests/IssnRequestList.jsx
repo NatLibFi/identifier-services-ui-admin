@@ -25,26 +25,35 @@
  *
  */
 
-import React, {useEffect, useState, useReducer} from 'react';
-import PropTypes from 'prop-types';
+import React, {useEffect, useMemo, useState, useReducer} from 'react';
 import {FormattedMessage} from 'react-intl';
+
+import {useHistory} from 'react-router-dom';
+import {useAuth} from 'react-oidc-context';
+
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
+import useSearch from '/src/frontend/hooks/useSearch';
+
 import moment from 'moment';
 import {Typography} from '@mui/material';
 
-import useSearch from '/src/frontend/hooks/useSearch';
 import {makeApiRequest} from '/src/frontend/actions';
 
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/requests/isbnIsmn/request.css';
 
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
-import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
+import IssnRequestQuickFormModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnRequestQuickFormModal.jsx';
 import SearchComponent from '/src/frontend/components/common/SearchComponent.jsx';
 import TabComponent from '/src/frontend/components/common/TabComponent.jsx';
-import IssnRequestQuickFormModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnRequestQuickFormModal.jsx';
+import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
+import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
 
-function IssnRequestList(props) {
-  const {authenticationToken, history, setSnackbarMessage} = props;
+
+function IssnRequestList() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   // Search body
   const initialSearchBody = history.location?.state?.searchBody ?? {
@@ -80,6 +89,9 @@ function IssnRequestList(props) {
     authenticationToken
   });
 
+  const formattedData = useMemo(() => data.results.map(formatSearchResult), [data]);
+  const hasData = formattedData && formattedData.length > 0;
+
   function updateRowsPerPage(rowsPerPage) {
     updateSearchBody({limit: rowsPerPage, offset: 0});
   }
@@ -114,7 +126,7 @@ function IssnRequestList(props) {
   }
 
   // Pre-format data for the table
-  function formatData(entry) {
+  function formatSearchResult(entry) {
     const {id, created, status, publisher, publicationCount, publicationCountIssn} = entry;
 
     return {
@@ -151,46 +163,6 @@ function IssnRequestList(props) {
     {id: 'created', intlId: 'form.common.created'}
   ];
 
-  const dataComponent = setDataComponent();
-
-  function setDataComponent() {
-    if (error) {
-      return  (
-        <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
-        </Typography>
-      );
-    }
-
-    if (loading) {
-    /* Showing a spinner while the component is loading */
-      return <Spinner />;
-    }
-
-    if (data.totalDoc === 0) {
-    /* Showing a message when the list is empty */
-      return (
-        <p>
-          <FormattedMessage id="common.noData" />
-        </p>
-      );
-    }
-
-    return (
-      <TableComponent
-        pagination
-        data={data.results.map(formatData)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={headRows}
-        page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
-        setPage={updatePageNumber}
-        totalDoc={data.totalDoc}
-        rowsPerPage={searchBody.limit}
-        setRowsPerPage={updateRowsPerPage}
-      />
-    );
-  }
-
   return (
     <div className="listSearch">
       <Typography variant="h5">
@@ -213,15 +185,21 @@ function IssnRequestList(props) {
           typeOfService="issn"
         />
       </div>
-      {dataComponent}
+      <TableResultWrapper error={error} loading={loading} hasData={hasData}>
+        <TableComponent
+          pagination
+          data={formattedData}
+          handleTableRowClick={handleTableRowClick}
+          headRows={headRows}
+          page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
+          setPage={updatePageNumber}
+          totalDoc={data.totalDoc}
+          rowsPerPage={searchBody.limit}
+          setRowsPerPage={updateRowsPerPage}
+        />
+      </TableResultWrapper>
     </div>
   );
 }
-
-IssnRequestList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IssnRequestList;

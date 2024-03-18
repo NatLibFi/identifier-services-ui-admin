@@ -33,8 +33,8 @@ import RenderSelect from '/src/frontend/components/common/form/render/RenderSele
 
 // Required to avoid focus issues on edit (component={renderTextField}})
 // NB! component={(props) => <RenderTextField {...props}/>} approach does not work here for some reason
-const renderSelect = (props) => <RenderSelect {...props} />;
-const renderTextField = (props) => <RenderTextField {...props} />;
+export const renderSelect = (props) => <RenderSelect {...props} />;
+export const renderTextField = (props) => <RenderTextField {...props} />;
 
 export function element({item, intl}) {
   if (item.type === 'select') {

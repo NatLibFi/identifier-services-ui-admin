@@ -31,6 +31,10 @@
  * @returns HTTP request headers
  */
 export function getHeaders(authenticationToken) {
+  if(!authenticationToken) {
+    return {'Content-Type': 'application/json'};
+  }
+
   return {
     Authorization: `Bearer ${authenticationToken}`,
     'Content-Type': 'application/json'

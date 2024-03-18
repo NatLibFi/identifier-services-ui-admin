@@ -25,6 +25,12 @@
  *
  */
 
+import {
+  electronicFormats,
+  printFormats,
+  authorRoles
+} from '/src/frontend/components/common/form/constants';
+
 /* eslint-disable no-unused-vars */
 export const formatPublicationValues = (values) => {
   // Remove fields that can not be updated and should not be sent to the API
@@ -97,3 +103,45 @@ export const formatPublicationRequestValues = (values) => {
 
   return updatedValues;
 };
+
+export function formatPublicationForEdit(values, intl) {
+  if (values && Object.keys(values).length > 0) {
+    const formattedValues = {
+      ...values,
+      fileformat: formatValue(values.fileformat, electronicFormats),
+      printFormat: formatValue(values.type, printFormats),
+      role1: formatValue(values.role1, authorRoles),
+      role2: formatValue(values.role2, authorRoles),
+      role3: formatValue(values.role3, authorRoles),
+      role4: formatValue(values.role4, authorRoles)
+    };
+    return formattedValues;
+  }
+
+  return {};
+
+  // Get translation label for each option
+  function formatValue(value, options) {
+    const formattedValue = value
+      ? value
+        .map(item => options.find(option => option.value === item))
+        .map(item => ({label: intl.formatMessage({id: item.label}), value: item.value}))
+      : [];
+
+    return formattedValue;
+  }
+}
+
+export function publicationHasIdentifiers(publicationRequest) {
+  if (
+    !publicationRequest.publicationIdentifierPrint &&
+    !publicationRequest.publicationIdentifierElectronical
+  ) {
+    return false;
+  }
+
+  return (
+    publicationRequest.publicationIdentifierPrint.length > 0 ||
+    publicationRequest.publicationIdentifierElectronical.length > 0
+  );
+}

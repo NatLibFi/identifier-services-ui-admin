@@ -25,13 +25,17 @@
  *
  */
 
-import React, {useRef} from 'react';
-import PropTypes from 'prop-types';
+import React, {useMemo, useRef} from 'react';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
+
 import {FormattedMessage, useIntl} from 'react-intl';
 import {Form} from 'react-final-form';
 import {Button, Typography} from '@mui/material';
 
 import {makeApiRequest} from '/src/frontend/actions';
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useList from '/src/frontend/hooks/useList';
 
 import '/src/frontend/css/forms/common.css';
@@ -42,9 +46,12 @@ import {element} from '/src/frontend/components/common/utils';
 import MessageTemplateInfoCard from '/src/frontend/components/issn-registry/subComponents/MessageTemplateInfoCard.jsx';
 import {validate} from '/src/frontend/components/common/form/validation/templateCreationValidation';
 
-function IssnMessageTemplateForm(props) {
-  const {history, userInfo, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+function IssnMessageTemplateForm() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   const {data: messageTypesList} = useList({
     url: '/api/issn-registry/messagetypes',
@@ -57,7 +64,7 @@ function IssnMessageTemplateForm(props) {
   });
 
   // Content of the template creation form
-  const fieldArray = [
+  const fieldArray = useMemo(() => [
     {
       name: 'name',
       type: 'text',
@@ -92,7 +99,7 @@ function IssnMessageTemplateForm(props) {
         ...messageTypesList.map((item) => ({label: item.name, value: item.id}))
       ]
     }
-  ];
+  ], [messageTypesList]);
 
   const intl = useIntl();
   const editorRef = useRef(null);
@@ -166,11 +173,5 @@ function IssnMessageTemplateForm(props) {
     </div>
   );
 }
-
-IssnMessageTemplateForm.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IssnMessageTemplateForm;

@@ -27,6 +27,10 @@
 
 import React, {useState, useReducer} from 'react';
 import PropTypes from 'prop-types';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
+
 import {FormattedMessage} from 'react-intl';
 import moment from 'moment';
 import {Button, Modal, Box, Typography} from '@mui/material';
@@ -39,9 +43,9 @@ import '/src/frontend/css/subComponents/modals.css';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
-function IssnPublishersRequestsModal(props) {
-  const {history, userInfo, publisher} = props;
-  const {authenticationToken} = userInfo;
+function IssnPublishersRequestsModal({publisher}) {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false); // State of the modal window (open/closed)
 
@@ -95,34 +99,6 @@ function IssnPublishersRequestsModal(props) {
     {id: 'created', intlId: 'form.common.created'}
   ];
 
-  const component = getComponent();
-
-  function getComponent() {
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (error) {
-      return <Typography>Could not fetch data due to API error</Typography>;
-    }
-
-    return (
-      <>
-        <TableComponent
-          pagination
-          data={data.results.map(filterDataFields)}
-          handleTableRowClick={handleTableRowClick}
-          headRows={headRows}
-          page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
-          setPage={updatePageNumber}
-          totalDoc={data.totalDoc}
-          rowsPerPage={searchBody.limit}
-          setRowsPerPage={updateRowsPerPage}
-        />
-      </>
-    );
-  }
-
   return (
     <>
       {/* Button that opens a modal */}
@@ -146,7 +122,28 @@ function IssnPublishersRequestsModal(props) {
               <FormattedMessage id="common.publisher.issn" />: {publisher?.officialName}
             </Typography>
           </div>
-          {component}
+          {/* Loading spinner */}
+          {loading && <Spinner />}
+
+          {/* Errors */}
+          {error && <Typography>Could not fetch data due to API error</Typography>}
+
+          {/* Content */}
+          {!loading && !error && (
+            <>
+              <TableComponent
+                pagination
+                data={data.results.map(filterDataFields)}
+                handleTableRowClick={handleTableRowClick}
+                headRows={headRows}
+                page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
+                setPage={updatePageNumber}
+                totalDoc={data.totalDoc}
+                rowsPerPage={searchBody.limit}
+                setRowsPerPage={updateRowsPerPage}
+              />
+            </>
+          )}
         </Box>
       </Modal>
     </>
@@ -154,9 +151,7 @@ function IssnPublishersRequestsModal(props) {
 }
 
 IssnPublishersRequestsModal.propTypes = {
-  publisher: PropTypes.object.isRequired,
-  userInfo: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  publisher: PropTypes.object.isRequired
 };
 
 export default IssnPublishersRequestsModal;

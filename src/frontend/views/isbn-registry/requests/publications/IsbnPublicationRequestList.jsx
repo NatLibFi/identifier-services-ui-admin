@@ -25,10 +25,13 @@
  *
  */
 
-import React, {useEffect, useState, useReducer} from 'react';
-import PropTypes from 'prop-types';
+import React, {useEffect, useMemo, useReducer, useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 
+import {useHistory} from 'react-router-dom';
+import {useAuth} from 'react-oidc-context';
+
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useSearch from '/src/frontend/hooks/useSearch';
 
 import {Typography} from '@mui/material';
@@ -38,13 +41,17 @@ import '/src/frontend/css/common.css';
 import '/src/frontend/css/requests/isbnIsmn/request.css';
 
 import PublicationRequestCreationModal from '/src/frontend/components/isbn-registry/subComponents/modals/PublicationRequestCreationModal.jsx';
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
-import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 import SearchComponent from '/src/frontend/components/common/SearchComponent.jsx';
 import TabComponent from '/src/frontend/components/common/TabComponent.jsx';
+import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
+import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
 
-function IsbnPublicationRequestList(props) {
-  const {authenticationToken, history, setSnackbarMessage} = props;
+
+function IsbnPublicationRequestList() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   // Search body
   const initialSearchBody = history.location?.state?.searchBody ?? {
@@ -79,6 +86,9 @@ function IsbnPublicationRequestList(props) {
     requireAuth: true,
     authenticationToken
   });
+
+  const formattedData = useMemo(() => data.results.map(formatSearchResult), [data]);
+  const hasData = formattedData && formattedData.length > 0;
 
   function updateRowsPerPage(rowsPerPage) {
     updateSearchBody({limit: rowsPerPage, offset: 0});
@@ -135,46 +145,6 @@ function IsbnPublicationRequestList(props) {
     {id: 'comments', intlId: 'form.common.additionalDetails'}
   ];
 
-  const dataComponent = setDataComponent();
-
-  function setDataComponent() {
-    if (error) {
-      return (
-        <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
-        </Typography>
-      );
-    }
-
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (data.totalDoc === 0) {
-      return (
-        <p>
-          <FormattedMessage id="common.noData" />
-        </p>
-      );
-    }
-
-    return (
-      <TableComponent
-        pagination
-        data={data.results.map(formatSearchResult)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={headRows}
-        page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
-        setPage={updatePageNumber}
-        totalDoc={data.totalDoc}
-        rowsPerPage={searchBody.limit}
-        setRowsPerPage={updateRowsPerPage}
-        // Those are not displayed on small screens (mobile devices etc)
-        unprioritizedRows={['officialName', 'comments']}
-      />
-    );
-  }
-
   return (
     <div className="listSearch">
       <Typography variant="h5">
@@ -198,15 +168,23 @@ function IsbnPublicationRequestList(props) {
         </Typography>
         <TabComponent handleChange={updateStateFilter} sortStateBy={filterValue} />
       </div>
-      {dataComponent}
+      <TableResultWrapper error={error} loading={loading} hasData={hasData}>
+        <TableComponent
+          pagination
+          data={formattedData}
+          handleTableRowClick={handleTableRowClick}
+          headRows={headRows}
+          page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
+          setPage={updatePageNumber}
+          totalDoc={data.totalDoc}
+          rowsPerPage={searchBody.limit}
+          setRowsPerPage={updateRowsPerPage}
+          // Those are not displayed on small screens (mobile devices etc)
+          unprioritizedRows={['officialName', 'comments']}
+        />
+      </TableResultWrapper>
     </div>
   );
 }
-
-IsbnPublicationRequestList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IsbnPublicationRequestList;

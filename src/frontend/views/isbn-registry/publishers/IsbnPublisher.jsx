@@ -25,51 +25,57 @@
  *
  */
 
-import React, {useState, useEffect, useRef} from 'react';
-import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
-import {Form} from 'react-final-form';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {useParams, withRouter} from 'react-router-dom';
+import {useAuth} from 'react-oidc-context';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {Button, Typography, Fab} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DownloadIcon from '@mui/icons-material/Download';
-
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {Typography} from '@mui/material';
+import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
 // Hooks
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useDocumentTitle from '/src/frontend/hooks/useDocumentTitle';
 import useItem from '/src/frontend/hooks/useItem';
 
 // Actions
-import {updateEntry, downloadFile} from '/src/frontend/actions';
+import {updateEntry} from '/src/frontend/actions';
 
+// Styles
 import '/src/frontend/css/common.css';
-import {classificationCodes, MESSAGE_CODES} from '/src/frontend/components/common/form/constants';
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
-// Modals
-import IsbnPublishersMessagesModal from '/src/frontend/components/isbn-registry/subComponents/modals/IsbnPublishersMessagesModal.jsx';
-import PublisherIdCreationModal from '/src/frontend/components/isbn-registry/subComponents/modals/PublisherIdCreationModal.jsx';
-import PublisherListCreationModal from '/src/frontend/components/isbn-registry/subComponents/modals/PublisherListCreationModal.jsx';
-import IsbnPublishersPublicationsModal from '/src/frontend/components/isbn-registry/subComponents/modals/IsbnPublishersPublicationsModal.jsx';
-import PublishersBatchIdsModal from '/src/frontend/components/isbn-registry/subComponents/modals/PublishersBatchIdsModal.jsx';
-import IsbnPublisherArchiveEntryModal from '/src/frontend/components/isbn-registry/subComponents/modals/IsbnPublisherArchiveEntryModal.jsx';
+// Displays and forms
+import IsbnPublisherEditForm from '/src/frontend/components/isbn-registry/publisher/IsbnPublisherEditForm.jsx';
+import IsbnPublisherDisplay from '/src/frontend/components/isbn-registry/publisher/IsbnPublisherDisplay.jsx';
 import IsbnPublisherDataComponent from '/src/frontend/components/isbn-registry/publisher/IsbnPublisherDataComponent.jsx';
-import {validate} from '/src/frontend/components/isbn-registry/publisher/validate';
 
-function IsbnPublisher(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {isAuthenticated, authenticationToken} = userInfo;
+// Data formatters
+import {formatPublisherForEdit} from '/src/frontend/components/isbn-registry/publisher/utils';
+
+
+function IsbnPublisher() {
+  useDocumentTitle('common.publisherDetails.isbn');
 
   const intl = useIntl();
+  const params = useParams();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
-  const {id} = match.params;
-  const componentRef = useRef();
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
+  const {id} = params;
+
+  // Note: state for display and edit modes are kept separately
+  // as formatting is currently required for edit mode
   const [publisher, setPublisher] = useState({});
+  const [editFormattedPublisher, setEditFormattedPublisher] = useState({});
+
   const [loading, setLoading] = useState(true);
   const [isEdit, setIsEdit] = useState(false);
+  const hasPublisherData = useMemo(() => Object.keys(publisher).length > 0, [publisher]);
+
+  const handleEditClick = useCallback(() => setIsEdit(true), [isEdit]);
+  const handleCancel = useCallback(() => setIsEdit(false), [isEdit]);
 
   const {
     data: initialData,
@@ -89,61 +95,15 @@ function IsbnPublisher(props) {
   useEffect(() => {
     setPublisher(initialData);
 
-    // End loading state when there actually is data
-    if (!initialLoading && Object.keys(initialData).length > 0) {
+    if (!initialLoading) {
       setLoading(false);
     }
   }, [initialData]);
 
-  // Set the title of the current page
-  useDocumentTitle('common.publisherDetails.isbn');
-
-  // EVENT HANDLERS
-  const handleEditClick = () => {
-    setIsEdit(true);
-  };
-
-  const handleCancel = () => {
-    setIsEdit(false);
-  };
-
-  /* Handles going back to the previous page */
-  const handleGoBack = () => {
-    history.push({
-      pathname: '/isbn-registry/publishers',
-      state: {
-        // Sending the search input value back to the list page
-        searchBody: history.location.state.searchBody
-      }
-    });
-  };
-
-  const handleSendSubrangeMessage = (type) => {
-    history.push({
-      pathname: '/isbn-registry/messages/form/send',
-      state: {
-        messageCode:
-          type === 'isbn'
-            ? MESSAGE_CODES.SEND_SUBRANGE_ISBN
-            : MESSAGE_CODES.SEND_SUBRANGE_ISMN,
-        langCode: publisher.langCode,
-        publisherId: publisher.id
-      }
-    });
-  };
-
-  const handleDownloadPublisherInformationPackage = async () => {
-    setLoading(true);
-    await downloadFile({
-      url: '/api/isbn-registry/publishers/get-information-package',
-      method: 'POST',
-      requestBody: {publisherId: id, format: 'xlsx'},
-      authenticationToken,
-      downloadName: `publisher-${id}-information.xlsx`
-    });
-
-    setLoading(false);
-  };
+  // Format publisher data for edit form whenever publisher data changes
+  useEffect(() => {
+    setEditFormattedPublisher(formatPublisherForEdit(publisher, intl));
+  }, [publisher]);
 
   async function handlePublisherUpdate(values) {
     // Remove values that should not be updated
@@ -180,210 +140,42 @@ function IsbnPublisher(props) {
     setIsEdit(false);
   }
 
-  // Lengths of active identifiers are used to determine if the message sending buttons should be shown
-  const activeIsbnIdentifierCategory =
-    publisher.activeIdentifierIsbn?.length > 0
-      ? publisher.activeIdentifierIsbn.split('-')[2].length
-      : 0;
-  const activeIsmnIdentifierCategory =
-    publisher.activeIdentifierIsmn?.length > 0
-      ? publisher.activeIdentifierIsmn.split('-')[2].length
-      : 0;
-
-  const EditForm = () => {
-    /* Format classification codes and previousNames since they are
-      rendered as <Chip/> components and should appear in required format */
-    function formatInitialValues(values) {
-      if (values && Object.keys(values).length > 0) {
-        const formattedValues = {
-          ...values,
-          classification: values.classification
-            ? values.classification
-              .map((item) => formatClassificationForEditing(item))
-              .map((item) => ({
-                label: item?.label && intl.formatMessage({id: item.label}),
-                value: item?.value
-              }))
-            : [],
-          previousNames: values.previousNames.map((item) => ({value: item, label: item}))
-        };
-
-        return formattedValues;
-      }
-
-      function formatClassificationForEditing(v) {
-        return classificationCodes.find((item) => item.value === v);
-      }
-    }
+  if (error) {
     return (
-      <Form
-        onSubmit={handlePublisherUpdate}
-        validate={validate}
-        initialValues={formatInitialValues(publisher)}
-      >
-        {({handleSubmit}) => (
-          <form onSubmit={handleSubmit}>
-            <div className="updateButtonsContainer">
-              <Button type="submit" variant="contained" color="success">
-                <FormattedMessage id="form.button.label.update" />
-              </Button>
-              <Button variant="contained" color="error" onClick={handleCancel}>
-                <FormattedMessage id="form.button.label.cancel" />
-              </Button>
-            </div>
-            <div className="listItemSpinner">{dataComponent}</div>
-          </form>
-        )}
-      </Form>
-    );
-  };
-
-  // COMPONENT GENERATION
-  // - Consists of data component and buttons which act as event dispatchers
-  const dataComponent = (
-    <IsbnPublisherDataComponent isEdit={isEdit} publisher={publisher} history={history} intl={intl} />
-  );
-
-  const component = setComponent();
-
-  function setComponent() {
-    if (error) {
-      return (
-        <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
-        </Typography>
-      );
-    }
-
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (isEdit) {
-      return (
-        <div className="listItem">
-          <Typography variant="h2" className="titleTopSticky normalTitle">
-            {`${publisher.officialName} - `}
-            <FormattedMessage id="common.publisherDetails.isbn" />
-          </Typography>
-          <EditForm />
-        </div>
-      );
-    }
-
-    return (
-      <div className={'listItem'}>
-        <Typography variant="h2" className="titleTopSticky normalTitle">
-          {`${publisher.officialName} - `}
-          <FormattedMessage id="common.publisherDetails.isbn" />
-        </Typography>
-        {isAuthenticated && (
-          <div className="publisherButtonsContainer">
-            <Fab
-              color="secondary"
-              size="small"
-              title={intl.formatMessage({id: 'form.button.label.back'})}
-              onClick={() => handleGoBack()}
-            >
-              <ArrowBackIcon />
-            </Fab>
-            <div className="publisherButtonsInnerContainer">
-              {/* Modals for adding id's and batches */}
-              <PublisherIdCreationModal
-                publisherId={id}
-                authenticationToken={authenticationToken}
-                setSnackbarMessage={setSnackbarMessage}
-              />
-              <PublisherListCreationModal
-                publisherId={id}
-                publisher={publisher}
-                authenticationToken={authenticationToken}
-                setSnackbarMessage={setSnackbarMessage}
-                history={history}
-              />
-              {/* Send ISBN Subrange information for category 5 ISBN subranges */}
-              {activeIsbnIdentifierCategory === 5 && (
-                <Button
-                  className="buttons"
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => handleSendSubrangeMessage('isbn')}
-                >
-                  <FormattedMessage
-                    id="publisherRegistry.publisher.sendMessage"
-                    values={{type: 'ISBN', category: '5'}}
-                  />
-                </Button>
-              )}
-              {/* Send ISMN Subrange information for category 7 ISMN subranges */}
-              {activeIsmnIdentifierCategory === 7 && (
-                <Button
-                  className="buttons"
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => handleSendSubrangeMessage('ismn')}
-                >
-                  <FormattedMessage
-                    id="publisherRegistry.publisher.sendMessage"
-                    values={{type: 'ISMN', category: '7'}}
-                  />
-                </Button>
-              )}
-              {/* Modal for viewing publishers messages */}
-              <IsbnPublishersMessagesModal
-                publisher={publisher}
-                authenticationToken={authenticationToken}
-                history={history}
-              />
-              {/* Modal for viewing publishers publications (accepted) */}
-              <IsbnPublishersPublicationsModal
-                publisher={publisher}
-                authenticationToken={authenticationToken}
-                history={history}
-              />
-              {/* Modal for viewing publishers batches */}
-              <PublishersBatchIdsModal
-                publisher={publisher}
-                authenticationToken={authenticationToken}
-                history={history}
-              />
-              {/* Modal for viewing archive entry of publisher */}
-              <IsbnPublisherArchiveEntryModal
-                publisherId={publisher.id}
-                authenticationToken={authenticationToken}
-              />
-            </div>
-            <Fab
-              color="secondary"
-              size="small"
-              title={intl.formatMessage({id: 'publisherRegistry.publisher.editPublisher'})}
-              onClick={handleEditClick}
-            >
-              <EditIcon />
-            </Fab>
-            <Fab
-              color="secondary"
-              size="small"
-              title={intl.formatMessage({id: 'publisherRegistry.publisher.downloadInformationPackage'})}
-              onClick={handleDownloadPublisherInformationPackage}
-            >
-              <DownloadIcon />
-            </Fab>
-          </div>
-        )}
-        <div ref={componentRef}>{dataComponent}</div>
-      </div>
+      <Typography variant="h2" className="normalTitle">
+        <FormattedMessage id="errorPage.message.defaultError" />
+      </Typography>
     );
   }
 
-  return component;
-}
+  if (loading) {
+    return <Spinner />;
+  }
 
-IsbnPublisher.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
+  return (
+    <div className={'listItem'}>
+      <Typography variant="h2" className="titleTopSticky normalTitle">
+        {`${publisher.officialName} - `}
+        <FormattedMessage id="common.publisherDetails.isbn" />
+      </Typography>
+
+      { /* Display data only */}
+      {hasPublisherData && !isEdit && <IsbnPublisherDisplay publisher={publisher} handleEditClick={handleEditClick}>
+        <IsbnPublisherDataComponent isEdit={isEdit} publisher={publisher} />
+      </IsbnPublisherDisplay>
+      }
+
+      { /* Edit data through form */}
+      {hasPublisherData && isEdit && <IsbnPublisherEditForm
+        publisher={editFormattedPublisher}
+        onSubmit={handlePublisherUpdate}
+        handleCancel={handleCancel}
+      >
+        <IsbnPublisherDataComponent isEdit={isEdit} publisher={publisher} />
+      </IsbnPublisherEditForm>}
+
+    </div>
+  );
+}
 
 export default withRouter(IsbnPublisher);

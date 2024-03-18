@@ -35,97 +35,90 @@ import '/src/frontend/css/common.css';
 import '/src/frontend/css/subComponents/modals.css';
 
 function MelindaResponseModal({apiResponse, closeMelindaResponseModal, showModal}) {
-  const component = getComponent();
-
-  function getComponent() {
-    if(!apiResponse || typeof apiResponse !== 'object') {
-      return;
-    }
+  function getRecordItem(record, idx) {
+    const {databaseId, recordStatus, recordMetadata} = record;
+    const standardIdentifiers = recordMetadata?.standardIdentifiers?.join(', ');
+    const databaseIdentifiers = record?.ids?.join(', ');
 
     return (
-      <>
-        <div>
-          <Typography variant="h4" className='melindaHeader'>
-            <FormattedMessage id="melinda.response.header" />
-          </Typography>
-
-          {/* Created records */}
-          <Accordion defaultExpanded={true}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-            >
-              <Typography>
-                <FormattedMessage id="melinda.response.records" />
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {Array.isArray(apiResponse?.records) && apiResponse.records.map((record, idx) => getRecordItem(record, idx))}
-              {Array.isArray(apiResponse?.records) && apiResponse.records.length === 0 && <FormattedMessage id="melinda.response.noCreatedRecords" />}
-            </AccordionDetails>
-          </Accordion>
-
-          {/* Errors */}
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-            >
-              <Typography>
-                <FormattedMessage id="melinda.response.errors" /> ({apiResponse?.errors?.length} kpl)
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {Array.isArray(apiResponse?.errors) && apiResponse.errors.map((error, idx) => getErrorItem(error, idx))}
-            </AccordionDetails>
-          </Accordion>
-        </div>
-      </>
+      <div key={idx} className='melindaItem'>
+        <Typography>
+          <FormattedMessage id="melinda.response.databaseId" />: {databaseId ?? 'Unknown ID'}
+        </Typography>
+        <Typography>
+          <FormattedMessage id="melinda.response.itemStatus" />: {recordStatus ?? 'Unknown status'}
+        </Typography>
+        <Typography>
+          <FormattedMessage id="melinda.response.standardIdentifiers" />: {standardIdentifiers ?? '-'}
+        </Typography>
+        <Typography>
+          <FormattedMessage id="melinda.response.databaseIds" />: {databaseIdentifiers ?? '-'}
+        </Typography>
+      </div>
     );
+  }
 
-    function getRecordItem(record, idx) {
-      const {databaseId, recordStatus, recordMetadata} = record;
-      const standardIdentifiers = recordMetadata?.standardIdentifiers?.join(', ');
-      const databaseIdentifiers = record?.ids?.join(', ');
+  function getErrorItem(error, idx) {
+    const {status, payload} = error;
 
-      return (
-        <div key={idx} className='melindaItem'>
-          <Typography>
-            <FormattedMessage id="melinda.response.databaseId" />: {databaseId ?? 'Unknown ID'}
-          </Typography>
-          <Typography>
-            <FormattedMessage id="melinda.response.itemStatus" />: {recordStatus ?? 'Unknown status'}
-          </Typography>
-          <Typography>
-            <FormattedMessage id="melinda.response.standardIdentifiers" />: {standardIdentifiers ?? '-'}
-          </Typography>
-          <Typography>
-            <FormattedMessage id="melinda.response.databaseIds" />: {databaseIdentifiers ?? '-'}
-          </Typography>
-        </div>
-      );
-    }
+    return (
+      <div key={idx} className='melindaItem'>
+        <Typography>
+          <FormattedMessage id="melinda.response.errorStatus" />: {status ?? 'Unknown status'}
+        </Typography>
+        <Typography>
+          <FormattedMessage id="melinda.response.errorPayload" />: {payload ?? 'Unknown error'}
+        </Typography>
+      </div>
+    );
+  }
 
-    function getErrorItem(error, idx) {
-      const {status, payload} = error;
-
-      return (
-        <div key={idx} className='melindaItem'>
-          <Typography>
-            <FormattedMessage id="melinda.response.errorStatus" />: {status ?? 'Unknown status'}
-          </Typography>
-          <Typography>
-            <FormattedMessage id="melinda.response.errorPayload" />: {payload ?? 'Unknown error'}
-          </Typography>
-        </div>
-      );
-    }
+  // Show modal only if it's open and there is something to display
+  if (!apiResponse || typeof apiResponse !== 'object' || !showModal) {
+    return;
   }
 
   return (
     <>
       <Modal open={showModal} onClose={() => closeMelindaResponseModal()}>
-        <Box className="melindaResultModal">{component}</Box>
+        <Box className="melindaResultModal">
+          <div>
+            <Typography variant="h4" className='melindaHeader'>
+              <FormattedMessage id="melinda.response.header" />
+            </Typography>
+
+            {/* Created records */}
+            <Accordion defaultExpanded={true}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+              >
+                <Typography>
+                  <FormattedMessage id="melinda.response.records" />
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {Array.isArray(apiResponse?.records) && apiResponse.records.map((record, idx) => getRecordItem(record, idx))}
+                {Array.isArray(apiResponse?.records) && apiResponse.records.length === 0 && <FormattedMessage id="melinda.response.noCreatedRecords" />}
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Errors */}
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+              >
+                <Typography>
+                  <FormattedMessage id="melinda.response.errors" /> ({apiResponse?.errors?.length} kpl)
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {Array.isArray(apiResponse?.errors) && apiResponse.errors.map((error, idx) => getErrorItem(error, idx))}
+              </AccordionDetails>
+            </Accordion>
+          </div>
+        </Box>
       </Modal>
     </>
   );
