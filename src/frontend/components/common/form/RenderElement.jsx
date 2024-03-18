@@ -221,8 +221,7 @@ function RenderElement(props) {
 RenderElement.propTypes = {
   array: PropTypes.array.isRequired,
   fieldName: PropTypes.string,
-  publicationIsbnValues: PropTypes.array,
-  intl: PropTypes.object.isRequired
+  publicationIsbnValues: PropTypes.array
 };
 
 export default RenderElement;
