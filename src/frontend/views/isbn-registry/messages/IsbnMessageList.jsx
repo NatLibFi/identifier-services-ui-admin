@@ -25,9 +25,11 @@
  *
  */
 
-import React, {useEffect, useReducer} from 'react';
-import PropTypes from 'prop-types';
+import React, {useEffect, useMemo, useReducer} from 'react';
 import {FormattedMessage} from 'react-intl';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
 
 import useSearch from '/src/frontend/hooks/useSearch';
 
@@ -36,12 +38,13 @@ import moment from 'moment';
 
 import '/src/frontend/css/common.css';
 
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
-import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 import SearchComponent from '/src/frontend/components/common/SearchComponent.jsx';
+import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
+import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
 
-function IsbnMessageList(props) {
-  const {authenticationToken, history} = props;
+function IsbnMessageList() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
   // Component state
   const initialSearchBody = history.location?.state?.searchBody ?? {
@@ -73,6 +76,9 @@ function IsbnMessageList(props) {
     authenticationToken
   });
 
+  const formattedData = useMemo(() => data.results.map(formatSearchResult), [data]);
+  const hasData = formattedData && formattedData.length > 0;
+
   function updateRowsPerPage(rowsPerPage) {
     updateSearchBody({limit: rowsPerPage, offset: 0});
   }
@@ -94,12 +100,12 @@ function IsbnMessageList(props) {
   }
 
   // Titles of the table columns
-  const headRows = [
+  const headRows = useMemo(() => [
     {id: 'email', intlId: 'messages.recipient'},
     {id: 'subject', intlId: 'messages.subject'},
     {id: 'messageTemplate', intlId: 'messages.messageTemplate'},
     {id: 'date', intlId: 'messages.sent'}
-  ];
+  ], []);
 
   // Filters data to be shown in the table
   function formatSearchResult(item) {
@@ -113,61 +119,30 @@ function IsbnMessageList(props) {
     };
   }
 
-  const dataComponent = getDataComponent();
-
-  function getDataComponent() {
-    if (error) {
-      return (
-        <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
-        </Typography>
-      );
-    }
-
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (data.totalDoc === 0) {
-      return (
-        <p>
-          <FormattedMessage id="common.noData" />
-        </p>
-      );
-    }
-
-    return (
-      <TableComponent
-        pagination
-        data={data.results.map(formatSearchResult)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={headRows}
-        page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
-        setPage={updatePageNumber}
-        totalDoc={data.totalDoc}
-        rowsPerPage={searchBody.limit}
-        setRowsPerPage={updateRowsPerPage}
-      />
-    );
-  }
-
   return (
     <div className="listSearch">
       <Typography variant="h5">
         <FormattedMessage id="messages.sentMessages" />
       </Typography>
       <SearchComponent
-        initialValue={initialSearchBody.searchText}
+        initialValue={searchBody.searchText}
         searchFunction={updateSearchText}
       />
-      {dataComponent}
+      <TableResultWrapper error={error} loading={loading} hasData={hasData}>
+        <TableComponent
+          pagination
+          data={formattedData}
+          handleTableRowClick={handleTableRowClick}
+          headRows={headRows}
+          page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
+          setPage={updatePageNumber}
+          totalDoc={data.totalDoc}
+          rowsPerPage={searchBody.limit}
+          setRowsPerPage={updateRowsPerPage}
+        />
+      </TableResultWrapper>
     </div>
   );
 }
-
-IsbnMessageList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IsbnMessageList;

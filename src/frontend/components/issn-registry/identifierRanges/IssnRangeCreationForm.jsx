@@ -31,6 +31,10 @@ import {Form, Field} from 'react-final-form';
 import {FormattedMessage} from 'react-intl';
 import {Button} from '@mui/material';
 
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
+
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import {makeApiRequest} from '/src/frontend/actions';
 
 import '/src/frontend/css/forms/common.css';
@@ -39,8 +43,19 @@ import '/src/frontend/css/forms/rangeCreationForm.css';
 import RenderTextField from '/src/frontend/components/common/form/render/RenderTextField.jsx';
 import {validate} from './validate';
 
+// Required to avoid focus issues on edit (component={renderTextField}})
+// NB! component={(props) => <RenderTextField {...props}/>} approach does not work here for some reason
+const renderTextField = (props) => <RenderTextField {...props} />;
+const formFields = ['block', 'rangeBegin', 'rangeEnd'];
+
 function IssnRangeCreationForm(props) {
-  const {setModal, setSnackbarMessage, authenticationToken, history} = props;
+  const {setModal} = props;
+
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   // Handles creating a new ISSN range
   async function handleCreateRange(values) {
@@ -62,12 +77,6 @@ function IssnRangeCreationForm(props) {
 
     setModal(false);
   }
-
-  const formFields = ['block', 'rangeBegin', 'rangeEnd'];
-
-  // Required to avoid focus issues on edit (component={renderTextField}})
-  // NB! component={(props) => <RenderTextField {...props}/>} approach does not work here for some reason
-  const renderTextField = (props) => <RenderTextField {...props} />;
 
   return (
     <Form onSubmit={handleCreateRange} validate={validate}>
@@ -96,9 +105,6 @@ function IssnRangeCreationForm(props) {
 }
 
 IssnRangeCreationForm.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
   setModal: PropTypes.func.isRequired
 };
 

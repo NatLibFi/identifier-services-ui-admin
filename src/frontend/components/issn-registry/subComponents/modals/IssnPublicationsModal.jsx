@@ -25,8 +25,12 @@
  *
  */
 
-import React, {useReducer, useState} from 'react';
+import React, {useMemo, useReducer, useState} from 'react';
 import PropTypes from 'prop-types';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
+
 import {FormattedMessage} from 'react-intl';
 import moment from 'moment';
 import {Button, Modal, Box, Typography} from '@mui/material';
@@ -40,8 +44,10 @@ import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
 function IssnPublicationsModal(props) {
-  const {searchAttribute, searchValue, history, userInfo, publisherName} = props;
-  const {authenticationToken} = userInfo;
+  const {searchAttribute, searchValue, publisherName} = props;
+
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false); // State of the modal window (open/closed)
 
@@ -63,6 +69,8 @@ function IssnPublicationsModal(props) {
     modalIsUsed: true,
     isModalOpen
   });
+
+  const filteredData = useMemo(() => data.results.map(filterDataFields), [data]);
 
   function updateRowsPerPage(rowsPerPage) {
     updateSearchBody({limit: rowsPerPage, offset: 0});
@@ -104,34 +112,6 @@ function IssnPublicationsModal(props) {
     {id: 'created', intlId: 'form.common.created'}
   ];
 
-  const component = getComponent();
-
-  function getComponent() {
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (error) {
-      return <Typography>Could not fetch data due to API error</Typography>;
-    }
-
-    return(
-      <>
-        <TableComponent
-          pagination
-          data={data.results.map(filterDataFields)}
-          handleTableRowClick={handleViewSinglePublication}
-          headRows={headRows}
-          page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
-          setPage={updatePageNumber}
-          totalDoc={data.totalDoc}
-          rowsPerPage={searchBody.limit}
-          setRowsPerPage={updateRowsPerPage}
-        />
-      </>
-    );
-  }
-
   return (
     <>
       {/* Button that opens a modal */}
@@ -147,22 +127,44 @@ function IssnPublicationsModal(props) {
       {/* Content of a modal component */}
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <Box className="modal">
-          <div>
-            <Typography variant="h5">
-              <FormattedMessage id="common.publications" />
-            </Typography>
-            {searchAttribute === 'publisherId' && (
-              <Typography variant="h6">
-                <FormattedMessage id="common.publisher.issn" />: {publisherName}
-              </Typography>
-            )}
-            {searchAttribute === 'formId' && (
-              <Typography variant="h6">
-                <FormattedMessage id="common.request" /> ID: {searchValue}
-              </Typography>
-            )}
-          </div>
-          {component}
+          {/* Loading spinner */}
+          {loading && <Spinner />}
+
+          {/* Errors */}
+          {error && <Typography>Could not fetch data due to API error</Typography>}
+
+          {/* Content */}
+          {!loading && !error && (
+            <>
+              <div>
+                <Typography variant="h5">
+                  <FormattedMessage id="common.publications" />
+                </Typography>
+                {searchAttribute === 'publisherId' && (
+                  <Typography variant="h6">
+                    <FormattedMessage id="common.publisher.issn" />: {publisherName}
+                  </Typography>
+                )}
+                {searchAttribute === 'formId' && (
+                  <Typography variant="h6">
+                    <FormattedMessage id="common.request" /> ID: {searchValue}
+                  </Typography>
+                )}
+              </div>
+              <>
+                <TableComponent
+                  pagination
+                  data={filteredData}
+                  handleTableRowClick={handleViewSinglePublication}
+                  headRows={headRows}
+                  page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
+                  setPage={updatePageNumber}
+                  totalDoc={data.totalDoc}
+                  rowsPerPage={searchBody.limit}
+                  setRowsPerPage={updateRowsPerPage}
+                />
+              </>
+            </>)}
         </Box>
       </Modal>
     </>
@@ -172,9 +174,7 @@ function IssnPublicationsModal(props) {
 IssnPublicationsModal.propTypes = {
   searchValue: PropTypes.number.isRequired,
   searchAttribute: PropTypes.string.isRequired,
-  publisherName: PropTypes.string,
-  userInfo: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  publisherName: PropTypes.string
 };
 
 export default IssnPublicationsModal;

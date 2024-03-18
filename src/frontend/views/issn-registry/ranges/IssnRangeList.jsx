@@ -25,8 +25,11 @@
  *
  */
 
-import React, {useState} from 'react';
-import PropTypes from 'prop-types';
+import React, {useMemo, useState} from 'react';
+
+import {useHistory} from 'react-router-dom';
+import {useAuth} from 'react-oidc-context';
+
 import {FormattedMessage} from 'react-intl';
 
 import {Grid, Typography} from '@mui/material';
@@ -37,12 +40,15 @@ import '/src/frontend/css/common.css';
 import '/src/frontend/css/identifierRanges/range.css';
 
 import ModalLayout from '/src/frontend/components/common/ModalLayout.jsx';
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
+import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
+
 import IssnRangeCreationForm from '/src/frontend/components/issn-registry/identifierRanges/IssnRangeCreationForm.jsx';
 
-function IssnRangeList(props) {
-  const {authenticationToken, history} = props;
+function IssnRangeList() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
   const [modal, setModal] = useState(false); // eslint-disable-line no-unused-vars
 
   const {data, loading, error} = useList({
@@ -54,6 +60,9 @@ function IssnRangeList(props) {
     requireAuth: true,
     modalIsUsed: false
   });
+
+  const formattedData = useMemo(() => data.map(formatDataEntry), [data]);
+  const hasData = formattedData && formattedData.length > 0;
 
   const handleTableRowClick = (id) => {
     history.push(`/issn-registry/ranges/${id}`);
@@ -87,31 +96,6 @@ function IssnRangeList(props) {
     };
   }
 
-  const dataComponent = setDataComponent();
-
-  function setDataComponent() {
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (error) {
-      return <Typography>Could not fetch data due to API error</Typography>;
-    }
-
-    return (
-      <TableComponent
-        pagination
-        data={data.map(formatDataEntry)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={getHeadRows()}
-        totalDoc={data.length}
-        // Those are not displayed on small screens (mobile devices etc)
-        // screen < 900px
-        unprioritizedRows={['rangeBegin', 'rangeEnd']}
-      />
-    );
-  }
-
   return (
     <Grid item xs={12} className="listSearch">
       <Typography variant="h5" className="rangesTitleColorISSN">
@@ -128,18 +112,23 @@ function IssnRangeList(props) {
           name="rangeCreation"
           variant="outlined"
         >
-          <IssnRangeCreationForm setModal={setModal} {...props} />
+          <IssnRangeCreationForm setModal={setModal} />
         </ModalLayout>
       </div>
-      {dataComponent}
+      <TableResultWrapper error={error} loading={loading} hasData={hasData}>
+        <TableComponent
+          pagination
+          data={formattedData}
+          handleTableRowClick={handleTableRowClick}
+          headRows={getHeadRows()}
+          totalDoc={data.length}
+          // Those are not displayed on small screens (mobile devices etc)
+          // screen < 900px
+          unprioritizedRows={['rangeBegin', 'rangeEnd']}
+        />
+      </TableResultWrapper>
     </Grid>
   );
 }
-
-IssnRangeList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IssnRangeList;

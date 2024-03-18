@@ -25,8 +25,11 @@
  *
  */
 
-import React, {useEffect, useState, useReducer} from 'react';
-import PropTypes from 'prop-types';
+import React, {useEffect, useMemo, useState, useReducer} from 'react';
+
+import {useHistory} from 'react-router-dom';
+import {useAuth} from 'react-oidc-context';
+
 import {FormattedMessage} from 'react-intl';
 
 import useSearch from '/src/frontend/hooks/useSearch';
@@ -37,13 +40,25 @@ import {Typography} from '@mui/material';
 import '/src/frontend/css/common.css';
 import '/src/frontend/css/requests/isbnIsmn/request.css';
 
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
-import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 import SearchComponent from '/src/frontend/components/common/SearchComponent.jsx';
 import TabComponent from '/src/frontend/components/common/TabComponent.jsx';
+import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
+import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
 
-function IssnPublicationList(props) {
-  const {authenticationToken, history} = props;
+/* Titles of the columns in the table of publications */
+const headRows = [
+  {id: 'id', intlId: 'common.id'},
+  {id: 'issn', intlId: 'common.issn'},
+  {id: 'title', intlId: 'common.publication'},
+  {id: 'language', intlId: 'form.common.language'},
+  {id: 'medium', intlId: 'form.common.format'},
+  {id: 'status', intlId: 'common.status'},
+  {id: 'created', intlId: 'form.common.created'}
+];
+
+function IssnPublicationList() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
   // Search body
   const initialSearchBody = history.location.state?.searchBody ?? {
@@ -79,6 +94,9 @@ function IssnPublicationList(props) {
     authenticationToken
   });
 
+  const formattedData = useMemo(() => data.results.map(formatSearchResult), [data]);
+  const hasData = formattedData && formattedData.length > 0;
+
   function updateRowsPerPage(rowsPerPage) {
     updateSearchBody({limit: rowsPerPage, offset: 0});
   }
@@ -113,7 +131,7 @@ function IssnPublicationList(props) {
   }
 
   // Formats the data to be displayed in the table
-  function formatData(entry) {
+  function formatSearchResult(entry) {
     const {id, issn, title, language, medium, status, created} = entry;
 
     return {
@@ -125,62 +143,6 @@ function IssnPublicationList(props) {
       language: language.toLowerCase(),
       medium: medium.toLowerCase()
     };
-  }
-
-  /* Titles of the columns in the table of publications */
-  const headRows = [
-    {id: 'id', intlId: 'common.id'},
-    {id: 'issn', intlId: 'common.issn'},
-    {id: 'title', intlId: 'common.publication'},
-    {id: 'language', intlId: 'form.common.language'},
-    {id: 'medium', intlId: 'form.common.format'},
-    {id: 'status', intlId: 'common.status'},
-    {id: 'created', intlId: 'form.common.created'}
-  ];
-
-  const dataComponent = setDataComponent();
-
-  function setDataComponent() {
-    if (error) {
-      return (
-        <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
-        </Typography>
-      );
-    }
-
-    if (loading) {
-    /* Showing a spinner while the component is loading */
-      return <Spinner />;
-    }
-
-    if (data.totalDoc === 0) {
-    /* Showing a message when the list is empty */
-      return (
-        <p>
-          <FormattedMessage id="common.noData" />
-        </p>
-      );
-    }
-
-    return (
-      <TableComponent
-        pagination
-        data={data.results.map(formatData)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={headRows}
-        page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
-        setPage={updatePageNumber}
-        totalDoc={data.totalDoc}
-        rowsPerPage={searchBody.limit}
-        setRowsPerPage={updateRowsPerPage}
-        // Those are not displayed on small screens (mobile devices etc)
-        // screen < 900px
-        unprioritizedRows={['medium']}
-        // screen < 550px
-        unprioritizedMobileRows={['language']}
-      />
-    );
   }
 
   return (
@@ -199,14 +161,26 @@ function IssnPublicationList(props) {
           sortStateBy={filterValue}
         />
       </div>
-      {dataComponent}
+      <TableResultWrapper error={error} loading={loading} hasData={hasData}>
+        <TableComponent
+          pagination
+          data={formattedData}
+          handleTableRowClick={handleTableRowClick}
+          headRows={headRows}
+          page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
+          setPage={updatePageNumber}
+          totalDoc={data.totalDoc}
+          rowsPerPage={searchBody.limit}
+          setRowsPerPage={updateRowsPerPage}
+          // Those are not displayed on small screens (mobile devices etc)
+          // screen < 900px
+          unprioritizedRows={['medium']}
+          // screen < 550px
+          unprioritizedMobileRows={['language']}
+        />
+      </TableResultWrapper>
     </div>
   );
 }
-
-IssnPublicationList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IssnPublicationList;
