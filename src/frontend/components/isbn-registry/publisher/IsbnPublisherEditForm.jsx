@@ -31,17 +31,13 @@ import PropTypes from 'prop-types';
 import {Form} from 'react-final-form';
 import {FormattedMessage} from 'react-intl';
 
-import {Button, Typography} from '@mui/material';
+import {Button} from '@mui/material';
 
 import {validate} from '/src/frontend/components/isbn-registry/publisher/validate';
 
 function IsbnPublisherEditForm({publisher, onSubmit, handleCancel, children}) {
   return (
     <div className="listItem">
-      <Typography variant="h2" className="titleTopSticky normalTitle">
-        {`${publisher.officialName} - `}
-        <FormattedMessage id="common.publisherDetails.isbn" />
-      </Typography>
       <Form
         onSubmit={onSubmit}
         validate={validate}
