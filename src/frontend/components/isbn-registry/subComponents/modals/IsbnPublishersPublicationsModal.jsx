@@ -103,32 +103,6 @@ function IsbnPublishersPublicationsModal(props) {
     {id: 'publicationType', intlId: 'table.headRows.publicationType'}
   ];
 
-  const component = getComponent();
-
-  function getComponent() {
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (error) {
-      return <Typography>Could not fetch data due to API error</Typography>;
-    }
-
-    return (
-      <TableComponent
-        pagination
-        data={data.results.map(filterDataFields)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={headRows}
-        page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
-        setPage={updatePageNumber}
-        totalDoc={data.totalDoc}
-        rowsPerPage={searchBody.limit}
-        setRowsPerPage={updateRowsPerPage}
-      />
-    );
-  }
-
   return (
     <>
       {/* Button that opens a modal */}
@@ -152,7 +126,29 @@ function IsbnPublishersPublicationsModal(props) {
               <FormattedMessage id="common.publisher.isbn" />: {publisher.officialName}
             </Typography>
           </div>
-          {component}
+
+          {/* Loading spinner */}
+          {loading && <Spinner />}
+
+          {/* Errors */}
+          {error && <Typography>Could not fetch data due to API error</Typography>}
+
+          {/* Content */}
+          {!loading && !error && (
+            <>
+              <TableComponent
+                pagination
+                data={data.results.map(filterDataFields)}
+                handleTableRowClick={handleTableRowClick}
+                headRows={headRows}
+                page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
+                setPage={updatePageNumber}
+                totalDoc={data.totalDoc}
+                rowsPerPage={searchBody.limit}
+                setRowsPerPage={updateRowsPerPage}
+              />
+            </>
+          )}
         </Box>
       </Modal>
     </>
