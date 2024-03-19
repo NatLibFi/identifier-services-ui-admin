@@ -31,6 +31,8 @@ import {AuthProvider} from 'react-oidc-context';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {IntlProvider} from 'react-intl';
 
+import {createTheme, ThemeProvider} from '@mui/material';
+
 import {AppStateProvider} from '/src/frontend/providers/AppStateProvider';
 
 import App from '/src/frontend/App.jsx';
@@ -47,6 +49,23 @@ const RuntimeEnvContext = createContext(undefined);
 function AppWrapper() {
   const {data: runtimeConfig, loading, error} = useConfig();
   const isTestInstance = runtimeConfig.environment !== 'production';
+
+  // MUI theme provider
+  // - Disable ripple effect globally from all buttons
+
+  // Regarding the MUI theme definition:
+  //   - From docs example given in: https://mui.com/material-ui/customization/theme-components/#theme-default-props
+  //   - Original source code: https://github.com/mui/material-ui/blob/v5.15.14/docs/data/material/customization/theme-components/DefaultProps.js
+  //   - License: MIT (https://github.com/mui/material-ui/blob/v5.15.14/LICENSE)
+  const theme = createTheme({
+    components: {
+      MuiButtonBase: {
+        defaultProps: {
+          disableRipple: true
+        }
+      }
+    }
+  });
 
   if (loading) {
     return <Spinner />;
@@ -66,7 +85,9 @@ function AppWrapper() {
         <IntlProvider locale={'fi'} messages={translations}>
           <RuntimeEnvContext.Provider value={isTestInstance}>
             <AppStateProvider>
-              <App />
+              <ThemeProvider theme={theme}>
+                <App />
+              </ThemeProvider>
             </AppStateProvider>
           </RuntimeEnvContext.Provider>
         </IntlProvider>
