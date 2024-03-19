@@ -85,72 +85,60 @@ function SavePublisherModal(props) {
     setShowPublicationRequestDetails(!showPublicationRequestDetails);
   };
 
-  if (error) {
-    return (
-      <Typography variant="h2" className="normalTitle">
-        <FormattedMessage id="errorPage.message.defaultError" />
-      </Typography>
-    );
-  }
-
-  if (loading) {
-    return <Spinner />;
-  }
-
-  // Display a message if object is empty, or data is not a type of object
-  if (typeof data !== 'object' || Object.keys(data).length === 0) {
-    return (
-      <div>
-        <Typography>
-          <FormattedMessage id="modal.savePublisher.noData" />
-        </Typography>
-      </div>
-    );
-  }
-
   return (
     <Modal open={savePublisherModalOpen} onClose={handleCloseSavePublisherModal}>
       <Box className="createListModal savePublisherModal">
-        <Typography variant="h4">
-          <FormattedMessage id="modal.savePublisher" />
-        </Typography>
-        <div className="savePublisherModalSwitch">
-          <Typography
-            data-checked={!showPublicationRequestDetails}
-            onClick={() => setShowPublicationRequestDetails(false)}
-          >
-            <FormattedMessage id="common.publisherDetails.isbn" />
-          </Typography>
-          <Switch
-            label="switch between publisher and request details"
-            checked={showPublicationRequestDetails}
-            onChange={handleSwitchDetails}
-            inputProps={{'aria-label': 'controlled switch'}}
-          />
-          <Typography
-            data-checked={showPublicationRequestDetails}
-            onClick={() => setShowPublicationRequestDetails(true)}
-          >
-            <FormattedMessage id="common.requestDetails" />
-          </Typography>
-        </div>
+        {/* Loading spinner */}
+        {loading && <Spinner />}
 
-        {/* Show publication */}
-        {showPublicationRequestDetails && <PublicationRequestDetails publicationRequest={publicationRequest} />}
+        {/* Errors */}
+        {error && <Typography>Could not fetch data due to API error</Typography>}
 
-        {/* Show publisher */}
-        {!showPublicationRequestDetails &&
-          <PublisherDetails
-            publisher={data}
-            publisherId={publisherId}
-            publicationRequest={publicationRequest}
-            setPublicationRequest={setPublicationRequest}
-            setSnackbarMessage={setSnackbarMessage}
-            authenticationToken={authenticationToken}
-            setSavePublisherModalOpen={setSavePublisherModalOpen}
-            handleCloseSavePublisherModal={handleCloseSavePublisherModal}
-          />
-        }
+        {/* Content */}
+        {!loading && !error && (
+          <>
+            <Typography variant="h4">
+              <FormattedMessage id="modal.savePublisher" />
+            </Typography>
+            <div className="savePublisherModalSwitch">
+              <Typography
+                data-checked={!showPublicationRequestDetails}
+                onClick={() => setShowPublicationRequestDetails(false)}
+              >
+                <FormattedMessage id="common.publisherDetails.isbn" />
+              </Typography>
+              <Switch
+                label="switch between publisher and request details"
+                checked={showPublicationRequestDetails}
+                onChange={handleSwitchDetails}
+                inputProps={{'aria-label': 'controlled switch'}}
+              />
+              <Typography
+                data-checked={showPublicationRequestDetails}
+                onClick={() => setShowPublicationRequestDetails(true)}
+              >
+                <FormattedMessage id="common.requestDetails" />
+              </Typography>
+            </div>
+
+            {/* Show publication */}
+            {showPublicationRequestDetails && <PublicationRequestDetails publicationRequest={publicationRequest} />}
+
+            {/* Show publisher */}
+            {!showPublicationRequestDetails &&
+              <PublisherDetails
+                publisher={data}
+                publisherId={publisherId}
+                publicationRequest={publicationRequest}
+                setPublicationRequest={setPublicationRequest}
+                setSnackbarMessage={setSnackbarMessage}
+                authenticationToken={authenticationToken}
+                setSavePublisherModalOpen={setSavePublisherModalOpen}
+                handleCloseSavePublisherModal={handleCloseSavePublisherModal}
+              />
+            }
+          </>
+        )}
       </Box>
     </Modal>
   );
