@@ -99,7 +99,8 @@ function BundledEditor(props) {
     skin: false,
     content_css: false,
     content_style: [contentCss, contentUiCss, customStyle || ''].join('\n'),
-    entity_encoding: 'raw'
+    entity_encoding: 'raw',
+    convert_unsafe_embeds: true
   };
 
   return <Editor init={bundledEditorConfig} {...props} />;
