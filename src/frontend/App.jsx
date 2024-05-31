@@ -50,7 +50,6 @@ import '/src/frontend/css/global.css';
 import '/src/frontend/css/app.css';
 
 function App() {
-  //console.log('[App.rerender]');
   const auth = useAuth();
   const {language} = useAppState();
 
