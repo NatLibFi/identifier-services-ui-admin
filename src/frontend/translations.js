@@ -844,6 +844,8 @@ const fi = {
   'request.issn.formPublisher': 'Asiakkaan ilmoittama julkaisija',
   'request.issn.choosePublisher': 'Valitse julkaisija',
   'request.issn.contactInfo': 'Yhteystiedot',
+  'request.issn.publisherInfo': 'Julkaisijan tiedot',
+  'request.issn.formInfo': 'Lomakkeen tiedot',
   'request.issn.publication_count': 'Julkaisujen lkm',
   'request.issn.publication_count_issn': 'Julkaisujen lkm (ISSN)',
   'request.issn.publisher_created': 'Julkaisija luotu',

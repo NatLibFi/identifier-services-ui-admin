@@ -44,77 +44,12 @@ import '/src/frontend/css/requests/isbnIsmn/dataComponent.css';
 
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 
-function IssnRequestDataComponent(props) {
-  const {issnRequest, setIssnRequest, isEdit} = props;
+import {deepCompareObjects} from '/src/frontend/components/utils';
+
+function IssnRequestFormFields(props) {
+  const {isEdit, issnRequest} = props;
 
   const intl = useIntl();
-  const {user: {access_token: authenticationToken}} = useAuth();
-
-  const appStateDispatch = useAppStateDispatch();
-  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
-
-  // Autocomplete
-  const initialSearchBody = {searchText: issnRequest.publisherName ?? ''};
-  const [searchBody, updateSearchBody] = useReducer((prev, next) => {
-    // Trigger autocomplete only after three or more characters
-    if (next.searchText.length > 3) {
-      return {...prev, ...next};
-    }
-
-    return prev;
-  }, initialSearchBody);
-
-  // Data fetching for autocomplete
-  const {data: publishers, loading: isLoadingPublishers} = useList({
-    url: '/api/issn-registry/publishers/autocomplete',
-    method: 'POST',
-    body: searchBody,
-    dependencies: [searchBody],
-    prefetch: true,
-    fetchOnce: false,
-    requireAuth: true,
-    authenticationToken,
-    modalIsUsed: true,
-    isModalOpen: !isEdit
-  });
-
-  // List of existing publishers processed for the Autocomplete component
-  const autoCompleteData = [
-    {label: '', value: null},
-    ...publishers.map((publisher) => ({
-      label: publisher.officialName,
-      value: publisher.id
-    }))
-  ];
-
-  /* Refreshes list from API */
-  function updateSearchText(event) {
-    if (event && event.target?.value && event.target.value !== searchBody.searchText) {
-      updateSearchBody({searchText: event.target.value});
-    }
-  }
-
-  /* Handles change of a publisher */
-  const handleChangePublisher = (_event, publisher) => {
-    handleSavePublisher(publisher?.value);
-  };
-
-  /* Handles saving of a publisher */
-  async function handleSavePublisher(selectedPublisherId) {
-    const publisherId = selectedPublisherId ? selectedPublisherId : null;
-
-    const updatePublicationRequest = await makeApiRequest({
-      url: `/api/issn-registry/requests/${issnRequest.id}/set-publisher`,
-      method: 'PUT',
-      values: {publisherId},
-      authenticationToken,
-      setSnackbarMessage
-    });
-
-    if (updatePublicationRequest) {
-      setIssnRequest(updatePublicationRequest);
-    }
-  }
 
   /* Set non-editable fields */
   const isEditable = (key) => {
@@ -136,64 +71,17 @@ function IssnRequestDataComponent(props) {
   };
 
   return (
-    <div className="mainContainer">
+    <>
       <div className="listComponentContainer">
         <Typography variant="h6" className="listComponentContainerHeader">
-          <FormattedMessage id="form.common.basicInfo" />
+          <FormattedMessage id="request.issn.formInfo" />
         </Typography>
-        <ListComponent
-          edit={isEdit && isEditable('id')}
-          fieldName="id"
-          label={<FormattedMessage id="common.id" />}
-          value={issnRequest.id}
-        />
         <ListComponent
           edit={isEdit && isEditable('formPublisher')}
           fieldName="publisher"
           label={<FormattedMessage id="request.issn.formPublisher" />}
           value={issnRequest.publisher}
         />
-        {/* Render an Autocomplete component for choosing a publisher from the list of existing publishers */}
-        <div className="publisherInformationContainer">
-          <div className="autoCompleteInnerContainer">
-            <Autocomplete
-              disablePortal
-              clearOnEscape
-              clearOnBlur
-              renderOption={(props, option) => (
-                <li {...props}>
-                  <Box>{option.label}</Box>
-                </li>
-              )}
-              options={autoCompleteData || []}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  size="small"
-                  label={<FormattedMessage id="request.issn.choosePublisher" />}
-                />
-              )}
-              value={issnRequest.publisherName || ''}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              onChange={handleChangePublisher}
-              onInputChange={updateSearchText}
-              loading={isLoadingPublishers}
-            />
-          </div>
-          {/* Displaying link to the publisher's details page when publisher is chosen from the list */}
-          {issnRequest.publisherId && (
-            <div className="publisherInformationLink">
-              <AccountBoxIcon />
-              <Link
-                href={`/issn-registry/publishers/${issnRequest.publisherId}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FormattedMessage id="common.publisherDetails.issn" />
-              </Link>
-            </div>
-          )}
-        </div>
         <ListComponent
           edit={isEdit && isEditable('contactPerson')}
           fieldName="contactPerson"
@@ -206,17 +94,6 @@ function IssnRequestDataComponent(props) {
           label={<FormattedMessage id="form.common.language" />}
           value={intl.formatMessage({id: `common.${issnRequest.langCode}`})}
         />
-        <ListComponent
-          edit={isEdit && isEditable('publisherId')}
-          fieldName="publisherId"
-          label={<FormattedMessage id="request.issn.publisherId" />}
-          value={issnRequest.publisherId ?? intl.formatMessage({id: 'common.noValue'})}
-        />
-      </div>
-      <div className="listComponentContainer">
-        <Typography variant="h6" className="listComponentContainerHeader">
-          <FormattedMessage id="request.issn.contactInfo" />
-        </Typography>
         <ListComponent
           edit={isEdit && isEditable('email')}
           fieldName="email"
@@ -308,6 +185,142 @@ function IssnRequestDataComponent(props) {
           value={issnRequest.modified}
         />
       </div>
+    </>
+  );
+}
+
+IssnRequestFormFields.propTypes = {
+  issnRequest: PropTypes.object.isRequired,
+  isEdit: PropTypes.bool.isRequired
+};
+
+const MemoizedIssnRequestFormFields = React.memo(IssnRequestFormFields, deepCompareObjects);
+
+function IssnRequestDataComponent(props) {
+  const {issnRequest, setIssnRequest, isEdit} = props;
+
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
+  // Autocomplete
+  const initialSearchBody = {searchText: issnRequest.publisherName ?? ''};
+  const [searchBody, updateSearchBody] = useReducer((prev, next) => {
+    // Trigger autocomplete only after three or more characters
+    if (next.searchText.length > 3) {
+      return {...prev, ...next};
+    }
+
+    return prev;
+  }, initialSearchBody);
+
+  // Data fetching for autocomplete
+  const {data: publishers, loading: isLoadingPublishers} = useList({
+    url: '/api/issn-registry/publishers/autocomplete',
+    method: 'POST',
+    body: searchBody,
+    dependencies: [searchBody],
+    prefetch: true,
+    fetchOnce: false,
+    requireAuth: true,
+    authenticationToken,
+    modalIsUsed: true,
+    isModalOpen: !isEdit
+  });
+
+  // List of existing publishers processed for the Autocomplete component
+  const autoCompleteData = [
+    {label: '', value: null},
+    ...publishers.map((publisher) => ({
+      label: publisher.officialName,
+      value: publisher.id
+    }))
+  ];
+
+  /* Refreshes list from API */
+  function updateSearchText(event) {
+    if (event && event.target?.value && event.target.value !== searchBody.searchText) {
+      updateSearchBody({searchText: event.target.value});
+    }
+  }
+
+  /* Handles change of a publisher */
+  const handleChangePublisher = (_event, publisher) => {
+    handleSavePublisher(publisher?.value);
+  };
+
+  /* Handles saving of a publisher */
+  async function handleSavePublisher(selectedPublisherId) {
+    const publisherId = selectedPublisherId ? selectedPublisherId : null;
+
+    const updatePublicationRequest = await makeApiRequest({
+      url: `/api/issn-registry/requests/${issnRequest.id}/set-publisher`,
+      method: 'PUT',
+      values: {publisherId},
+      authenticationToken,
+      setSnackbarMessage
+    });
+
+    if (updatePublicationRequest) {
+      setIssnRequest(updatePublicationRequest);
+    }
+  }
+
+  return (
+    <div className="mainContainer">
+      <div className="listComponentContainer">
+        <Typography variant="h6" className="listComponentContainerHeader">
+          <FormattedMessage id="request.issn.publisherInfo" />
+        </Typography>
+        {/* Render an Autocomplete component for choosing a publisher from the list of existing publishers */}
+        <div className="publisherInformationContainer">
+          <div className="autoCompleteInnerContainer">
+            <Autocomplete
+              disablePortal
+              clearOnEscape
+              clearOnBlur
+              renderOption={(props, option) => (
+                <li {...props}>
+                  <Box>{option.label}</Box>
+                </li>
+              )}
+              options={autoCompleteData || []}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  size="small"
+                  label={<FormattedMessage id="request.issn.choosePublisher" />}
+                />
+              )}
+              value={issnRequest.publisherName || ''}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              onChange={handleChangePublisher}
+              onInputChange={updateSearchText}
+              loading={isLoadingPublishers}
+            />
+          </div>
+          {/* Displaying link to the publisher's details page when publisher is chosen from the list */}
+          {issnRequest.publisherId && (
+            <div className="publisherInformationLink">
+              <AccountBoxIcon />
+              <Link
+                href={`/issn-registry/publishers/${issnRequest.publisherId}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FormattedMessage id="common.publisherDetails.issn" />
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <MemoizedIssnRequestFormFields
+        issnRequest={issnRequest}
+        isEdit={isEdit}
+      />
+
     </div>
   );
 }
