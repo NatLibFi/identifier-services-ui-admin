@@ -39,6 +39,8 @@ import '/src/frontend/css/publishers.css';
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 
+import {deepCompareObjects} from '../../utils';
+
 function IsbnPublisherDataComponent({isEdit, publisher}) {
   const intl = useIntl();
   const history = useHistory();
@@ -400,4 +402,4 @@ IsbnPublisherDataComponent.propTypes = {
   isEdit: PropTypes.bool
 };
 
-export default IsbnPublisherDataComponent;
+export default React.memo(IsbnPublisherDataComponent, deepCompareObjects);
