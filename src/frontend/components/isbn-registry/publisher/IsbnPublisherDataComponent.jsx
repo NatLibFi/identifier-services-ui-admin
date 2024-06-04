@@ -39,7 +39,7 @@ import '/src/frontend/css/publishers.css';
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 
-import {deepCompareObjects} from '../../utils';
+import {deepCompareObjects} from '/src/frontend/components/utils';
 
 function IsbnPublisherDataComponent({isEdit, publisher}) {
   const intl = useIntl();
