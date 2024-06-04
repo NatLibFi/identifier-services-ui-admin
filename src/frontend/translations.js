@@ -344,6 +344,7 @@ const fi = {
   'form.common.scale': 'Mittakaava',
   'form.common.archiveRecord': 'Arkistotietue',
   'form.common.url': 'Verkko-osoite',
+  'form.common.identifiers': 'Tunnisteet',
 
   // Form publisher language translations
   'form.publishersLanguages.fi-FI': 'suomi',
@@ -590,6 +591,7 @@ const fi = {
   'form.isbnIsmn.availability.type.option.other': 'Muu',
   'form.isbnIsmn.availability.publicationsPublic.label': 'Onko julkaisunne julkisesti saatavilla?',
   'form.isbnIsmn.availability.type.label': 'Julkaisun tyyppi',
+  'form.isbnIsmn.publisherInfo': 'Kustantajan tiedot (lomake)',
   'form.isbnIsmn.publisherInfo.name': 'Kustantajan nimi*',
   'form.isbnIsmn.publisherInfo.publisherIdentifierStr': 'Kustantajatunnus',
   'form.isbnIsmn.publisherInfo.address': 'Lähiosoite*',

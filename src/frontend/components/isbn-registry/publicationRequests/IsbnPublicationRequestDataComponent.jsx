@@ -60,74 +60,13 @@ import {PUBLICATION_TYPES} from '/src/frontend/components/common/form/constants'
 import SavePublisherModal from '/src/frontend/components/isbn-registry/subComponents/modals/SavePublisherModal/index.jsx';
 
 import {publicationHasIdentifiers} from '/src/frontend/components/isbn-registry/publicationRequests/utils';
+import {deepCompareObjects} from '/src/frontend/components/utils';
 
-function IsbnPublicationRequestDataComponent(props) {
-  const {
-    publicationRequest,
-    setPublicationRequest,
-    isEdit
-  } = props;
+function IsbnPublicationRequestFormFields(props) {
+  const {isEdit, hasIdentifiers, publicationRequest} = props;
 
   const intl = useIntl();
-  const {user: {access_token: authenticationToken}} = useAuth();
 
-  const appStateDispatch = useAppStateDispatch();
-  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
-
-  // Publisher selected from the list
-  const [publisher, setPublisher] = useState({});
-  const [autocompleteInput, setAutocompleteInput] = useState('');
-  const [autocompleteIsPristine, setAutocompleteIsPristine] = useState(true);
-
-  // Modal for saving a publisher
-  const [savePublisherModalOpen, setSavePublisherModalOpen] = useState(false);
-
-  // Loading publishers for autocomplete
-  // Component state
-  const initialSearchBody = {searchText: ''};
-  const hasIdentifiers = useMemo(() => publicationHasIdentifiers(publicationRequest), [publicationRequest]);
-
-  const [searchBody, updateSearchBody] = useReducer((prev, next) => {
-    // Refetch default when searchText has been emptied
-    // Trigger autocomplete only after three or more characters
-    if (next.searchText.length > 3 || next.searchText.length === 0) {
-      return {...prev, ...next};
-    }
-
-    return prev;
-  }, initialSearchBody);
-
-  // Data fetching
-  const {data: publishers, loading: isLoadingPublishers} = useList({
-    url: '/api/isbn-registry/publishers/autocomplete',
-    method: 'POST',
-    body: searchBody,
-    dependencies: [searchBody],
-    prefetch: true,
-    fetchOnce: false,
-    requireAuth: true,
-    authenticationToken,
-    modalIsUsed: true,
-    isModalOpen: !isEdit
-  });
-
-  // List of existing publishers processed for the Autocomplete component
-  const autoCompleteData = publishers.map((publisher) => ({
-    label: publisher.officialName,
-    value: publisher.id,
-    otherNames: publisher.otherNames,
-    previousNames: publisher.previousNames,
-    // Used to help distinguish between ISBN and ISMN publishers with the same name
-    isbnPublisher: publisher.isbnSubRanges?.length ? 'ISBN' : '',
-    ismnPublisher: publisher.ismnSubRanges?.length ? 'ISMN' : ''
-  }));
-
-  // Reset pristine information when request changes
-  useEffect(() => {
-    setAutocompleteIsPristine(true);
-  }, [publicationRequest]);
-
-  /* Non-editable fields depending on user's role */
   const isEditable = (key) => {
     const nonEditableFields = ['modified', 'modifiedBy', 'created', 'createdBy'];
     const nonEditableAfterAccept = [
@@ -159,93 +98,6 @@ function IsbnPublicationRequestDataComponent(props) {
       : !nonEditableFields.includes(key);
   };
 
-  /* Refreshes list from API */
-  function updateSearchText(event, value, reason) {
-    // During first event, set pristine to false
-    if (autocompleteIsPristine && event) {
-      setAutocompleteIsPristine(false);
-    }
-
-    // Manage autocomplete text state, search body state and publisher state
-    // based on input type and value
-    if (['input', 'reset'].includes(reason) && (value || value === '')) {
-      if (reason === 'reset') {
-        setAutocompleteInput({label: value, value: null});
-      } else {
-        // Note: used for autocomplete state value getter evaluation
-        // Saving requires call of setPublisher function to set
-        // publisher value that contains publisherId
-        setAutocompleteInput({label: value, value: true});
-      }
-
-      if (value === '') {
-        setPublisher({label: '', value: null});
-      }
-
-      return updateSearchBody({searchText: value});
-    }
-  }
-
-  /* Handles change of a publisher */
-  const handleChangePublisher = (_event, v) => {
-    setPublisher(v);
-  };
-
-  const handleOpenSavePublisherModal = () => {
-    setSavePublisherModalOpen(true);
-  };
-
-  // Handles closing the save publisher modal
-  const handleCloseSavePublisherModal = () => {
-    setSavePublisherModalOpen(false);
-
-    // Reset publisher information as request is re-loaded and thus
-    // autoComplete input resetted through useEffect
-    setPublisher({label: '', value: null});
-  };
-
-  /* Handles resetting of a publisher */
-  async function handleResetPublisher() {
-    const requestBody = {publisherId: null};
-
-    const updatedRequest = await makeApiRequest({
-      url: `/api/isbn-registry/requests/publications/${publicationRequest.id}/set-publisher`,
-      method: 'PUT',
-      values: requestBody,
-      authenticationToken,
-      setSnackbarMessage
-    });
-
-    setPublicationRequest(updatedRequest);
-
-    // Manually reset publisher and autocomplet input value so that state stays intact
-    setPublisher({label: '', value: null});
-    setAutocompleteInput('');
-  }
-
-  /* Identifier cancellation/removal handlers. Note: these will make redirect to same page using history.go(0) when process succeeds */
-  async function cancelIdentifier(identifier) {
-    await makeApiRequest({
-      url: '/api/isbn-registry/identifiers/cancel',
-      method: 'POST',
-      values: {identifier},
-      authenticationToken,
-      setSnackbarMessage,
-      history
-    });
-  }
-
-  async function removeIdentifier(identifier) {
-    await makeApiRequest({
-      url: '/api/isbn-registry/identifiers/remove',
-      method: 'POST',
-      values: {identifier},
-      authenticationToken,
-      setSnackbarMessage,
-      history
-    });
-  }
-
   // Creating an array of authors to display
   const authorsArray = genAuthors([], 1);
 
@@ -265,160 +117,12 @@ function IsbnPublicationRequestDataComponent(props) {
     return genAuthors(tempAuthorsArray, index + 1);
   }
 
-  // Getter for autocomplete value
-  function getAutocompleteValue() {
-    const requestPublisherValue = publicationRequest.publisherId ? {label: publicationRequest.publisherName, value: publicationRequest.publisherId} : {label: '', value: null};
-    const currentPublisherValue = publisher.value ? publisher : {label: '', value: null};
-
-    // If user has not started using autocomplete, display current request value
-    if (autocompleteIsPristine) {
-      return requestPublisherValue;
-    }
-
-    // If autocomplete input is ongoing, display it
-    // Otherwise display selected publisher
-    return autocompleteInput?.value ? autocompleteInput : currentPublisherValue;
-  }
-
-  function autocompleteHasSavedValue() {
-    if (autocompleteIsPristine) {
-      return true;
-    }
-
-    const requestPublisherValue = publicationRequest.publisherId || null;
-    const currentPublisherValue = publisher.value || null;
-
-    if (currentPublisherValue === requestPublisherValue) {
-      return true;
-    }
-
-    return false;
-  }
-
   return (
-    <div className="mainContainer">
-      {/* Kustantajan tiedot - Publisher details*/}
-      <div className="listComponentContainer">
+    <>
+      <div className='listComponentContainer'>
         <Typography variant="h6" className="listComponentContainerHeader">
-          <FormattedMessage id="common.publisherDetails.isbn" />
+          <FormattedMessage id="form.isbnIsmn.publisherInfo" />
         </Typography>
-        {/* This component is related to choosing publisher from the list (ISBN/ISMN single request page) */}
-        <div className="publisherInformationContainer">
-          <div className="autoCompleteContainer">
-            <div className="autoCompleteInnerContainer">
-              <Autocomplete
-                disableClearable
-                clearOnBlur={false}
-                /* List is disabled when request is already accepted */
-                disabled={hasIdentifiers || isEdit}
-                filterOptions={(x) => x} // Required for search-as-you-type
-                renderOption={(props, option) => (
-                  // NB! It is important to use a unique key for each option, since we can have multiple publishers with the same name (eg. ISBN & ISMN)
-                  // That's why it is not possible to use a default key (props.key)
-                  <li {...props} key={uuidv4()}>
-                    <Box>
-                      {/* Displaying publication type with the label when there are multiple publishers with the same name */}
-                      {autoCompleteData.filter((item) => item.label === option.label)
-                        .length > 1 ? (
-                          <>
-                            {option.label}{' '}
-                            <em>
-                            ({option.isbnPublisher}
-                              {option.ismnPublisher})
-                            </em>
-                          </>
-                        ) : (
-                          option.label
-                        )}
-                      {option.otherNames && (
-                        <p className="autocompleteAdditionalRow">
-                          <FormattedMessage id="form.common.otherNames" />:{' '}
-                          {option.otherNames}
-                        </p>
-                      )}
-                      {option.previousNames?.length ? (
-                        <p className="autocompleteAdditionalRow">
-                          <FormattedMessage id="form.common.previousNames" />:{' '}
-                          {option.previousNames.join(', ')}
-                        </p>
-                      ) : null}
-                    </Box>
-                  </li>
-                )}
-                options={autoCompleteData || []}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    focused
-                    /* Warning (red) color in case of error,
-                    Success (green) color in case of successfull save,
-                    and Primary (blue) color by default */
-                    color={hasIdentifiers ? 'success' : autocompleteHasSavedValue() ? 'primary' : 'error'}
-                    helperText={autocompleteHasSavedValue() ? '' : intl.formatMessage({id: 'request.publication.autocomplete.notSaved'})}
-                    size="small"
-                    label={<FormattedMessage id="request.publication.choosePublisher" />}
-                  />
-                )}
-                value={getAutocompleteValue()}
-                getOptionLabel={(option) => option.label || ''}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                onChange={handleChangePublisher}
-                onInputChange={updateSearchText}
-                loading={isLoadingPublishers}
-              />
-              <div>
-                {/* Save-button is showed by default, Check-icon if request is accepted */}
-                <IconButton
-                  disabled={
-                    isEdit ||
-                    hasIdentifiers ||
-                    !publisher.value ||
-                    publisher.value === publicationRequest.publisherId
-                  }
-                  className={hasIdentifiers ? '' : 'iconButton'}
-                  title={intl.formatMessage({id: 'form.button.label.save'})}
-                  onClick={handleOpenSavePublisherModal}
-                >
-                  {hasIdentifiers ? (
-                    <DoneIcon color="success" fontSize="large" />
-                  ) : (
-                    <SaveIcon color="primary" fontSize="large" />
-                  )}
-                </IconButton>
-                <IconButton
-                  disabled={hasIdentifiers || isEdit}
-                  className="iconButton"
-                  title={intl.formatMessage({id: 'form.button.label.reset'})}
-                  onClick={handleResetPublisher}
-                >
-                  <ClearIcon
-                    color={hasIdentifiers ? 'disabled' : 'primary'}
-                    fontSize="large"
-                  />
-                </IconButton>
-              </div>
-            </div>
-            {/* Displaying link to the publisher's details page */}
-            <div className="publisherInformationLink">
-              <AccountBoxIcon />
-              <Link
-                href={`/isbn-registry/publishers/${publisher.value ? publisher.value : publicationRequest.publisherId}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FormattedMessage id="common.publisherDetails.isbn" />
-              </Link>
-            </div>
-          </div>
-        </div>
-        <SavePublisherModal
-          publicationRequest={publicationRequest}
-          publisherId={publisher.value} // Note: autocomplete formatting maps publisher.id to publisher.value
-          setPublicationRequest={setPublicationRequest}
-          savePublisherModalOpen={savePublisherModalOpen}
-          setSavePublisherModalOpen={setSavePublisherModalOpen}
-          handleCloseSavePublisherModal={handleCloseSavePublisherModal}
-        />
         <ListComponent
           edit={isEdit && isEditable('publisherIdentifierStr')}
           fieldName="publisherIdentifierStr"
@@ -524,30 +228,6 @@ function IsbnPublicationRequestDataComponent(props) {
           label={<FormattedMessage id="form.common.publicationYear" />}
           value={publicationRequest.year}
         />
-        {publicationRequest.publicationIdentifierElectronical && (
-          <ListComponent
-            edit={false} // Never editable directly
-            fieldName="publicationIdentifierElectronical"
-            format="electronical"
-            label={<FormattedMessage id="request.publication.electronic" />}
-            value={publicationRequest.publicationIdentifierElectronical}
-            cancelId={cancelIdentifier}
-            removeId={removeIdentifier}
-            token={authenticationToken}
-          />
-        )}
-        {publicationRequest.publicationIdentifierPrint && (
-          <ListComponent
-            edit={false} // Never editable directly
-            fieldName="publicationIdentifierPrint"
-            format="print"
-            label={<FormattedMessage id="request.publication.printed" />}
-            value={publicationRequest.publicationIdentifierPrint}
-            cancelId={cancelIdentifier}
-            removeId={removeIdentifier}
-            token={authenticationToken}
-          />
-        )}
       </div>
 
       {/* Julkaisutoiminta - Publishing activities*/}
@@ -830,6 +510,362 @@ function IsbnPublicationRequestDataComponent(props) {
           value={publicationRequest.modified}
         />
       </div>
+    </>
+  );
+}
+
+IsbnPublicationRequestFormFields.propTypes = {
+  publicationRequest: PropTypes.object.isRequired,
+  hasIdentifiers: PropTypes.bool.isRequired,
+  isEdit: PropTypes.bool.isRequired
+};
+
+const MemoizedIsbnPublicationRequestFormFields = React.memo(IsbnPublicationRequestFormFields, deepCompareObjects);
+
+function IsbnPublicationRequestDataComponent(props) {
+  const {
+    publicationRequest,
+    setPublicationRequest,
+    isEdit
+  } = props;
+
+  const intl = useIntl();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
+  // Publisher selected from the list
+  const [publisher, setPublisher] = useState({});
+  const [autocompleteInput, setAutocompleteInput] = useState('');
+  const [autocompleteIsPristine, setAutocompleteIsPristine] = useState(true);
+
+  // Modal for saving a publisher
+  const [savePublisherModalOpen, setSavePublisherModalOpen] = useState(false);
+
+  // Loading publishers for autocomplete
+  // Component state
+  const initialSearchBody = {searchText: ''};
+  const hasIdentifiers = useMemo(() => publicationHasIdentifiers(publicationRequest), [publicationRequest]);
+
+  const [searchBody, updateSearchBody] = useReducer((prev, next) => {
+    // Refetch default when searchText has been emptied
+    // Trigger autocomplete only after three or more characters
+    if (next.searchText.length > 3 || next.searchText.length === 0) {
+      return {...prev, ...next};
+    }
+
+    return prev;
+  }, initialSearchBody);
+
+  // Data fetching
+  const {data: publishers, loading: isLoadingPublishers} = useList({
+    url: '/api/isbn-registry/publishers/autocomplete',
+    method: 'POST',
+    body: searchBody,
+    dependencies: [searchBody],
+    prefetch: true,
+    fetchOnce: false,
+    requireAuth: true,
+    authenticationToken,
+    modalIsUsed: true,
+    isModalOpen: !isEdit
+  });
+
+  // List of existing publishers processed for the Autocomplete component
+  const autoCompleteData = publishers.map((publisher) => ({
+    label: publisher.officialName,
+    value: publisher.id,
+    otherNames: publisher.otherNames,
+    previousNames: publisher.previousNames,
+    // Used to help distinguish between ISBN and ISMN publishers with the same name
+    isbnPublisher: publisher.isbnSubRanges?.length ? 'ISBN' : '',
+    ismnPublisher: publisher.ismnSubRanges?.length ? 'ISMN' : ''
+  }));
+
+  // Reset pristine information when request changes
+  useEffect(() => {
+    setAutocompleteIsPristine(true);
+  }, [publicationRequest]);
+
+  /* Refreshes list from API */
+  function updateSearchText(event, value, reason) {
+    // During first event, set pristine to false
+    if (autocompleteIsPristine && event) {
+      setAutocompleteIsPristine(false);
+    }
+
+    // Manage autocomplete text state, search body state and publisher state
+    // based on input type and value
+    if (['input', 'reset'].includes(reason) && (value || value === '')) {
+      if (reason === 'reset') {
+        setAutocompleteInput({label: value, value: null});
+      } else {
+        // Note: used for autocomplete state value getter evaluation
+        // Saving requires call of setPublisher function to set
+        // publisher value that contains publisherId
+        setAutocompleteInput({label: value, value: true});
+      }
+
+      if (value === '') {
+        setPublisher({label: '', value: null});
+      }
+
+      return updateSearchBody({searchText: value});
+    }
+  }
+
+  /* Handles change of a publisher */
+  const handleChangePublisher = (_event, v) => {
+    setPublisher(v);
+  };
+
+  const handleOpenSavePublisherModal = () => {
+    setSavePublisherModalOpen(true);
+  };
+
+  // Handles closing the save publisher modal
+  const handleCloseSavePublisherModal = () => {
+    setSavePublisherModalOpen(false);
+
+    // Reset publisher information as request is re-loaded and thus
+    // autoComplete input resetted through useEffect
+    setPublisher({label: '', value: null});
+  };
+
+  /* Handles resetting of a publisher */
+  async function handleResetPublisher() {
+    const requestBody = {publisherId: null};
+
+    const updatedRequest = await makeApiRequest({
+      url: `/api/isbn-registry/requests/publications/${publicationRequest.id}/set-publisher`,
+      method: 'PUT',
+      values: requestBody,
+      authenticationToken,
+      setSnackbarMessage
+    });
+
+    setPublicationRequest(updatedRequest);
+
+    // Manually reset publisher and autocomplet input value so that state stays intact
+    setPublisher({label: '', value: null});
+    setAutocompleteInput('');
+  }
+
+  /* Identifier cancellation/removal handlers. Note: these will make redirect to same page using history.go(0) when process succeeds */
+  async function cancelIdentifier(identifier) {
+    await makeApiRequest({
+      url: '/api/isbn-registry/identifiers/cancel',
+      method: 'POST',
+      values: {identifier},
+      authenticationToken,
+      setSnackbarMessage,
+      history
+    });
+  }
+
+  async function removeIdentifier(identifier) {
+    await makeApiRequest({
+      url: '/api/isbn-registry/identifiers/remove',
+      method: 'POST',
+      values: {identifier},
+      authenticationToken,
+      setSnackbarMessage,
+      history
+    });
+  }
+
+  // Getter for autocomplete value
+  function getAutocompleteValue() {
+    const requestPublisherValue = publicationRequest.publisherId ? {label: publicationRequest.publisherName, value: publicationRequest.publisherId} : {label: '', value: null};
+    const currentPublisherValue = publisher.value ? publisher : {label: '', value: null};
+
+    // If user has not started using autocomplete, display current request value
+    if (autocompleteIsPristine) {
+      return requestPublisherValue;
+    }
+
+    // If autocomplete input is ongoing, display it
+    // Otherwise display selected publisher
+    return autocompleteInput?.value ? autocompleteInput : currentPublisherValue;
+  }
+
+  function autocompleteHasSavedValue() {
+    if (autocompleteIsPristine) {
+      return true;
+    }
+
+    const requestPublisherValue = publicationRequest.publisherId || null;
+    const currentPublisherValue = publisher.value || null;
+
+    if (currentPublisherValue === requestPublisherValue) {
+      return true;
+    }
+
+    return false;
+  }
+
+  return (
+    <div className="mainContainer">
+      {/* Kustantajan tiedot - Publisher details*/}
+      <div className="listComponentContainer">
+        <Typography variant="h6" className="listComponentContainerHeader">
+          <FormattedMessage id="common.publisherDetails.isbn" />
+        </Typography>
+        {/* This component is related to choosing publisher from the list (ISBN/ISMN single request page) */}
+        <div className="publisherInformationContainer">
+          <div className="autoCompleteContainer">
+            <div className="autoCompleteInnerContainer">
+              <Autocomplete
+                disableClearable
+                clearOnBlur={false}
+                /* List is disabled when request is already accepted */
+                disabled={hasIdentifiers || isEdit}
+                filterOptions={(x) => x} // Required for search-as-you-type
+                renderOption={(props, option) => (
+                  // NB! It is important to use a unique key for each option, since we can have multiple publishers with the same name (eg. ISBN & ISMN)
+                  // That's why it is not possible to use a default key (props.key)
+                  <li {...props} key={uuidv4()}>
+                    <Box>
+                      {/* Displaying publication type with the label when there are multiple publishers with the same name */}
+                      {autoCompleteData.filter((item) => item.label === option.label)
+                        .length > 1 ? (
+                          <div>
+                            {option.label}{' '}
+                            <em>
+                              ({option.isbnPublisher}
+                              {option.ismnPublisher})
+                            </em>
+                          </div>
+                        ) : (
+                          option.label
+                        )}
+                      {option.otherNames && (
+                        <p className="autocompleteAdditionalRow">
+                          <FormattedMessage id="form.common.otherNames" />:{' '}
+                          {option.otherNames}
+                        </p>
+                      )}
+                      {option.previousNames?.length ? (
+                        <p className="autocompleteAdditionalRow">
+                          <FormattedMessage id="form.common.previousNames" />:{' '}
+                          {option.previousNames.join(', ')}
+                        </p>
+                      ) : null}
+                    </Box>
+                  </li>
+                )}
+                options={autoCompleteData || []}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    focused
+                    /* Warning (red) color in case of error,
+                    Success (green) color in case of successfull save,
+                    and Primary (blue) color by default */
+                    color={hasIdentifiers ? 'success' : autocompleteHasSavedValue() ? 'primary' : 'error'}
+                    helperText={autocompleteHasSavedValue() ? '' : intl.formatMessage({id: 'request.publication.autocomplete.notSaved'})}
+                    size="small"
+                    label={<FormattedMessage id="request.publication.choosePublisher" />}
+                  />
+                )}
+                value={getAutocompleteValue()}
+                getOptionLabel={(option) => option.label || ''}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={handleChangePublisher}
+                onInputChange={updateSearchText}
+                loading={isLoadingPublishers}
+              />
+              <div>
+                {/* Save-button is showed by default, Check-icon if request is accepted */}
+                <IconButton
+                  disabled={
+                    isEdit ||
+                    hasIdentifiers ||
+                    !publisher.value ||
+                    publisher.value === publicationRequest.publisherId
+                  }
+                  className={hasIdentifiers ? '' : 'iconButton'}
+                  title={intl.formatMessage({id: 'form.button.label.save'})}
+                  onClick={handleOpenSavePublisherModal}
+                >
+                  {hasIdentifiers ? (
+                    <DoneIcon color="success" fontSize="large" />
+                  ) : (
+                    <SaveIcon color="primary" fontSize="large" />
+                  )}
+                </IconButton>
+                <IconButton
+                  disabled={hasIdentifiers || isEdit}
+                  className="iconButton"
+                  title={intl.formatMessage({id: 'form.button.label.reset'})}
+                  onClick={handleResetPublisher}
+                >
+                  <ClearIcon
+                    color={hasIdentifiers ? 'disabled' : 'primary'}
+                    fontSize="large"
+                  />
+                </IconButton>
+              </div>
+            </div>
+            {/* Displaying link to the publisher's details page */}
+            <div className="publisherInformationLink">
+              <AccountBoxIcon />
+              <Link
+                href={`/isbn-registry/publishers/${publisher.value ? publisher.value : publicationRequest.publisherId}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FormattedMessage id="common.publisherDetails.isbn" />
+              </Link>
+            </div>
+          </div>
+        </div>
+        <SavePublisherModal
+          publicationRequest={publicationRequest}
+          publisherId={publisher.value} // Note: autocomplete formatting maps publisher.id to publisher.value
+          setPublicationRequest={setPublicationRequest}
+          savePublisherModalOpen={savePublisherModalOpen}
+          setSavePublisherModalOpen={setSavePublisherModalOpen}
+          handleCloseSavePublisherModal={handleCloseSavePublisherModal}
+        />
+      </div>
+
+      <div className="listComponentContainer">
+        <Typography variant="h6" className="listComponentContainerHeader">
+          <FormattedMessage id="form.common.identifiers" />
+        </Typography>
+        {publicationRequest.publicationIdentifierElectronical && (
+          <ListComponent
+            edit={false} // Never editable directly
+            fieldName="publicationIdentifierElectronical"
+            format="electronical"
+            label={<FormattedMessage id="request.publication.electronic" />}
+            value={publicationRequest.publicationIdentifierElectronical}
+            cancelId={cancelIdentifier}
+            removeId={removeIdentifier}
+            token={authenticationToken}
+          />
+        )}
+        {publicationRequest.publicationIdentifierPrint && (
+          <ListComponent
+            edit={false} // Never editable directly
+            fieldName="publicationIdentifierPrint"
+            format="print"
+            label={<FormattedMessage id="request.publication.printed" />}
+            value={publicationRequest.publicationIdentifierPrint}
+            cancelId={cancelIdentifier}
+            removeId={removeIdentifier}
+            token={authenticationToken}
+          />
+        )}
+      </div>
+
+      <MemoizedIsbnPublicationRequestFormFields
+        publicationRequest={publicationRequest}
+        hasIdentifiers={hasIdentifiers}
+        isEdit={isEdit}
+      />
     </div>
   );
 }
@@ -837,7 +873,7 @@ function IsbnPublicationRequestDataComponent(props) {
 IsbnPublicationRequestDataComponent.propTypes = {
   publicationRequest: PropTypes.object.isRequired,
   setPublicationRequest: PropTypes.func.isRequired,
-  isEdit: PropTypes.bool
+  isEdit: PropTypes.bool.isRequired
 };
 
 export default IsbnPublicationRequestDataComponent;
