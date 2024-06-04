@@ -6,8 +6,9 @@ import {Typography} from '@mui/material';
 
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 
+import {deepCompareObjects} from '/src/frontend/components/utils';
 
-function IsbnPublisherRequestDisplay({publisherRequest, isEdit}) {
+function IsbnPublisherRequestDataComponent({publisherRequest, isEdit}) {
   const intl = useIntl();
 
   function isEditable(key) {
@@ -250,9 +251,9 @@ function IsbnPublisherRequestDisplay({publisherRequest, isEdit}) {
   );
 }
 
-IsbnPublisherRequestDisplay.propTypes = {
+IsbnPublisherRequestDataComponent.propTypes = {
   publisherRequest: PropTypes.object.isRequired,
   isEdit: PropTypes.bool
 };
 
-export default IsbnPublisherRequestDisplay;
+export default React.memo(IsbnPublisherRequestDataComponent, deepCompareObjects);
