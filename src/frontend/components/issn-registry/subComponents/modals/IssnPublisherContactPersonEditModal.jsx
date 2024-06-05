@@ -40,7 +40,6 @@ import {
   OutlinedInput,
   IconButton
 } from '@mui/material';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
@@ -48,9 +47,9 @@ import '/src/frontend/css/common.css';
 import '/src/frontend/css/subComponents/modals.css';
 
 function IssnPublisherContactPersonEditModal(props) {
-  const {initialState, attribute, edit, headerIntlId, handlePublisherUpdate} = props;
-  const initialValues = initialState[attribute]
-    ? initialState[attribute]
+  const {initialState, handlePublisherUpdate} = props;
+  const initialValues = initialState['contactPerson']
+    ? initialState['contactPerson']
     : [{name: '', email: ''}];
   const intl = useIntl();
 
@@ -68,7 +67,7 @@ function IssnPublisherContactPersonEditModal(props) {
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => {
     // Set initial state
-    setValues(initialState[attribute]);
+    setValues(initialState['contactPerson']);
     setOpenModal(false);
   };
 
@@ -99,38 +98,26 @@ function IssnPublisherContactPersonEditModal(props) {
 
   // Handles approving a process of creating a new ISSN-publisher
   const handleUpdate = async () => {
-    await handlePublisherUpdate({[attribute]: values});
+    await handlePublisherUpdate({['contactPerson']: values});
     handleCloseModal();
   };
 
   return (
     <>
-      {/* Button that opens a modal for adding a new ISSN request */}
-      <Typography variant="h6" className="listComponentContainerHeader editableContainer">
-        <FormattedMessage id={headerIntlId} />
-        {edit && (
-          <Fab
-            aria-label={`edit-${attribute}`}
-            onClick={handleOpenModal}
-            color="info"
-            size="small"
-            className="issnPulisherContactsModalButton"
-            title={intl.formatMessage({id: 'form.button.label.edit'})}
-          >
-            <PlaylistAddIcon />
-          </Fab>
-        )}
-      </Typography>
-
-      <Modal
-        open={openModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        onClose={handleCloseModal}
+      {/* Button that opens a modal */}
+      <Button
+        className="requestButton"
+        variant="outlined"
+        color="primary"
+        onClick={handleOpenModal}
       >
+        <FormattedMessage id="publisher.issn.contactPerson.edit" />
+      </Button>
+
+      <Modal open={openModal} onClose={handleCloseModal}>
         <Box className="createListModal issnLinkedPublicationEditModal">
           <Typography variant="h5">
-            <FormattedMessage id={headerIntlId} />
+            <FormattedMessage id={'publisher.issn.contactPerson'} />
           </Typography>
           {values.length === 0 && <FormattedMessage id={'common.undefined'} />}
           {[...Array(values.length).keys()].map((idx) => {
@@ -200,9 +187,6 @@ function IssnPublisherContactPersonEditModal(props) {
 
 IssnPublisherContactPersonEditModal.propTypes = {
   initialState: PropTypes.object.isRequired,
-  attribute: PropTypes.string.isRequired,
-  edit: PropTypes.bool.isRequired,
-  headerIntlId: PropTypes.string.isRequired,
   handlePublisherUpdate: PropTypes.func.isRequired
 };
 

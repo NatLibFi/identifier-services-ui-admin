@@ -28,11 +28,12 @@ import {deleteEntry} from '/src/frontend/actions';
 import IssnMessagesModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnMessagesModal.jsx';
 import IssnPublicationsModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnPublicationsModal.jsx';
 import IssnPublishersRequestsModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnPublishersRequestsModal.jsx';
-
+import IssnPublisherContactPersonEditModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnPublisherContactPersonEditModal.jsx';
 
 function IssnPublisherDisplay(props) {
   const {
     children,
+    handlePublisherUpdate,
     issnPublisher,
     setIsEdit
   } = props;
@@ -80,7 +81,7 @@ function IssnPublisherDisplay(props) {
 
   return (
     <>
-      <div className="issnPublisherButtonsContainer">
+      <div className="issnPublicationButtonsContainer">
         <Fab
           color="secondary"
           size="small"
@@ -103,6 +104,12 @@ function IssnPublisherDisplay(props) {
           searchValue={issnPublisher.id}
           publisherName={issnPublisher.officialName}
         />
+
+        <IssnPublisherContactPersonEditModal
+          initialState={issnPublisher}
+          handlePublisherUpdate={handlePublisherUpdate}
+        />
+
         {/* Pressing the delete button below causes opening of a confirmation Dialog */}
         <Fab
           disabled={issnPublisher.formId !== null && issnPublisher.formId !== 0}
@@ -153,6 +160,7 @@ function IssnPublisherDisplay(props) {
 
 IssnPublisherDisplay.propTypes = {
   children: PropTypes.node.isRequired,
+  handlePublisherUpdate: PropTypes.func.isRequired,
   issnPublisher: PropTypes.object.isRequired,
   setIsEdit: PropTypes.func.isRequired
 };

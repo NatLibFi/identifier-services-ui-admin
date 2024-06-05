@@ -35,10 +35,10 @@ import '/src/frontend/css/publishers.css';
 
 import {containsInformation} from '/src/frontend/components/issn-registry/apiFormatUtils';
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
-import IssnPublisherContactPersonEditModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnPublisherContactPersonEditModal.jsx';
+import {deepCompareObjects} from '/src/frontend/components/utils';
 
 function IssnPublisherDataComponent(props) {
-  const {publisher, handlePublisherUpdate, isEdit} = props;
+  const {publisher, isEdit} = props;
   const intl = useIntl();
 
   function isEditable(key) {
@@ -81,14 +81,9 @@ function IssnPublisherDataComponent(props) {
         />
       </div>
       <div className="listComponentContainer">
-        <IssnPublisherContactPersonEditModal
-          initialState={publisher}
-          attribute={'contactPerson'}
-          edit={!isEdit}
-          headerIntlId={'publisher.issn.contactPerson'}
-          handlePublisherUpdate={handlePublisherUpdate}
-        />
-
+        <Typography variant="h6" className="listComponentContainerHeader">
+          <FormattedMessage id="publisher.issn.contactPerson" />
+        </Typography>
         <ListComponent
           edit={false} // Never edit through edit mode
           fieldName="contactPerson"
@@ -201,8 +196,7 @@ function IssnPublisherDataComponent(props) {
 
 IssnPublisherDataComponent.propTypes = {
   isEdit: PropTypes.bool.isRequired,
-  publisher: PropTypes.object.isRequired,
-  handlePublisherUpdate: PropTypes.func.isRequired
+  publisher: PropTypes.object.isRequired
 };
 
-export default IssnPublisherDataComponent;
+export default React.memo(IssnPublisherDataComponent, deepCompareObjects);

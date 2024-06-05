@@ -123,10 +123,9 @@ function IssnPublisher() {
       </Typography>
       { /* Display data only */}
       {hasData && !isEdit &&
-        <IssnPublisherDisplay issnPublisher={issnPublisher} setIsEdit={setIsEdit}>
+        <IssnPublisherDisplay handlePublisherUpdate={handlePublisherUpdate} issnPublisher={issnPublisher} setIsEdit={setIsEdit}>
           <IssnPublisherDataComponent
             publisher={issnPublisher}
-            handlePublisherUpdate={handlePublisherUpdate}
             isEdit={isEdit}
           />
         </IssnPublisherDisplay>
@@ -137,7 +136,6 @@ function IssnPublisher() {
         <IssnPublisherEditForm issnPublisher={issnPublisher} setIsEdit={setIsEdit} handlePublisherUpdate={handlePublisherUpdate}>
           <IssnPublisherDataComponent
             publisher={issnPublisher}
-            handlePublisherUpdate={handlePublisherUpdate}
             isEdit={isEdit}
           />
         </IssnPublisherEditForm>

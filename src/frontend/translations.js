@@ -883,6 +883,7 @@ const fi = {
   'publisher.issn.formId': 'Pyynnön ID',
   'publisher.issn.oldId': 'Vanha tunnus',
   'publisher.issn.contactPerson': 'Yhteyshenkilöt',
+  'publisher.issn.contactPerson.edit': 'Määritä yhteyshenkilöt',
 
   // ISSN publication
   'publication.issn.title': 'Etsi ISSN-julkaisu nimekkeellä',
