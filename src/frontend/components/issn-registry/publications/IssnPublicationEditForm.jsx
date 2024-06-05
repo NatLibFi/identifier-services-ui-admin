@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import {useAuth} from 'react-oidc-context';
+
 import {Form} from 'react-final-form';
 
 import {FormattedMessage} from 'react-intl';
@@ -17,6 +19,13 @@ function IssnPublicationEditForm(props) {
     setIsEdit
   } = props;
 
+  // NB: Hook is used here to avoid re-renders which would happen if passing token/handler function
+  // through props
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  async function handleSubmit(values) {
+    return handleUpdatePublication(values, authenticationToken);
+  }
 
   const handleCancel = () => {
     setIsEdit(false);
@@ -24,7 +33,7 @@ function IssnPublicationEditForm(props) {
 
   return (
     <Form
-      onSubmit={handleUpdatePublication}
+      onSubmit={handleSubmit}
       initialValues={issnPublication}
       validate={validate}
     >

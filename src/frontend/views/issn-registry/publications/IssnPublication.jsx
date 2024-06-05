@@ -25,7 +25,7 @@
  *
  */
 
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useCallback, useState, useEffect, useMemo} from 'react';
 
 import {useAuth} from 'react-oidc-context';
 import {useParams, withRouter} from 'react-router-dom';
@@ -88,12 +88,12 @@ function IssnPublication() {
   }, [initialData]);
 
   /* Handles updating of the current publication */
-  async function handleUpdatePublication(values) {
+  async function handleUpdatePublication(values, token) {
     const formattedValues = formatToApi(values);
     const updateResult = await updateEntry({
       url: `/api/issn-registry/publications/${id}`,
       values: formattedValues,
-      authenticationToken,
+      authenticationToken: token,
       setSnackbarMessage
     });
 
@@ -108,6 +108,8 @@ function IssnPublication() {
     const newFailedUpdateCount = failedUpdateCount + 1;
     setFailedUpdateCount(newFailedUpdateCount);
   }
+
+  const memoizedHandleUpdatePublication = useCallback(handleUpdatePublication, [id]);
 
   if (error) {
     return (
@@ -139,7 +141,7 @@ function IssnPublication() {
             <IssnPublicationDataComponent
               issnPublication={issnPublication}
               isEdit={isEdit}
-              updatePublication={handleUpdatePublication}
+              updatePublication={memoizedHandleUpdatePublication}
             />
           </IssnPublicationDisplay>
         }
@@ -148,13 +150,13 @@ function IssnPublication() {
         {hasPublicationRequestData && isEdit &&
           <IssnPublicationEditForm
             issnPublication={issnPublication}
-            handleUpdatePublication={handleUpdatePublication}
+            handleUpdatePublication={memoizedHandleUpdatePublication}
             setIsEdit={setIsEdit}
           >
             <IssnPublicationDataComponent
               issnPublication={issnPublication}
               isEdit={isEdit}
-              updatePublication={handleUpdatePublication}
+              updatePublication={memoizedHandleUpdatePublication}
             />
           </IssnPublicationEditForm>
         }
