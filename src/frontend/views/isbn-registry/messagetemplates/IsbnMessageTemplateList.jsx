@@ -41,6 +41,14 @@ import '/src/frontend/css/common.css';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
+// Titles of the table columns
+const headRows = [
+  {id: 'name', intlId: 'table.headRows.name'},
+  {id: 'subject', intlId: 'messages.subject'},
+  {id: 'messageType', intlId: 'messages.messageType'},
+  {id: 'language', intlId: 'form.common.language'}
+];
+
 function IsbnMessageTemplateList() {
   const {user: {access_token: authenticationToken}} = useAuth();
   const history = useHistory();
@@ -63,14 +71,6 @@ function IsbnMessageTemplateList() {
   const handleCreateNewTemplate = () => {
     history.push('/isbn-registry/messagetemplates/form/create');
   };
-
-  // Titles of the table columns
-  const headRows = useMemo(() => [
-    {id: 'name', intlId: 'table.headRows.name'},
-    {id: 'subject', intlId: 'messages.subject'},
-    {id: 'messageType', intlId: 'messages.messageType'},
-    {id: 'language', intlId: 'form.common.language'}
-  ], []);
 
   const formattedData = useMemo(() => data.map(formatDataEntry), [data]);
 

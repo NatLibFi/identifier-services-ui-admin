@@ -42,6 +42,14 @@ import SearchComponent from '/src/frontend/components/common/SearchComponent.jsx
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
 
+// Titles of the table columns
+const headRows = [
+  {id: 'email', intlId: 'messages.recipient'},
+  {id: 'subject', intlId: 'messages.subject'},
+  {id: 'messageTemplate', intlId: 'messages.messageTemplate'},
+  {id: 'date', intlId: 'messages.sent'}
+];
+
 function IsbnMessageList() {
   const history = useHistory();
   const {user: {access_token: authenticationToken}} = useAuth();
@@ -98,14 +106,6 @@ function IsbnMessageList() {
   function updateSearchText(searchText) {
     updateSearchBody({searchText, offset: 0});
   }
-
-  // Titles of the table columns
-  const headRows = useMemo(() => [
-    {id: 'email', intlId: 'messages.recipient'},
-    {id: 'subject', intlId: 'messages.subject'},
-    {id: 'messageTemplate', intlId: 'messages.messageTemplate'},
-    {id: 'date', intlId: 'messages.sent'}
-  ], []);
 
   // Filters data to be shown in the table
   function formatSearchResult(item) {

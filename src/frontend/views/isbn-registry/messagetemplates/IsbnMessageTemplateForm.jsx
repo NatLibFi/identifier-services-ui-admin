@@ -104,7 +104,7 @@ function IsbnMessageTemplateForm() {
         ...messageTypesList.map((item) => ({label: item.name, value: item.id}))
       ]
     }
-  ]);
+  ], [messageTypesList]);
 
   const handleCreateTemplate = async (values) => {
     const formattedDoc = {
