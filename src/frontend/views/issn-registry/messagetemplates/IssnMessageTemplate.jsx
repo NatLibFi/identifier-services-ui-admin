@@ -26,6 +26,7 @@
  */
 
 import React, {useRef} from 'react';
+import PropTypes from 'prop-types';
 
 import {useAuth} from 'react-oidc-context';
 import {useHistory} from 'react-router-dom';
@@ -50,9 +51,65 @@ import RenderTextField from '/src/frontend/components/common/form/render/RenderT
 import RenderSelect from '/src/frontend/components/common/form/render/RenderSelect.jsx';
 import BundledEditor from '/src/frontend/components/common/BundledEditor.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
+import {deepCompareObjects} from '/src/frontend/components/utils';
+
+function IssnMessageTemplateFormFields(props) {
+  const {editorRef, messageTemplate, messageTypesList} = props;
+
+  const intl = useIntl();
+
+  return (
+    <>
+      <div className="templateEditableFields">
+        <Field
+          name="name"
+          component={(props) => <RenderTextField {...props} />}
+          variant="outlined"
+          label={<FormattedMessage id="common.name" />}
+        />
+        <Field
+          name="subject"
+          component={(props) => <RenderTextField {...props} />}
+          variant="outlined"
+          label={<FormattedMessage id="messages.subject" />}
+        />
+        <Field
+          name="langCode"
+          component={(props) => <RenderSelect {...props} />}
+          options={[
+            {label: 'Suomi', value: 'fi-FI'},
+            {label: 'English ', value: 'en-GB'},
+            {label: 'Svenska', value: 'sv-SE'}
+          ]}
+          variant="outlined"
+          label={intl.formatMessage({id: 'form.common.language'})}
+        />
+        <Field
+          name="messageTypeId"
+          component={(props) => <RenderSelect {...props} />}
+          options={messageTypesList.map((type) => ({label: type.name, value: type.id}))}
+          variant="outlined"
+          label={intl.formatMessage({id: 'messages.messageType'})}
+        />
+      </div>
+      {/* Message body (tinyMCE editor) */}
+      <BundledEditor
+        onInit={(evt, editor) => (editorRef.current = editor)}
+        initialValue={messageTemplate.message}
+      />
+    </>
+  );
+}
+
+IssnMessageTemplateFormFields.propTypes = {
+  editorRef: PropTypes.object.isRequired,
+  messageTemplate: PropTypes.object.isRequired,
+  messageTypesList: PropTypes.array.isRequired
+};
+
+const MemoizedIssnMessageTemplateFormFields = React.memo(IssnMessageTemplateFormFields, deepCompareObjects);
 
 function IssnMessageTemplate() {
-  const intl = useIntl();
   const history = useHistory();
   const {user: {access_token: authenticationToken}} = useAuth();
 
@@ -126,48 +183,6 @@ function IssnMessageTemplate() {
     });
   }
 
-  const messageDetail = (
-    <>
-      <div className="templateEditableFields">
-        <Field
-          name="name"
-          component={(props) => <RenderTextField {...props} />}
-          variant="outlined"
-          label={<FormattedMessage id="common.name" />}
-        />
-        <Field
-          name="subject"
-          component={(props) => <RenderTextField {...props} />}
-          variant="outlined"
-          label={<FormattedMessage id="messages.subject" />}
-        />
-        <Field
-          name="langCode"
-          component={(props) => <RenderSelect {...props} />}
-          options={[
-            {label: 'Suomi', value: 'fi-FI'},
-            {label: 'English ', value: 'en-GB'},
-            {label: 'Svenska', value: 'sv-SE'}
-          ]}
-          variant="outlined"
-          label={intl.formatMessage({id: 'form.common.language'})}
-        />
-        <Field
-          name="messageTypeId"
-          component={(props) => <RenderSelect {...props} />}
-          options={messageTypesList.map((type) => ({label: type.name, value: type.id}))}
-          variant="outlined"
-          label={intl.formatMessage({id: 'messages.messageType'})}
-        />
-      </div>
-      {/* Message body (tinyMCE editor) */}
-      <BundledEditor
-        onInit={(evt, editor) => (editorRef.current = editor)}
-        initialValue={messageTemplate.message}
-      />
-    </>
-  );
-
   if (error) {
     return (
       <Typography variant="h2" className="normalTitle">
@@ -208,7 +223,11 @@ function IssnMessageTemplate() {
                 <FormattedMessage id="form.button.label.delete" />
               </Button>
             </div>
-            {messageDetail}
+            <MemoizedIssnMessageTemplateFormFields
+              editorRef={editorRef}
+              messageTemplate={messageTemplate}
+              messageTypesList={messageTypesList}
+            />
           </form>
         )}
       </Form>
