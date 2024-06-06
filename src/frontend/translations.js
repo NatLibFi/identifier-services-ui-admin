@@ -345,6 +345,7 @@ const fi = {
   'form.common.archiveRecord': 'Arkistotietue',
   'form.common.url': 'Verkko-osoite',
   'form.common.identifiers': 'Tunnisteet',
+  'form.common.noIdentifiers': 'Ei tunnisteita',
 
   // Form publisher language translations
   'form.publishersLanguages.fi-FI': 'suomi',

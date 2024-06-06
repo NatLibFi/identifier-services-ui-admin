@@ -75,7 +75,7 @@ function ListComponent(props) {
   function getRender() {
     /* Rendering Array type of values is handled separately at current stage */
     if (Array.isArray(value)) {
-      return <RenderArray value={value} fieldName={fieldName} edit={edit} label={label}/>;
+      return <RenderArray value={value} fieldName={fieldName} edit={edit} label={label} />;
     }
     /* Render of string, number and boolean values is defined through isEdit and fieldName parameters */
     /* For fields containing link, a separate render is defined */
@@ -116,7 +116,7 @@ function ListComponent(props) {
           'publishedBefore',
           'promoteSorting'
         ].includes(fieldName)) {
-          return <RenderEditSelect fieldName={fieldName} options={booleanOptions}/>;
+          return <RenderEditSelect fieldName={fieldName} options={booleanOptions} />;
         }
         if (fieldName === 'publicationFormat') {
           return <RenderEditSelect fieldName={fieldName} options={publicationFormatOptions} />;
@@ -140,7 +140,7 @@ function ListComponent(props) {
           return <RenderEditPublicationMonth value={value} />;
         }
         if (fieldName === 'publicationYear') {
-          return <RenderEditPublicationYear value={value}/>;
+          return <RenderEditPublicationYear value={value} />;
         }
         if (fieldName === 'noIdentifierGranted') {
           return <RenderEditRejectIdentifier fieldName={fieldName} />;

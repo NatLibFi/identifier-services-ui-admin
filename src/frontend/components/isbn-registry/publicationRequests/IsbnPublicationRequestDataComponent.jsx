@@ -37,6 +37,7 @@ import {makeApiRequest} from '/src/frontend/actions';
 import useList from '/src/frontend/hooks/useList';
 
 import {
+  Grid,
   Typography,
   IconButton,
   Link,
@@ -835,6 +836,13 @@ function IsbnPublicationRequestDataComponent(props) {
         <Typography variant="h6" className="listComponentContainerHeader">
           <FormattedMessage id="form.common.identifiers" />
         </Typography>
+
+        {!hasIdentifiers && (
+          <Grid item xs={6}>
+            <FormattedMessage id="form.common.noIdentifiers" />
+          </Grid>
+        )}
+
         {publicationRequest.publicationIdentifierElectronical && (
           <ListComponent
             edit={false} // Never editable directly
