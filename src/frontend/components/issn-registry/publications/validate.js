@@ -43,5 +43,9 @@ export function validate(values) {
     errors.url = 'format.www';
   }
 
+  if (values.additionalInfo && values.additionalInfo.length > 2000) {
+    errors.additionalInfo = 'format.maxLength';
+  }
+
   return errors;
 }

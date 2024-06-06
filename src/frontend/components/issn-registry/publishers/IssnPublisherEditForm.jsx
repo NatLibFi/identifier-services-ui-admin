@@ -22,10 +22,10 @@ function IssnPublisherEditForm(props) {
         validate={validate}
         initialValues={issnPublisher}
       >
-        {({handleSubmit}) => (
+        {({handleSubmit, valid}) => (
           <form onSubmit={handleSubmit}>
             <div className="updateButtonsContainer">
-              <Button type="submit" variant="contained" color="success">
+              <Button type="submit" variant="contained" color="success" disabled={!valid}>
                 <FormattedMessage id="form.button.label.update" />
               </Button>
               <Button variant="contained" color="error" onClick={handleCancel}>
