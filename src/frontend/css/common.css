@@ -141,8 +141,7 @@
   gap: 1rem;
 }
 
-.publisherButtonsInnerContainer button
-  button:not(:nth-child(5)):not(:last-child):not(:first-child) {
+.publisherButtonsInnerContainer button {
   height: 5rem;
   font-size: 0.75rem;
 }
