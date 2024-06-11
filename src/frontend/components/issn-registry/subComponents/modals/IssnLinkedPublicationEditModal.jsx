@@ -27,6 +27,8 @@
 
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+
+import {useAuth} from 'react-oidc-context';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {
@@ -49,6 +51,11 @@ import '/src/frontend/css/subComponents/modals.css';
 
 function IssnLinkedPublicationEditModal(props) {
   const {initialState, attribute, edit, headerIntlId, updatePublication} = props;
+
+  // NB: Hook is used here to avoid re-renders which would happen if passing token/handler function
+  // through props
+  const {user: {access_token: authenticationToken}} = useAuth();
+
   // Previous is the only attribute requiring lastIssue attribute
   const lastIssue = attribute === 'previous';
   const initialValues = initialState[attribute]
@@ -92,7 +99,7 @@ function IssnLinkedPublicationEditModal(props) {
 
   // Handles approving a process of creating a new ISSN-publisher
   async function handleApproveCreatingRequest() {
-    const result = await updatePublication({[attribute]: values});
+    const result = await updatePublication({[attribute]: values}, authenticationToken);
     if (!result) {
       setValues(initialValues);
     }

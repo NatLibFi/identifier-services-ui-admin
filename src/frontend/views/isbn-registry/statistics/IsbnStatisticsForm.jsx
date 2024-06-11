@@ -26,7 +26,9 @@
  */
 
 import React, {useState} from 'react';
-import PropTypes from 'prop-types';
+
+import {useAuth} from 'react-oidc-context';
+
 import {FormattedMessage, useIntl} from 'react-intl';
 import {Form} from 'react-final-form';
 import moment from 'moment';
@@ -42,8 +44,8 @@ import RenderElement from '/src/frontend/components/common/form/RenderElement.js
 import {validate} from '/src/frontend/components/isbn-registry/statisticsGeneratingForm/validation';
 import {STATISTIC_FORM_FIELDS} from '/src/frontend/components/isbn-registry/statisticsGeneratingForm/content';
 
-function IsbnStatisticsForm(props) {
-  const {authenticationToken} = props;
+function IsbnStatisticsForm() {
+  const {user: {access_token: authenticationToken}} = useAuth();
 
   const intl = useIntl();
   const [loading, setLoading] = useState(false);
@@ -74,13 +76,14 @@ function IsbnStatisticsForm(props) {
   return (
     <Box>
       <Form
+        initialValues={{statisticsBeginDate: '1970-01-01', statisticsEndDate: moment().format('YYYY-MM-DD'), statisticsFileFormat: 'xlsx'}}
         onSubmit={handleGeneratingStatistics}
         validate={validate}
       >
         {({handleSubmit, valid, values}) => (
           <form className='statisticsForm' onSubmit={handleSubmit} >
             <Typography variant="h5">
-              <FormattedMessage id="common.statistics"/>
+              <FormattedMessage id="common.statistics" />
             </Typography>
 
             <div className='statisticsFieldsContainer'>
@@ -90,7 +93,7 @@ function IsbnStatisticsForm(props) {
             {/* Show an error message when statisticsBeginDate is set to be after the statisticsEndDate */}
             {moment(values.statisticsBeginDate).isAfter(values.statisticsEndDate) && (
               <Typography className='statisticsDateInvalidMessage'>
-                <ErrorIcon/><FormattedMessage id="error.statistics.date.invalid"/>
+                <ErrorIcon /><FormattedMessage id="error.statistics.date.invalid" />
               </Typography>
             )}
 
@@ -100,17 +103,17 @@ function IsbnStatisticsForm(props) {
               variant="contained"
               color="success"
             >
-              <FormattedMessage id="statistics.get"/>
+              <FormattedMessage id="statistics.get" />
             </Button>
 
             {/* Show loading message & spinner when statistics is being generated */}
             {loading &&
-                <div className='statisticsSpinner'>
-                  <Typography>
-                    <FormattedMessage id='statistics.generating'/>
-                  </Typography>
-                  <CircularProgress/>
-                </div>
+              <div className='statisticsSpinner'>
+                <Typography>
+                  <FormattedMessage id='statistics.generating' />
+                </Typography>
+                <CircularProgress />
+              </div>
             }
           </form>
         )}
@@ -118,9 +121,5 @@ function IsbnStatisticsForm(props) {
     </Box>
   );
 }
-
-IsbnStatisticsForm.propTypes = {
-  authenticationToken: PropTypes.string
-};
 
 export default IsbnStatisticsForm;

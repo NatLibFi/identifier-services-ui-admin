@@ -28,6 +28,7 @@
 import React from 'react';
 import {Field} from 'react-final-form';
 import {PropTypes} from 'prop-types';
+import {useIntl} from 'react-intl';
 
 import {Grid, Typography, Link} from '@mui/material';
 import HelpIcon from '@mui/icons-material/Help';
@@ -42,7 +43,8 @@ import RenderTextArea from './render/RenderTextArea.jsx';
 import '/src/frontend/css/forms/common.css';
 
 function RenderElement(props) {
-  const {array, fieldName, publicationIsbnValues, intl} = props;
+  const intl = useIntl();
+  const {array, fieldName, publicationIsbnValues} = props;
 
   function translateOptions(options, intl) {
     return options ? options.map(v => {
@@ -87,9 +89,9 @@ function RenderElement(props) {
       return (
         <Grid key={formField.name} item xs={formField.width === 'half' ? 6 : 12}>
           {formField.title &&
-              <Typography className="selectTitle">
-                {formField.title}
-              </Typography>
+            <Typography className="selectTitle">
+              {formField.title}
+            </Typography>
           }
           <Field
             className='selectField'
@@ -189,7 +191,7 @@ function RenderElement(props) {
                 underline="always"
               >
                 {' '}
-                  additional information{' '}
+                additional information{' '}
               </Link>
             </>
           )}
@@ -219,8 +221,7 @@ function RenderElement(props) {
 RenderElement.propTypes = {
   array: PropTypes.array.isRequired,
   fieldName: PropTypes.string,
-  publicationIsbnValues: PropTypes.array,
-  intl: PropTypes.object.isRequired
+  publicationIsbnValues: PropTypes.array
 };
 
 export default RenderElement;

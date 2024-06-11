@@ -25,9 +25,14 @@
  *
  */
 
-import React, {useRef} from 'react';
-import PropTypes from 'prop-types';
+import React, {useMemo, useRef} from 'react';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
 import {FormattedMessage, useIntl} from 'react-intl';
+
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
+
 import {Form} from 'react-final-form';
 import {Button, Typography} from '@mui/material';
 
@@ -42,9 +47,15 @@ import {element} from '/src/frontend/components/common/utils';
 import MessageTemplateInfoCard from '/src/frontend/components/isbn-registry/subComponents/cards/MessageTemplateInfoCard.jsx';
 import {validate} from '/src/frontend/components/common/form/validation/templateCreationValidation';
 
-function IsbnMessageTemplateForm(props) {
-  const {history, userInfo, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+function IsbnMessageTemplateForm() {
+  const {user: {access_token: authenticationToken}} = useAuth();
+  const history = useHistory();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+
+  const intl = useIntl();
+  const editorRef = useRef(null);
 
   // Message template list
   const {data: messageTypesList} = useList({
@@ -58,7 +69,7 @@ function IsbnMessageTemplateForm(props) {
   });
 
   // Content of the template creation form
-  const fieldArray = [
+  const fieldArray = useMemo(() => [
     {
       name: 'name',
       type: 'text',
@@ -93,10 +104,7 @@ function IsbnMessageTemplateForm(props) {
         ...messageTypesList.map((item) => ({label: item.name, value: item.id}))
       ]
     }
-  ];
-
-  const intl = useIntl();
-  const editorRef = useRef(null);
+  ], [messageTypesList]);
 
   const handleCreateTemplate = async (values) => {
     const formattedDoc = {
@@ -167,11 +175,5 @@ function IsbnMessageTemplateForm(props) {
     </div>
   );
 }
-
-IsbnMessageTemplateForm.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IsbnMessageTemplateForm;

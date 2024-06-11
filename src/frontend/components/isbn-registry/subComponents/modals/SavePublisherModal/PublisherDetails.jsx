@@ -45,7 +45,7 @@ import {makeApiRequest} from '/src/frontend/actions';
 import {classificationCodes} from '/src/frontend/components/common/form/constants';
 import {getIdentifiersAvailable} from '/src/frontend/rangeFormattingUtils';
 
-function PublisherDetails (props) {
+function PublisherDetails(props) {
   const {
     publisher,
     publisherId,
@@ -463,7 +463,7 @@ function PublisherDetails (props) {
 
 PublisherDetails.propTypes = {
   publisher: PropTypes.object.isRequired,
-  publisherId: PropTypes.number.isRequired,
+  publisherId: PropTypes.number,
   publicationRequest: PropTypes.object.isRequired,
   setPublicationRequest: PropTypes.func.isRequired,
   setSnackbarMessage: PropTypes.func.isRequired,

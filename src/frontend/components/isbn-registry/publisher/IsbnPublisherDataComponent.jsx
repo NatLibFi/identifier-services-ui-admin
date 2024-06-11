@@ -26,7 +26,9 @@
  */
 
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
+import {useHistory} from 'react-router-dom';
+
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import {Typography} from '@mui/material';
@@ -37,7 +39,12 @@ import '/src/frontend/css/publishers.css';
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 
-function IsbnPublisherDataComponent({isEdit, publisher, clearFields, history, intl}) {
+import {deepCompareObjects} from '/src/frontend/components/utils';
+
+function IsbnPublisherDataComponent({isEdit, publisher}) {
+  const intl = useIntl();
+  const history = useHistory();
+
   const headRowsPublisherIdentifier = [
     {id: 'publisherIdentifier', intlId: 'form.common.identifier'},
     {id: 'free', intlId: 'table.headRows.free'},
@@ -247,7 +254,6 @@ function IsbnPublisherDataComponent({isEdit, publisher, clearFields, history, in
         <ListComponent
           edit={isEdit && isEditable('otherNames')}
           fieldName="otherNames"
-          clearFields={clearFields}
           label={<FormattedMessage id="publisherRegistry.publisher.otherNameForms" />}
           value={publisher.otherNames ?? ''}
         />
@@ -265,7 +271,6 @@ function IsbnPublisherDataComponent({isEdit, publisher, clearFields, history, in
         <ListComponent
           edit={isEdit && isEditable('previousNames')}
           fieldName="previousNames"
-          clearFields={clearFields}
           label={<FormattedMessage id="publisherRegistry.publisher.previousNameForms" />}
           value={publisher.previousNames ?? ''}
         />
@@ -302,7 +307,6 @@ function IsbnPublisherDataComponent({isEdit, publisher, clearFields, history, in
         <ListComponent
           edit={isEdit && isEditable('classification')}
           fieldName="classification"
-          clearFields={clearFields}
           label={<FormattedMessage id="form.common.classificationCodes" />}
           value={publisher.classification ?? []}
         />
@@ -395,10 +399,7 @@ function IsbnPublisherDataComponent({isEdit, publisher, clearFields, history, in
 
 IsbnPublisherDataComponent.propTypes = {
   publisher: PropTypes.object,
-  isEdit: PropTypes.bool,
-  clearFields: PropTypes.func,
-  history: PropTypes.object,
-  intl: PropTypes.object
+  isEdit: PropTypes.bool
 };
 
-export default IsbnPublisherDataComponent;
+export default React.memo(IsbnPublisherDataComponent, deepCompareObjects);

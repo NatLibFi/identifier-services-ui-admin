@@ -25,9 +25,11 @@
  *
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useMemo} from 'react';
 import {FormattedMessage} from 'react-intl';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
 
 import useList from '/src/frontend/hooks/useList';
 
@@ -39,8 +41,17 @@ import '/src/frontend/css/common.css';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 
-function IsbnMessageTemplateList(props) {
-  const {authenticationToken, history} = props;
+// Titles of the table columns
+const headRows = [
+  {id: 'name', intlId: 'table.headRows.name'},
+  {id: 'subject', intlId: 'messages.subject'},
+  {id: 'messageType', intlId: 'messages.messageType'},
+  {id: 'language', intlId: 'form.common.language'}
+];
+
+function IsbnMessageTemplateList() {
+  const {user: {access_token: authenticationToken}} = useAuth();
+  const history = useHistory();
 
   const {data, loading, error} = useList({
     url: '/api/isbn-registry/messagetemplates',
@@ -61,13 +72,7 @@ function IsbnMessageTemplateList(props) {
     history.push('/isbn-registry/messagetemplates/form/create');
   };
 
-  // Titles of the table columns
-  const headRows = [
-    {id: 'name', intlId: 'table.headRows.name'},
-    {id: 'subject', intlId: 'messages.subject'},
-    {id: 'messageType', intlId: 'messages.messageType'},
-    {id: 'language', intlId: 'form.common.language'}
-  ];
+  const formattedData = useMemo(() => data.map(formatDataEntry), [data]);
 
   // Format data to be shown in the table
   function formatDataEntry(item) {
@@ -81,24 +86,12 @@ function IsbnMessageTemplateList(props) {
     };
   }
 
-  const dataComponent = setDataComponent();
+  if (loading) {
+    return <Spinner />;
+  }
 
-  function setDataComponent() {
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (error) {
-      return <Typography>Could not fetch data due to API error</Typography>;
-    }
-
-    return (
-      <TableComponent
-        data={data.map(formatDataEntry)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={headRows}
-      />
-    );
+  if (error) {
+    return <Typography>Could not fetch data due to API error</Typography>;
   }
 
   return (
@@ -116,14 +109,13 @@ function IsbnMessageTemplateList(props) {
         <AddIcon />
         <FormattedMessage id="messages.templates.create" />
       </Button>
-      {dataComponent}
+      <TableComponent
+        data={formattedData}
+        handleTableRowClick={handleTableRowClick}
+        headRows={headRows}
+      />
     </div>
   );
 }
-
-IsbnMessageTemplateList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IsbnMessageTemplateList;

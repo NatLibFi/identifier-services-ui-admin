@@ -30,33 +30,6 @@ import HttpStatus from 'http-status';
 import {getHeaders, formatBody, redirect, removeMetadataFields} from '/src/frontend/actions/util';
 
 /**
- * Get configuration to run the app in from express server.
- * @returns Returns parsed configuration on success and default configuration which turns on maintenance mode on failure.
- */
-export async function getConfig() {
-  const defaultConfig = {
-    maintenance: true,
-    oidcConfig: {}
-  };
-
-  try {
-    const response = await fetch('/api/config', {
-      method: 'GET',
-      headers: getHeaders()
-    });
-
-    if (response.status === HttpStatus.OK) {
-      const configuration = await response.json();
-      return configuration;
-    }
-
-    throw new Error('Could not load configuration from API');
-  } catch (err) {
-    return defaultConfig;
-  }
-}
-
-/**
   * Send any create request to API
   * @param values Values of request entry
   * @param url URL to send the request to

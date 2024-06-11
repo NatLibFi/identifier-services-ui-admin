@@ -27,12 +27,16 @@
 
 import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
+
 import {Form, Field} from 'react-final-form';
-import {withRouter} from 'react-router-dom';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory, useParams, withRouter} from 'react-router-dom';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import useItem from '/src/frontend/hooks/useItem';
 import useList from '/src/frontend/hooks/useList';
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import {makeApiRequest} from '/src/frontend/actions';
 
 import {Button, Typography} from '@mui/material';
@@ -46,15 +50,88 @@ import BundledEditor from '/src/frontend/components/common/BundledEditor.jsx';
 import Spinner from '/src/frontend/components/common/Spinner.jsx';
 import RenderTextField from '/src/frontend/components/common/form/render/RenderTextField.jsx';
 import RenderSelect from '/src/frontend/components/common/form/render/RenderSelect.jsx';
+import {deepCompareObjects} from '/src/frontend/components/utils';
 
-function IsbnMessageTemplate(props) {
-  const {userInfo, match, history, setSnackbarMessage} = props;
-  const {authenticationToken} = userInfo;
+// NB: form fields have been separated in order to memoize the component and avoid
+// re-render issues during token refresh
+function IsbnMessageTemplateFields(props) {
+  const {editorRef, messageTemplate, messageTypesList} = props;
 
   const intl = useIntl();
 
+  // Required to avoid focus issues on edit (component={renderTextField}})
+  // NB! component={(props) => <RenderTextField {...props}/>} approach does not work here for some reason
+  const renderSelect = (props) => <RenderSelect {...props} />;
+  const renderTextField = (props) => <RenderTextField {...props} />;
+
+  return (
+    <div>
+      <div className="templateEditableFields">
+        <Field
+          name="name"
+          // See comment above about the renderTextField function
+          component={renderTextField}
+          variant="outlined"
+          label={<FormattedMessage id="common.name" />}
+        />
+        <Field
+          name="subject"
+          // See comment above about the renderTextField function
+          component={renderTextField}
+          variant="outlined"
+          label={<FormattedMessage id="messages.subject" />}
+        />
+        <Field
+          name="langCode"
+          // See comment above about the renderSelect function
+          component={renderSelect}
+          options={[
+            {label: 'Suomi', value: 'fi-FI'},
+            {label: 'English ', value: 'en-GB'},
+            {label: 'Svenska', value: 'sv-SE'}
+          ]}
+          variant="outlined"
+          label={intl.formatMessage({id: 'form.common.language'})}
+        />
+        <Field
+          name="messageTypeId"
+          // See comment above about the renderSelect function
+          component={renderSelect}
+          options={messageTypesList.map((type) => ({
+            label: type.name,
+            value: type.id
+          }))}
+          variant="outlined"
+          label={intl.formatMessage({id: 'messages.messageType'})}
+        />
+      </div>
+      {/* Message body (tinyMCE editor) */}
+      <BundledEditor
+        onInit={(evt, editor) => (editorRef.current = editor)}
+        initialValue={messageTemplate.message}
+      />
+    </div>
+  );
+}
+
+IsbnMessageTemplateFields.propTypes = {
+  messageTemplate: PropTypes.object.isRequired,
+  editorRef: PropTypes.object.isRequired,
+  messageTypesList: PropTypes.array.isRequired
+};
+
+const MemoizedIsbnMessageTemplateFields = React.memo(IsbnMessageTemplateFields, deepCompareObjects);
+
+function IsbnMessageTemplate() {
+  const history = useHistory();
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const params = useParams();
+
   // ID of a current template
-  const {id} = match.params;
+  const {id} = params;
   const editorRef = useRef(null);
 
   // Message template list loading
@@ -133,11 +210,6 @@ function IsbnMessageTemplate(props) {
     return <Spinner />;
   }
 
-  // Required to avoid focus issues on edit (component={renderTextField}})
-  // NB! component={(props) => <RenderTextField {...props}/>} approach does not work here for some reason
-  const renderSelect = (props) => <RenderSelect {...props} />;
-  const renderTextField = (props) => <RenderTextField {...props} />;
-
   return (
     <div className="templateContainer">
       <Typography variant="h5">
@@ -166,49 +238,11 @@ function IsbnMessageTemplate(props) {
                 <FormattedMessage id="form.button.label.delete" />
               </Button>
             </div>
-            <div className="templateEditableFields">
-              <Field
-                name="name"
-                // See comment above about the renderTextField function
-                component={renderTextField}
-                variant="outlined"
-                label={<FormattedMessage id="common.name" />}
-              />
-              <Field
-                name="subject"
-                // See comment above about the renderTextField function
-                component={renderTextField}
-                variant="outlined"
-                label={<FormattedMessage id="messages.subject" />}
-              />
-              <Field
-                name="langCode"
-                // See comment above about the renderSelect function
-                component={renderSelect}
-                options={[
-                  {label: 'Suomi', value: 'fi-FI'},
-                  {label: 'English ', value: 'en-GB'},
-                  {label: 'Svenska', value: 'sv-SE'}
-                ]}
-                variant="outlined"
-                label={intl.formatMessage({id: 'form.common.language'})}
-              />
-              <Field
-                name="messageTypeId"
-                // See comment above about the renderSelect function
-                component={renderSelect}
-                options={messageTypesList.map((type) => ({
-                  label: type.name,
-                  value: type.id
-                }))}
-                variant="outlined"
-                label={intl.formatMessage({id: 'messages.messageType'})}
-              />
-            </div>
-            {/* Message body (tinyMCE editor) */}
-            <BundledEditor
-              onInit={(evt, editor) => (editorRef.current = editor)}
-              initialValue={messageTemplate.message}
+
+            <MemoizedIsbnMessageTemplateFields
+              messageTemplate={messageTemplate}
+              editorRef={editorRef}
+              messageTypesList={messageTypesList}
             />
           </form>
         )}
@@ -217,12 +251,5 @@ function IsbnMessageTemplate(props) {
   );
 
 }
-
-IsbnMessageTemplate.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default withRouter(IsbnMessageTemplate);

@@ -25,8 +25,11 @@
  *
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useMemo} from 'react';
+
+import {useHistory} from 'react-router-dom';
+import {useAuth} from 'react-oidc-context';
+
 import {FormattedMessage} from 'react-intl';
 
 import useList from '/src/frontend/hooks/useList';
@@ -37,10 +40,19 @@ import AddIcon from '@mui/icons-material/Add';
 import '/src/frontend/css/common.css';
 
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
+import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
 
-function IssnMessageTemplateList(props) {
-  const {authenticationToken, history} = props;
+// Titles of the table columns
+const headRows = [
+  {id: 'name', intlId: 'table.headRows.name'},
+  {id: 'subject', intlId: 'messages.subject'},
+  {id: 'messageType', intlId: 'messages.messageType'},
+  {id: 'language', intlId: 'form.common.language'}
+];
+
+function IssnMessageTemplateList() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
 
   const {data, loading, error} = useList({
     url: '/api/issn-registry/messagetemplates',
@@ -52,6 +64,9 @@ function IssnMessageTemplateList(props) {
     modalIsUsed: false
   });
 
+  const formattedData = useMemo(() => data.map(formatDataEntry), [data]);
+  const hasData = formattedData && formattedData.length > 0;
+
   const handleTableRowClick = (id) => {
     history.push(`/issn-registry/messagetemplates/${id}`);
   };
@@ -60,14 +75,6 @@ function IssnMessageTemplateList(props) {
   const handleCreateNewTemplate = () => {
     history.push('/issn-registry/messagetemplates/form/create');
   };
-
-  // Titles of the table columns
-  const headRows = [
-    {id: 'name', intlId: 'table.headRows.name'},
-    {id: 'subject', intlId: 'messages.subject'},
-    {id: 'messageType', intlId: 'messages.messageType'},
-    {id: 'language', intlId: 'form.common.language'}
-  ];
 
   // Filters data to be shown in the table
   function formatDataEntry(item) {
@@ -79,26 +86,6 @@ function IssnMessageTemplateList(props) {
       messageType: messageTypeName ?? '-',
       language: langCode
     };
-  }
-
-  const dataComponent = setDataComponent();
-
-  function setDataComponent() {
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (error) {
-      return <Typography>Could not fetch data due to API error</Typography>;
-    }
-
-    return (
-      <TableComponent
-        data={data.map(formatDataEntry)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={headRows}
-      />
-    );
   }
 
   return (
@@ -116,14 +103,15 @@ function IssnMessageTemplateList(props) {
         <AddIcon />
         <FormattedMessage id="messages.templates.create" />
       </Button>
-      {dataComponent}
+      <TableResultWrapper error={error} loading={loading} hasData={hasData}>
+        <TableComponent
+          data={formattedData}
+          handleTableRowClick={handleTableRowClick}
+          headRows={headRows}
+        />
+      </TableResultWrapper>
     </div>
   );
 }
-
-IssnMessageTemplateList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  history: PropTypes.object.isRequired
-};
 
 export default IssnMessageTemplateList;

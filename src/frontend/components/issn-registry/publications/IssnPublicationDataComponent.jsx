@@ -38,6 +38,8 @@ import {containsInformation} from '/src/frontend/components/issn-registry/apiFor
 import ListComponent from '/src/frontend/components/common/ListComponent.jsx';
 import IssnLinkedPublicationEditModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnLinkedPublicationEditModal.jsx';
 
+import {deepCompareObjects} from '/src/frontend/components/utils';
+
 function IssnPublicationDataComponent(props) {
   const {issnPublication, isEdit, updatePublication} = props;
   const intl = useIntl();
@@ -359,4 +361,4 @@ IssnPublicationDataComponent.propTypes = {
   updatePublication: PropTypes.func.isRequired
 };
 
-export default IssnPublicationDataComponent;
+export default React.memo(IssnPublicationDataComponent, deepCompareObjects);

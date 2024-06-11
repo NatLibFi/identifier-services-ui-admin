@@ -25,11 +25,15 @@
  *
  */
 
-import React, {useEffect, useReducer} from 'react';
-import PropTypes from 'prop-types';
+import React, {useEffect, useMemo, useReducer} from 'react';
+
+import {useAuth} from 'react-oidc-context';
+import {useHistory} from 'react-router-dom';
+
 import {FormattedMessage} from 'react-intl';
 import {Typography} from '@mui/material';
 
+import useAppStateDispatch from '/src/frontend/hooks/useAppStateDispatch';
 import useSearch from '/src/frontend/hooks/useSearch';
 import {makeApiRequest} from '/src/frontend/actions';
 import {redirect} from '/src/frontend/actions/util';
@@ -39,10 +43,14 @@ import '/src/frontend/css/common.css';
 import IssnPublisherQuickFormModal from '/src/frontend/components/issn-registry/subComponents/modals/IssnPublisherQuickFormModal.jsx';
 import SearchComponent from '/src/frontend/components/common/SearchComponent.jsx';
 import TableComponent from '/src/frontend/components/common/TableComponent.jsx';
-import Spinner from '/src/frontend/components/common/Spinner.jsx';
+import TableResultWrapper from '/src/frontend/components/common/TableResultWrapper.jsx';
 
-function IssnPublisherList(props) {
-  const {authenticationToken, history, setSnackbarMessage} = props;
+function IssnPublisherList() {
+  const history = useHistory();
+  const {user: {access_token: authenticationToken}} = useAuth();
+
+  const appStateDispatch = useAppStateDispatch();
+  const setSnackbarMessage = (snackbarMessage) => appStateDispatch({snackbarMessage});
 
   // Search body
   const initialSearchBody = history.location?.state?.searchBody ?? {
@@ -74,6 +82,9 @@ function IssnPublisherList(props) {
     authenticationToken
   });
 
+  const formattedData = useMemo(() => data.results.map(formatSearchResult), [data]);
+  const hasData = formattedData && formattedData.length > 0;
+
   function updateRowsPerPage(rowsPerPage) {
     updateSearchBody({limit: rowsPerPage, offset: 0});
   }
@@ -94,7 +105,7 @@ function IssnPublisherList(props) {
     updateSearchBody({searchText, offset: 0});
   }
 
-  function formatData(entry) {
+  function formatSearchResult(entry) {
     const {id, officialName, emailCommon, phone, langCode} = entry;
 
     return {
@@ -128,46 +139,6 @@ function IssnPublisherList(props) {
     {id: 'langCode', intlId: 'form.common.language'}
   ];
 
-  const dataComponent = setDataComponent();
-
-  function setDataComponent() {
-    if (error) {
-      return (
-        <Typography variant="h2" className="normalTitle">
-          <FormattedMessage id="errorPage.message.defaultError" />
-        </Typography>
-      );
-    }
-
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (data.totalDoc === 0) {
-      return (
-        <p>
-          <FormattedMessage id="common.noData" />
-        </p>
-      );
-    }
-
-    return (
-      <TableComponent
-        pagination
-        data={data.results.map(formatData)}
-        handleTableRowClick={handleTableRowClick}
-        headRows={headRows}
-        page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
-        setPage={updatePageNumber}
-        totalDoc={data.totalDoc}
-        rowsPerPage={searchBody.limit}
-        setRowsPerPage={updateRowsPerPage}
-        // Those are not displayed on small screens (< 900px)
-        unprioritizedRows={['phone']}
-      />
-    );
-  }
-
   return (
     <div className="listSearch">
       <Typography variant="h5">
@@ -181,16 +152,23 @@ function IssnPublisherList(props) {
         {/* Modal for creating new ISSN publishers */}
         <IssnPublisherQuickFormModal createIssnPublisher={createIssnPublisher} />
       </div>
-      {dataComponent}
+      <TableResultWrapper error={error} loading={loading} hasData={hasData}>
+        <TableComponent
+          pagination
+          data={formattedData}
+          handleTableRowClick={handleTableRowClick}
+          headRows={headRows}
+          page={searchBody.offset !== 0 ? searchBody.offset / searchBody.limit : 0}
+          setPage={updatePageNumber}
+          totalDoc={data.totalDoc}
+          rowsPerPage={searchBody.limit}
+          setRowsPerPage={updateRowsPerPage}
+          // Those are not displayed on small screens (< 900px)
+          unprioritizedRows={['phone']}
+        />
+      </TableResultWrapper>
     </div>
   );
 }
-
-IssnPublisherList.propTypes = {
-  authenticationToken: PropTypes.string.isRequired,
-  setSnackbarMessage: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  language: PropTypes.string.isRequired
-};
 
 export default IssnPublisherList;

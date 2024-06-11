@@ -35,7 +35,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 function RenderIsbnIds(props) {
-  const {value, cancelId, removeId, token, format} = props;
+  const {value, cancelId, removeId, format} = props;
   // Parses ISBN/ISMN identifiers as they are stored as stringified JSON
   // Using try-catch to avoid crashing, since the value in the database could be '' by default
   function parseIdentifiers(v) {
@@ -62,7 +62,7 @@ function RenderIsbnIds(props) {
               <Tooltip title={<FormattedMessage id="form.button.label.cancel" />}>
                 <IconButton
                   aria-label="cancel"
-                  onClick={() => cancelId(identifier, token)}
+                  onClick={() => cancelId(identifier)}
                 >
                   <CancelIcon />
                 </IconButton>
@@ -70,7 +70,7 @@ function RenderIsbnIds(props) {
               <Tooltip title={<FormattedMessage id="form.button.label.delete" />}>
                 <IconButton
                   aria-label="delete"
-                  onClick={() => removeId(identifier, token)}
+                  onClick={() => removeId(identifier)}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -87,7 +87,6 @@ RenderIsbnIds.propTypes = {
   value: PropTypes.string.isRequired,
   cancelId: PropTypes.func.isRequired,
   removeId: PropTypes.func.isRequired,
-  token: PropTypes.string.isRequired,
   format: PropTypes.string.isRequired
 };
 
