@@ -67,7 +67,6 @@ function ListComponent(props) {
     fieldName,
     cancelId,
     removeId,
-    token,
     placeholder,
     format
   } = props;
@@ -167,7 +166,7 @@ function ListComponent(props) {
           return <RenderClassification value={value} />;
         }
         if (fieldName === 'publicationIdentifierElectronical' || fieldName === 'publicationIdentifierPrint') {
-          return <RenderIsbnIds value={value} cancelId={cancelId} removeId={removeId} token={token} format={format} />;
+          return <RenderIsbnIds value={value} cancelId={cancelId} removeId={removeId} format={format} />;
         }
         if (fieldName === 'timestamp') {
           return moment(value).isValid() ? moment(value).format('LLL') : value;
@@ -220,7 +219,6 @@ ListComponent.propTypes = {
   fieldName: PropTypes.string,
   cancelId: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   removeId: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-  token: PropTypes.string,
   placeholder: PropTypes.string,
   format: PropTypes.string
 };
