@@ -50,7 +50,8 @@ function IsbnPublicationRequestEditForm(props) {
       url: `/api/isbn-registry/requests/publications/${publicationRequest.id}`,
       values: updateValues,
       authenticationToken,
-      setSnackbarMessage
+      setSnackbarMessage,
+      keepIssn: true
     });
 
     if (updateResult) {

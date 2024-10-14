@@ -80,14 +80,15 @@ export async function createRequest({values, url, history, redirectRoute, authen
   * @param url URL to send the request to
   * @param authenticationToken Authentication token to authenticate to API with
   * @param setSnackbarMessage Function that allows display of success message.
+  * @param keepIssn Whether to keep issn within request body: ok for ISBN-registry, not ok for ISSN-registry
   * @returns Returns response body on success, otherwise returns false
 */
-export async function updateEntry({values, url, authenticationToken, setSnackbarMessage}) {
+export async function updateEntry({values, url, authenticationToken, setSnackbarMessage, keepIssn=false}) {
   try {
     const response = await fetch(url, {
       method: 'PUT',
       headers: getHeaders(authenticationToken),
-      body: JSON.stringify(removeMetadataFields(values))
+      body: JSON.stringify(removeMetadataFields(values, keepIssn))
     });
 
     if (response.status === HttpStatus.OK) {
