@@ -71,17 +71,26 @@ export function formatBody(body) {
 }
 
 /**
- * Loading initial values to forms loads also metadata fields. This function
- * is used to strip data and metadata fields for request payloads that are not accepted to be altered by API.
+ * This function is used to strip data and metadata fields for request payloads that are not accepted to be altered by API.
  * @param {Object} values Values to be sent as update
+ * @param {boolean} keepIssn Whether to keep ISSN value in request or not: this is ok for ISBN-registry but not ok for ISSN-registry
  * @returns Object that has been stripped of metadata fields
  */
-export function removeMetadataFields(values) {
+export function removeMetadataFields(values, keepIssn=false) {
+  // NB: note that in addition to metadata fields also other fields that should not be updated directly are removed here
+  // Removing these fields should result into api error in validation (and worse case is that it doesn't if there is any problem with validation)
+  // DO NOT remove these unless you know what you are doing exactly. These removals are shared between registries.
+
   /* eslint-disable no-unused-vars */
   const {id, idOld, created, createdBy, modified, modifiedBy, sent, sentBy,
     publicationCount, publicationCountIssn, formId, publisherCreated, publicationIssn, issn, publisherId,
     ...formattedDoc} = values;
   /* eslint-enable no-unused-vars */
+
+  // This is not a smart fix for the bug where ISSN is lost in ISBN publication update, but it's cost-efficient
+  if(keepIssn) {
+    formattedDoc.issn = values.issn;
+  }
 
   return formatBody(formattedDoc);
 }
