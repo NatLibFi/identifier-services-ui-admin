@@ -103,7 +103,7 @@ function BundledEditor(props) {
     convert_unsafe_embeds: true
   };
 
-  return <Editor init={bundledEditorConfig} {...props} />;
+  return <Editor licenseKey='gpl' init={bundledEditorConfig} {...props} />;
 }
 
 export default BundledEditor;
