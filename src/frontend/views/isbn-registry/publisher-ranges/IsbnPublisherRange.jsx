@@ -197,10 +197,9 @@ function IsbnPublisherRange() {
         >
           <ArrowBackIcon />
         </Fab>
-        {subRange.taken === 0 && (
+        {subRange.taken === subRange.canceled && (
           <>
             <Button
-              disabled={subRange.taken !== 0}
               className="buttons"
               variant="outlined"
               color="primary"
