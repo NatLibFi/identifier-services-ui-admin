@@ -33,7 +33,7 @@ export const regexPatterns = {
   zip: /^\d{5}$/,
   city: /^[a-zåäöA-ZÅÄÖ\s-]{2,}$/,
   phone: /^[+0-9()\s-]{5,}$/,
-  www: /^http(s)?:\/\/(www\.)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/,
+  www: /^http(s)?:\/\/(www\.)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,10}(:[0-9]{1,5})?(\/.*)?$/,
   langCode: /^fi-FI$|^en-GB$|^sv-SE$/,
   publicationEditionString: /^[0-9]{2}$/,
   publicationIssn: /^\d{4}-\d{3}[0-9X]{1}$/,
