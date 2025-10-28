@@ -39,7 +39,7 @@ function appendPrefixToPath(req) {
 // Set decorator options based on the environment configuration
 function preprocessRequest(proxyReqOpts, srcReq) {
   // For development purposes only
-  if(config.ALLOW_SELF_SIGNED) {
+  if(config.ALLOW_SELF_SIGNED && config.NODE_ENV === 'development') {
     proxyReqOpts.rejectUnauthorized = false;
   }
 
