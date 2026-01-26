@@ -38,7 +38,7 @@
     "@mui/icons-material": "^5.17.1",
     "@mui/material": "^5.17.1",
     "@mui/x-date-pickers": "^5.0.13",
-    "@natlibfi/melinda-backend-commons": "^2.3.7-alpha.1",
+    "@natlibfi/melinda-backend-commons": "^3.0.1",
     "@tinymce/tinymce-react": "^6.1.0",
     "body-parser": "^2.2.1",
     "express": "^4.22.0",
