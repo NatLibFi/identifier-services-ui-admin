@@ -39,6 +39,7 @@ function RenderEditAdditionalDetails({fieldName, label, placeholder}) {
       name={fieldName}
       label={label}
       type="multiline"
+      parse={(v) => v} // identity function for allowing value of ''
       placeholder={placeholder}
     />
   );
