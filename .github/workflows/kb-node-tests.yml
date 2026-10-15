@@ -37,7 +37,11 @@ jobs:
       - uses: actions/checkout@v7
       - uses: mikaelvesavuori/license-compliance-action@main
         with:
-          exclude_pattern: /^@natlibfi/
+          # important note: GPL-2.0-or-later is compatible with GPLv3 per gnu.or: https://www.gnu.org/licenses/gpl-faq.html#v2v3Compatibility
+          # as of now, this component is licensed with GPLv3
+          allow_licenses: MIT;ISC;0BSD;BSD-2-Clause;BSD-3-Clause;Apache-2.0;BlueOak-1.0.0;GPL-2.0-or-later
+          exclude_pattern: /^@natlibfi/;nodemailer
+          # nodemailer@9.1.1 and the current version are both licensed under MIT No Attribution license: https://github.com/nodemailer/nodemailer/tree/v9.1.1#license
 
   njsscan:
     name: Njsscan check
