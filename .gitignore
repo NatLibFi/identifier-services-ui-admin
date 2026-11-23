@@ -132,3 +132,6 @@ dist
 # Dev
 .env*
 dev-certs
+
+# tmp
+*.md

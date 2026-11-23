@@ -25,7 +25,7 @@
  *
  */
 
-import {readEnvironmentVariable} from '@natlibfi/melinda-backend-commons';
+import {readEnvironmentVariable} from './local-melinda-utils';
 import {parseBoolean, parseFile} from './utils';
 
 export const API_HOST = readEnvironmentVariable('API_HOST', {defaultValue: 'https://localhost:8081'});
@@ -43,6 +43,7 @@ export const TLS_KEY = readEnvironmentVariable('TLS_KEY', {defaultValue: '', for
 export const TLS_CERT = readEnvironmentVariable('TLS_CERT', {defaultValue: '', format: parseFile});
 
 export const NODE_ENV = readEnvironmentVariable('NODE_ENV', {defaultValue: 'development'});
+export const LOG_LEVEL = readEnvironmentVariable('LOG_LEVEL', {defaultValue: 'info'});
 
 export const MAINTENANCE_MODE = readEnvironmentVariable('MAINTENANCE_MODE', {defaultValue: true, format: parseBoolean});
 
