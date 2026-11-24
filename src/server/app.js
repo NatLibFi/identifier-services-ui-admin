@@ -31,18 +31,22 @@ import helmet from 'helmet';
 import https from 'https';
 import path from 'path';
 
-import {createLogger} from '@natlibfi/melinda-backend-commons';
-
-import {HELMET_CONFIG, TLS_CERT, TLS_KEY, HTTP_PORT, HTTPS_PORT, MAINTENANCE_MODE} from './config';
+import {HELMET_CONFIG, LOG_LEVEL, TLS_CERT, TLS_KEY, HTTP_PORT, HTTPS_PORT, MAINTENANCE_MODE, PROXY_IP_SRC_HEADER} from './config';
 import {provideFrontendConfig} from './utils';
 import {getConfiguredProxy} from './proxy';
+import {createApplicationLogger, createExpressLogger} from './logging';
 
 export default async function startApp() {
-  const logger = createLogger();
+  const applicationLogger = createApplicationLogger(LOG_LEVEL);
   const app = express();
 
   // Header config
   app.disable('x-powered-by');
+
+  // Logging
+  app.use(createExpressLogger(LOG_LEVEL, PROXY_IP_SRC_HEADER));
+
+  // Helmet
   app.use(helmet(HELMET_CONFIG));
 
   // Parse application/json, required for turnstile auth
@@ -59,7 +63,7 @@ export default async function startApp() {
 
   // Fallback to index
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
+    return res.sendFile(path.join(__dirname, 'public/index.html'));
   });
 
   // Error management
@@ -67,12 +71,12 @@ export default async function startApp() {
 
   // Log config options if necessary
   if(MAINTENANCE_MODE) {
-    logger.warn('Maintenance mode is enabled. Proxy will not send requests to API.');
+    applicationLogger.warn('Maintenance mode is enabled. Proxy will not send requests to API.');
   }
 
   // If TLS configuration is not provided, start HTTP server
   if (!TLS_CERT || !TLS_KEY) {
-    const server = app.listen(HTTP_PORT, () => logger.info(`Started identifier-services-ui-admin HTTP server on PORT ${HTTP_PORT}`));
+    const server = app.listen(HTTP_PORT, () => applicationLogger.info(`Started identifier-services-ui-admin HTTP server on PORT ${HTTP_PORT}`));
     return server;
   }
 
@@ -83,19 +87,19 @@ export default async function startApp() {
   };
 
   const server = https.createServer(tlsConfig, app).listen(HTTPS_PORT, () => {
-    logger.info(`Started identifier-services-ui-admin HTTPS server on port ${HTTPS_PORT}`);
+    applicationLogger.info(`Started identifier-services-ui-admin HTTPS server on port ${HTTPS_PORT}`);
   });
 
   return server;
 
   function handleErrors(err, req, res, next) {
     if(err) {
-      logger.warn('Proxy has encountered an error');
-      logger.debug(`${err.message}`);
+      applicationLogger.warn('Proxy has encountered an error');
+      applicationLogger.debug(`${err.message}`);
       return res.status(500).json({message: 'Unknown error occurred'});
     }
 
-    logger.warn('Unknown error occurred!');
+    applicationLogger.warn('Unknown error occurred!');
 
     next();
   }

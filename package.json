@@ -20,14 +20,14 @@
   "private": true,
   "version": "1.1.1",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "start": "node dist/index.js",
     "lint": "eslint --ext .jsx,.js src",
     "lint:dev": "eslint --fix --ext .jsx,.js src",
     "watch:react": "webpack watch --config=./webpack/webpack.config.dev.js --progress",
-    "watch:server": "nodemon -w src/server --exec 'npm run build:server && DOTENV_CONFIG_PATH=.env.dev node -r dotenv/config dist/index.js'",
+    "watch:server": "nodemon -w src/server --exec 'npm run build:server && DOTENV_CONFIG_PATH=../identifier-services-admin-ui-v1-dev-env node -r dotenv/config dist/index.js'",
     "build": "INLINE_RUNTIME_CHUNK=false npm run build:server && npm run build:frontend",
     "build:frontend": "NODE_ENV=production webpack --config ./webpack/webpack.config.prod.js --progress",
     "build:server": "cd src/server && BABEL_ENV=production babel . --out-dir ../../dist"
@@ -38,16 +38,17 @@
     "@mui/icons-material": "^5.17.1",
     "@mui/material": "^5.17.1",
     "@mui/x-date-pickers": "^5.0.13",
-    "@natlibfi/melinda-backend-commons": "^3.0.1",
     "@tinymce/tinymce-react": "^6.1.0",
     "body-parser": "^2.2.1",
     "express": "^4.22.0",
     "express-http-proxy": "^2.1.1",
+    "express-winston": "^4.2.0",
     "final-form": "^4.20.10",
     "final-form-arrays": "^3.1.0",
     "helmet": "^8.1.0",
     "http-status": "^2.1.0",
     "lodash": "^4.17.21",
+    "luxon": "^3.7.2",
     "moment": "^2.30.1",
     "oidc-client-ts": "^3.2.0",
     "prop-types": "^15.8.1",
@@ -59,8 +60,9 @@
     "react-oidc-context": "^3.3.0",
     "react-router-dom": "^5.3.4",
     "react-select": "^5.10.1",
-    "tinymce": "^7.8.0",
-    "uuid": "^11.1.0"
+    "tinymce": "^8.10.2",
+    "uuid": "^11.1.0",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.27.0",
@@ -86,6 +88,9 @@
     "webpack": "^5.99.6",
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
+  },
+  "overrides": {
+    "nodemailer": "10.5.0"
   },
   "babel": {
     "plugins": [

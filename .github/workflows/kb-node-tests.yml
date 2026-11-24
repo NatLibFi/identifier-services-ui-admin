@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [24.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -39,9 +39,11 @@ jobs:
         with:
           # important note: GPL-2.0-or-later is compatible with GPLv3 per gnu.or: https://www.gnu.org/licenses/gpl-faq.html#v2v3Compatibility
           # as of now, this component is licensed with GPLv3
-          allow_licenses: MIT;ISC;0BSD;BSD-2-Clause;BSD-3-Clause;Apache-2.0;BlueOak-1.0.0;GPL-2.0-or-later
-          exclude_pattern: /^@natlibfi/;nodemailer
           # nodemailer@9.1.1 and the current version are both licensed under MIT No Attribution license: https://github.com/nodemailer/nodemailer/tree/v9.1.1#license
+          # tinymce@8.10.2 lists license as GNU General Public License Version 2 or later: https://github.com/tinymce/tinymce/blob/819782a585cabcdd2e05b2073b28c01de19110bb/LICENSE.md
+          allow_licenses: MIT;ISC;0BSD;BSD-2-Clause;BSD-3-Clause;Apache-2.0;BlueOak-1.0.0;GPL-2.0-or-later
+          exclude_pattern: /^@natlibfi/;nodemailer;tinymce
+          direct: true
 
   njsscan:
     name: Njsscan check
